@@ -1,14 +1,28 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv, fields
 import re
 from tools.translate import _
-from gestionatr.defs import TABLA_113, TABLA_17
+from gestionatr.defs import TABLA_17, TABLA_113_NEW, TENEN_AUTOCONSUM, TABLA_133
 from datetime import datetime, timedelta
+from bisect import bisect_right
+from osv.expression import OOQuery
+from six import string_types
 from tools import cache
 import logging
 
-TIPO_AUTOCONSUMO_SEL = [(ac[0], "[{}] - {}".format(ac[0], ac[1])) for ac in TABLA_113]
 IMPORT_PHASE_1 = 10  # 10 = Fase de càrrega XML
+
+TIPO_AUTOCONSUMO_NEW = TABLA_113_NEW
+TIPO_AUTOCONSUMO_SEL_NEW = [
+    (ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPO_AUTOCONSUMO_NEW
+]
+
+TIPUS_SUBSECCIO = TABLA_133
+TIPUS_SUBSECCIO_SEL = [
+    (ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPUS_SUBSECCIO
+]
 
 
 class GiscedataFacturacioImportacioLinia(osv.osv):
@@ -48,13 +62,19 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             tipus = tipus_autoconsum[0]
             if tipus in ["01", "2A", "2B", "2G"]:
                 tipus = "00"
+            if tipus != '00' and tipus in TENEN_AUTOCONSUM:
+                tipus = '11' if tipus in ['31', '32', '33'] else '12'
             vals["tipus_autoconsum"] = tipus
 
         tarifaATR = re.findall("<TarifaATRFact>(.*)</TarifaATRFact>", xml_data)
         if tarifaATR:
             vals["tarifa_atr"] = tarifaATR[0]
 
-        if vals["type_factura"] == "C":
+        motiu_facturacio = re.findall("<MotivoFacturacion>(.*)</MotivoFacturacion>", xml_data)
+        if motiu_facturacio:
+            vals["motiu_facturacio"] = motiu_facturacio[0]
+
+        if vals["type_factura"] in ("C", "A"):
             expedient = re.findall("<NumeroExpediente>(.*)</NumeroExpediente>", xml_data)
             if expedient:
                 vals["num_expedient"] = expedient[0]
@@ -71,6 +91,17 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                         comentario = ""
 
                 vals["comentari"] = comentario
+
+        tipus_subseccio = re.findall("<TipoSubseccion>(.*)</TipoSubseccion>", xml_data)
+        if tipus_subseccio:
+            vals["tipus_subseccio"] = tipus_subseccio[0]
+        else:
+            vals["tipus_subseccio"] = '00'
+
+        is_autoconsum_collectiu = re.findall("<Colectivo>(.*)</Colectivo>", xml_data)
+        if is_autoconsum_collectiu:
+            vals["is_autoconsum_collectiu"] = is_autoconsum_collectiu[0] == 'S'
+
         return vals
 
     @cache(timeout=5 * 60)
@@ -92,7 +123,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                     if (
                         exact_origin
                         and field == "invoice_number_text"
-                        and isinstance(match, (unicode, str))  # noqa: F821
+                        and isinstance(match, string_types)
                     ):
                         if "%" not in match:
                             operator = "="
@@ -186,9 +217,10 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
 
     def _ff_get_polissa(self, cursor, uid, ids, field_name, arg, context):
         """Pòlissa a la que fa referència l'F1."""
-        cups_obj = self.pool.get("giscedata.cups.ps")
-
         res = dict.fromkeys(ids, False)
+        if not ids:
+            return res
+        invoice_dates = {}
         for f1_info in self.read(cursor, uid, ids, ["cups_id", "fecha_factura_desde"]):
             if f1_info["cups_id"] and f1_info["fecha_factura_desde"]:
                 data_inici_factura = datetime.strftime(
@@ -196,10 +228,30 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                     + timedelta(days=1),
                     "%Y-%m-%d",
                 )
-                pol_id = cups_obj.find_most_recent_polissa(
-                    cursor, uid, f1_info["cups_id"][0], data_inici_factura
-                )
-                res[f1_info["id"]] = pol_id[f1_info["cups_id"][0]]
+                invoice_dates[f1_info["id"]] = (f1_info["cups_id"][0], data_inici_factura)
+        if not invoice_dates:
+            return res
+
+        cups_ids = list(set(cups_id for cups_id, date in invoice_dates.values()))
+        latest_date = max(date for cups_id, date in invoice_dates.values())
+        pol_querier = OOQuery(self.pool.get("giscedata.polissa"), cursor, uid)
+        pol_query = pol_querier.select(
+            ["id", "cups", "data_alta"], order_by=["data_alta.desc"], only_active=False
+        ).where([("cups", "in", cups_ids), ("data_alta", "<=", latest_date)])
+        cursor.execute(*pol_query)
+        contracts_by_cups = {}
+        for contract in cursor.dictfetchall():
+            contracts = contracts_by_cups.setdefault(contract["cups"], {})
+            # Preserve the first result for a date, as in the previous LIMIT 1.
+            contracts.setdefault(contract["data_alta"], contract["id"])
+        dates_by_cups = {}
+        for cups_id, contracts in contracts_by_cups.items():
+            dates_by_cups[cups_id] = sorted(contracts)
+        for f1_id, (cups_id, invoice_date) in invoice_dates.items():
+            dates = dates_by_cups.get(cups_id, [])
+            position = bisect_right(dates, invoice_date) - 1
+            if position >= 0:
+                res[f1_id] = contracts_by_cups[cups_id][dates[position]]
         return res
 
     def _get_importacio_linia_polissa(self, cr, uid, ids, context={}):
@@ -220,12 +272,13 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
 
     _columns = {
         "tipus_autoconsum": fields.selection(
-            TIPO_AUTOCONSUMO_SEL,
+            TIPO_AUTOCONSUMO_SEL_NEW,
             u"Autoconsum",
             readonly=True,
             help=u"Tipus de autoconsum informat a l'F1",
         ),
         "tarifa_atr": fields.selection(TABLA_17, u"Tarifa", readonly=True),
+        "motiu_facturacio": fields.char(_(u"Motiu facturació"), size=4, readonly=True),
         "num_expedient": fields.char(_(u"Núm. Expedient"), size=16, readonly=True),
         "comentari": fields.text(_(u"Comentari de l'F1"), readonly=True),
         "polissa_id": fields.function(
@@ -242,6 +295,17 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             type="date",
             string="Data ultima lect. facturada pòlissa",
             readonly=True,
+        ),
+        "tipus_subseccio": fields.selection(
+            TIPUS_SUBSECCIO_SEL,
+            u"Tipus subsecció",
+            readonly=True,
+            help=u"Tipus subsecció informat a l'F1",
+        ),
+        "is_autoconsum_collectiu": fields.boolean(
+            "Es col·lectiu",
+            readonly=True,
+            help=u"Es autoconsum col·lectiu informat a l'F1",
         ),
     }
 

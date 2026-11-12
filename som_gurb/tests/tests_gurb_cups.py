@@ -1,13 +1,30 @@
-from tests_gurb_base import TestsGurbBase
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
+import mock
+from .tests_gurb_base import TestsGurbBase
 from osv import osv
 from datetime import datetime, timedelta
 
 
 class TestsGurbCups(TestsGurbBase):
 
+    def _assert_account_code(self, many2one_value, expected_code):
+        self.assertEqual(many2one_value[1].split(' ', 1)[0], expected_code)
+
+    def _assert_partner_receivable_account(self, partner_id, many2one_value):
+        partner_o = self.openerp.pool.get("res.partner")
+        partner = partner_o.read(
+            self.cursor, self.uid, partner_id, ["property_account_receivable"]
+        )
+        self.assertEqual(
+            many2one_value[0], partner["property_account_receivable"][0]
+        )
+
     def test_gurb_cups_percentage(self):
         imd_o = self.openerp.pool.get("ir.model.data")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        gurb_cups_beta_o = self.openerp.pool.get("som.gurb.cups.beta")
 
         gurb_cups_id_1 = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
@@ -15,6 +32,17 @@ class TestsGurbCups(TestsGurbBase):
         gurb_cups_id_2 = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0002"
         )[1]
+
+        gurb_beta_id_1 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_beta_0001"
+        )[1]
+        gurb_beta_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_beta_0002"
+        )[1]
+
+        gurb_cups_beta_o.write(self.cursor, self.uid, gurb_beta_id_1, {"gift_beta_kw": 0.5})
+        gurb_cups_beta_o.write(self.cursor, self.uid, gurb_beta_id_2, {"gift_beta_kw": 0.5})
+
         percentatge_1 = gurb_cups_o.read(
             self.cursor, self.uid, gurb_cups_id_1, ['beta_percentage']
         )['beta_percentage']
@@ -22,8 +50,8 @@ class TestsGurbCups(TestsGurbBase):
             self.cursor, self.uid, gurb_cups_id_2, ['beta_percentage']
         )['beta_percentage']
 
-        self.assertEqual(percentatge_1, 35.0)
-        self.assertEqual(percentatge_2, 35.0)
+        self.assertEqual(percentatge_1, 40.0)
+        self.assertEqual(percentatge_2, 40.0)
 
     def test_gurb_is_owner(self):
 
@@ -49,53 +77,271 @@ class TestsGurbCups(TestsGurbBase):
     def test_wizard_gurb_create_new_beta(self):
         context = {}
 
+        gurb_cups_beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+
         gurb_cups_id = self.get_references()['gurb_cups_id']
         start_date = "2015-02-01"
         new_beta_kw = 1.5
         new_extra_beta_kw = 0.5
+        new_gift_beta = 1
 
         with self.assertRaises(osv.except_osv):
             self.create_new_gurb_cups_beta(
-                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw,
+                new_gift_beta, context=context
             )
 
         new_beta_kw = -10
 
         with self.assertRaises(osv.except_osv):
             self.create_new_gurb_cups_beta(
-                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw,
+                new_gift_beta, context=context
             )
 
         new_beta_kw = 0
         new_extra_beta_kw = 0
+        new_gift_beta = 0
 
         with self.assertRaises(osv.except_osv):
             self.create_new_gurb_cups_beta(
-                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw,
+                new_gift_beta, context=context
             )
 
         start_date = (datetime.today() + timedelta(days=20)).strftime("%Y-%m-%d")
         new_beta_kw = 1.5
         new_extra_beta_kw = 0.5
+        new_gift_beta = 1
 
         with self.assertRaises(osv.except_osv):
             self.create_new_gurb_cups_beta(
-                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw,
+                new_gift_beta, context=context
             )
 
         new_beta_kw = 2.5
         new_extra_beta_kw = 1
+        new_gift_beta = 0
         start_date = "2017-02-01"
 
         with self.assertRaises(osv.except_osv):
             self.create_new_gurb_cups_beta(
-                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw,
+                new_gift_beta, context=context
             )
 
         new_beta_kw = 3
         new_extra_beta_kw = 2
+        new_gift_beta = 1
         start_date = (datetime.today()).strftime("%Y-%m-%d")
 
+        context["activate"] = False
+
         self.create_new_gurb_cups_beta(
-            gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+            gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, new_gift_beta, context=context
         )
+        gurb_cups_beta_id = gurb_cups_beta_o.search(
+            self.cursor, self.uid, [("gurb_cups_id", "=", gurb_cups_id), ("future_beta", "=", True)]
+        )
+        self.assertEqual(len(gurb_cups_beta_id), 1)
+
+    def test_gurb_cups_activation(self):
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        gurb_cups_beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+        pol_o = self.openerp.pool.get("giscedata.polissa")
+
+        gurb_cups_id = self.get_references()["gurb_cups_id"]
+        gurb_cups_beta_id = self.get_references()["gurb_cups_beta_2_id"]
+
+        gurb_cups_o.write(self.cursor, self.uid, gurb_cups_id, {"start_date": False})
+        gurb_cups_beta_o.write(self.cursor, self.uid, gurb_cups_beta_id, {"future_beta": True})
+        gurb_cups_o.send_signal(self.cursor, self.uid, [gurb_cups_id], "button_create_cups")
+        gurb_cups_o.activate_or_modify_gurb_cups(self.cursor, self.uid, gurb_cups_id, "2024-01-01")
+
+        pol_id = gurb_cups_o.read(
+            self.cursor, self.uid, gurb_cups_id, ["polissa_id"]
+        )["polissa_id"][0]
+
+        pol_br = pol_o.browse(self.cursor, self.uid, pol_id)
+        gurb_cups_br = gurb_cups_o.browse(self.cursor, self.uid, gurb_cups_id)
+        gurb_cups_beta_br = gurb_cups_beta_o.browse(self.cursor, self.uid, gurb_cups_id)
+
+        self.assertEqual(len(pol_br.serveis), 1)
+        self.assertEqual(pol_br.serveis[0].polissa_id.id, pol_id)
+        self.assertEqual(gurb_cups_br.start_date, "2024-01-01")
+        self.assertEqual(gurb_cups_br.state, "active")
+        self.assertEqual(gurb_cups_beta_br.future_beta, False)
+
+    @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.create_initial_invoice")
+    def test_create_initial_invoices_collects_exception(self, mock_create_invoice):
+        mock_create_invoice.side_effect = [ValueError("Invoice failed"), (42, False)]
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        refs = self.get_references()
+        gurb_cups_id = refs["gurb_cups_id"]
+
+        invoice_ids, errors = gurb_cups_o.create_initial_invoices(
+            self.cursor, self.uid, [gurb_cups_id, refs["owner_gurb_cups_id"]]
+        )
+
+        self.assertEqual(invoice_ids, [42])
+        self.assertEqual(errors, [
+            "[GURB CUPS ID {}]: Invoice failed".format(gurb_cups_id)
+        ])
+
+    def test_cancel_gurb_cups_preserves_beta_history(self):
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+        refs = self.get_references()
+        gurb_cups_id = refs["gurb_cups_id"]
+        historical_beta_id = refs["gurb_cups_beta_2_id"]
+        beta_o.write(self.cursor, self.uid, historical_beta_id, {
+            "active": False,
+            "end_date": "2016-01-31",
+        })
+        active_beta_id = beta_o.create(self.cursor, self.uid, {
+            "gurb_cups_id": gurb_cups_id,
+            "active": True,
+            "start_date": "2016-02-01",
+            "beta_kw": 3,
+            "extra_beta_kw": 0,
+            "gift_beta_kw": 0,
+        })
+        gurb_cups_o.send_signal(self.cursor, self.uid, [gurb_cups_id], [
+            "button_create_cups", "button_activate_cups",
+            "button_coming_cancellation",
+        ])
+
+        gurb_cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, gurb_cups_id, "2016-06-06",
+            context={"active_test": False}
+        )
+
+        active_beta = beta_o.browse(self.cursor, self.uid, active_beta_id)
+        self.assertFalse(active_beta.active)
+        self.assertEqual(active_beta.end_date, "2016-06-06")
+        historical_beta = beta_o.browse(
+            self.cursor, self.uid, historical_beta_id
+        )
+        self.assertFalse(historical_beta.active)
+        self.assertEqual(historical_beta.end_date, "2016-01-31")
+        unrelated_beta = beta_o.browse(
+            self.cursor, self.uid, refs["gurb_cups_beta_id"]
+        )
+        self.assertTrue(unrelated_beta.active)
+        self.assertFalse(unrelated_beta.end_date)
+
+    @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64")
+    def test_create_initial__invoice_bank_transfer(
+        self, generate_gurb_invoice_base64_mock_function
+    ):
+        generate_gurb_invoice_base64_mock_function.return_value = (
+            "JVBERi0xLjAKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+"
+            "ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50"
+            "IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9S"
+            "ZXNvdXJjZXM8PD4+L01lZGlhQm94WzAgMCA5IDldPj5lbmRvYmoKeHJlZgow"
+            "IDQKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAw"
+            "MDAwMDAwNTIgMDAwMDAgbiAKMDAwMDAwMDEwMSAwMDAwMCBuIAp0cmFpbGVy"
+            "PDwvUm9vdCAxIDAgUi9TaXplIDQ+PgpzdGFydHhyZWYKMTc0CiUlRU9G"
+        )
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        invoice_o = self.openerp.pool.get("account.invoice")
+        line_o = self.openerp.pool.get("account.invoice.line")
+        self.maxDiff = None
+        gurb_cups_id = self.get_references()["gurb_cups_id"]
+        ctx = {"tpv": False}
+
+        invoice_id, errs = gurb_cups_o.create_initial_invoice(
+            self.cursor, self.uid, gurb_cups_id, context=ctx)
+
+        self.assertFalse(errs)
+        self.assertTrue(invoice_id)
+        inv = invoice_o.read(self.cursor, self.uid, invoice_id)
+        self._assert_partner_receivable_account(inv['partner_id'][0], inv['account_id'])
+        self.assertEqual(inv['partner_id'][1], 'GISCE')
+        self.assertEqual(inv['origin'], 'GURBCUPSID2')
+        self.assertEqual(inv['reference'], 'GURBCUPSID2')
+        self.assertEqual(inv['date_invoice'], datetime.today().strftime('%Y-%m-%d'))
+        self.assertEqual(inv['amount_untaxed'], 3.75)
+        self.assertEqual(inv['amount_tax'], 0.79)
+        self.assertEqual(inv['amount_total'], 4.54)
+        self.assertEqual(inv['type'], 'out_invoice')
+        self.assertEqual(inv['state'], 'draft')
+        self.assertEqual(len(inv['invoice_line']), 1)
+        self.assertEqual(len(inv['tax_line']), 1)
+        self.assertEqual(inv["residual"], 4.54)
+        self.assertEqual(inv["saldo"], 4.54)
+        self.assertEqual(inv['journal_id'][1], u'Factures GURB')
+        self.assertEqual(inv['payment_type'][1], u'Recibo domiciliado')
+        line = line_o.read(self.cursor, self.uid, inv['invoice_line'][0])
+        self.assertEqual(line['name'], u"Cost d'adhesió GURB GRUP 001")
+        self.assertEqual(line['quantity'], 1.0)
+        self.assertEqual(line['price_unit'], 3.75)
+        self._assert_account_code(line['account_id'], '705000000104')
+
+    @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64")
+    def test_create_initial_invoice__invoice_tpv_payment(
+        self, generate_gurb_invoice_base64_mock_function
+    ):
+        generate_gurb_invoice_base64_mock_function.return_value = (
+            "JVBERi0xLjAKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+"
+            "ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50"
+            "IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9S"
+            "ZXNvdXJjZXM8PD4+L01lZGlhQm94WzAgMCA5IDldPj5lbmRvYmoKeHJlZgow"
+            "IDQKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAw"
+            "MDAwMDAwNTIgMDAwMDAgbiAKMDAwMDAwMDEwMSAwMDAwMCBuIAp0cmFpbGVy"
+            "PDwvUm9vdCAxIDAgUi9TaXplIDQ+PgpzdGFydHhyZWYKMTc0CiUlRU9G"
+        )
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        invoice_o = self.openerp.pool.get("account.invoice")
+        line_o = self.openerp.pool.get("account.invoice.line")
+        self.maxDiff = None
+        gurb_cups_id = self.get_references()["gurb_cups_id"]
+        ctx = {"tpv": True}
+
+        invoice_id, errs = gurb_cups_o.create_initial_invoice(
+            self.cursor, self.uid, gurb_cups_id, context=ctx)
+
+        self.assertFalse(errs)
+        self.assertTrue(invoice_id)
+        inv = invoice_o.read(self.cursor, self.uid, invoice_id)
+        self._assert_partner_receivable_account(inv['partner_id'][0], inv['account_id'])
+        self.assertEqual(inv['partner_id'][1], 'GISCE')
+        self.assertEqual(inv['origin'], 'GURBCUPSID2')
+        self.assertEqual(inv['reference'], 'GURBCUPSID2')
+        self.assertEqual(inv['date_invoice'], datetime.today().strftime('%Y-%m-%d'))
+        self.assertEqual(inv['amount_untaxed'], 3.75)
+        self.assertEqual(inv['amount_tax'], 0.79)
+        self.assertEqual(inv['amount_total'], 4.54)
+        self.assertEqual(inv['type'], 'out_invoice')
+        self.assertEqual(inv['state'], 'draft')
+        self.assertEqual(len(inv['invoice_line']), 1)
+        self.assertEqual(len(inv['tax_line']), 1)
+        self.assertEqual(inv["residual"], 4.54)
+        self.assertEqual(inv["saldo"], 4.54)
+        self.assertEqual(inv['journal_id'][1], u'Factures GURB')
+        self.assertEqual(inv['payment_type'][1], u'Cobrament Targeta')
+        line = line_o.read(self.cursor, self.uid, inv['invoice_line'][0])
+        self.assertEqual(line['name'], u"Cost d'adhesió GURB GRUP 001")
+        self.assertEqual(line['quantity'], 1.0)
+        self.assertEqual(line['price_unit'], 3.75)
+        self._assert_account_code(line['account_id'], '705000000104')
+
+    def test_pay_invoice_gurb(self):
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        invoice_o = self.openerp.pool.get("account.invoice")
+        gurb_cups_id = self.get_references()["gurb_cups_id"]
+        ctx = {"tpv": True}
+        invoice_id, errs = gurb_cups_o.create_initial_invoice(
+            self.cursor, self.uid, gurb_cups_id, context=ctx)
+        self.assertFalse(errs)
+        self.assertTrue(invoice_id)
+
+        gurb_cups_o.pay_invoice_gurb(
+            self.cursor, self.uid, invoice_id, context=ctx
+        )
+
+        inv = invoice_o.read(self.cursor, self.uid, invoice_id)
+        self.assertEqual(inv['state'], 'paid')
+        self.assertEqual(inv['residual'], 0.0)
+        self.assertEqual(inv['saldo'], 4.54)

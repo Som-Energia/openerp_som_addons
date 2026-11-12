@@ -2,31 +2,17 @@
     background-color: #ffffff;
 }
 
-.chart_consum rect {
-    fill: url(#grad);
-}
-
-.chart_consum .bar1 rect {
-    fill: url(#grad1);
-}
-
-.chart_consum .bar2 rect {
-    fill: url(#grad2);
-}
-
-.chart_consum .bar3 rect {
-    fill: url(#grad3);
-}
-
 .chart_consum text {
-    writing-mode: tb;
     font-size: .7em;
     fill: #6c6c6c;
 }
 
+.chart_consum .xaxis text {
+    font-size: 1em;
+}
+
 .chart_consum .mes {
     font-size: .7em;
-/*        writing-mode: tb; */
     writing-mode: lr;
     text-anchor: middle;
 }

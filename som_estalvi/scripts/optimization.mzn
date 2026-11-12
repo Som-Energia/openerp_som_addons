@@ -1,12 +1,11 @@
 int: nMesos = 12;
 int: nPeriodes = 6;
-float: excess_price;
 float: power_p6;
-
 float: max_power = max(max(maximeters_powers),power_p6);
-
 array[1..nMesos, 1..nPeriodes] of int: maximeters_powers;
 array[1..nPeriodes] of float: power_price;
+array[1..nPeriodes] of float: excess_price;
+
 array[1..nPeriodes] of var 1..round(max_power): potenciaOptima;
 array[1..12] of int: diesMes = [31,29,31,30,31,30,31,31,30,31,30,31];
 array[1..nMesos,1..nPeriodes] of var 0..max(maximeters_powers)*max(power_price): maximetreMesPeriode;
@@ -23,9 +22,9 @@ constraint potenciaOptima[3] <= potenciaOptima[4];
 constraint potenciaOptima[4] <= potenciaOptima[5];
 constraint potenciaOptima[5] <= optim_p6;
 
-constraint forall(i in 1..nMesos, j in 1..(nPeriodes-1)) (((maximeters_powers[i,j]-potenciaOptima[j]) > 0) -> (maximetreMesPeriode[i,j] = (maximeters_powers[i,j]-potenciaOptima[j]) * diesMes[i] * excess_price * 2));
+constraint forall(i in 1..nMesos, j in 1..(nPeriodes-1)) (((maximeters_powers[i,j]-potenciaOptima[j]) > 0) -> (maximetreMesPeriode[i,j] = (maximeters_powers[i,j]-potenciaOptima[j]) * diesMes[i] * excess_price[j]));
 
-constraint forall(i in 1..nMesos) (((maximeters_powers[i,nPeriodes]-optim_p6) > 0) -> (maximetreMesPeriode[i,nPeriodes] = (maximeters_powers[i,nPeriodes]-optim_p6) * diesMes[i] * excess_price * 2));
+constraint forall(i in 1..nMesos) (((maximeters_powers[i,nPeriodes]-optim_p6) > 0) -> (maximetreMesPeriode[i,nPeriodes] = (maximeters_powers[i,nPeriodes]-optim_p6) * diesMes[i] * excess_price[nPeriodes]));
 
 constraint forall(i in 1..nPeriodes) (totalMaximetres[i] = sum(col(maximetreMesPeriode,i)));
 constraint forall(i in 1..(nPeriodes-1)) (totalPotencies[i] = (potenciaOptima[i] * power_price[i]));

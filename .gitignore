@@ -136,3 +136,24 @@ patches/
 
 # GISCE Stuff
 .idea
+
+# Jasper binaries
+*.jasper
+
+# VSCode
+.vscode/
+
+# Agents
+.codegraph/
+.engram/
+.atl/
+.pi/
+.pi-lens/
+.agents/workspace-repositories.local
+
+# Local consumer env (secrets)
+runtime-docker/.env.consumer
+runtime-docker/.env.producer
+
+# webclient docker custom css
+/webclient-docker/custom.css

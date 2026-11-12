@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="action_report_mailcanvipreus" model="ir.actions.report.xml">
+            <field name="report_name">report_mailcanvipreus</field>
+            <field name="name">Mail Canvi Preus</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="report_webkit" eval=""/>
+            <field name="report_type">pdf</field>
+            <field name="header" eval="0"/>
+            <field name="auto" eval="0"/>
+        </record>
+        <record id="value_report_mailcanvipreus" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Mail Canvi Preus</field>
+            <field name="key2">client_print_multi</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.report.xml,'+str(ref('action_report_mailcanvipreus'))"/>
+        </record>
+    </data>
+</openerp>

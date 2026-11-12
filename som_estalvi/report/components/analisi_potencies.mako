@@ -77,5 +77,6 @@
             <a href="${_(u"https://ca.support.somenergia.coop/article/271-com-puc-fer-una-modificacio-de-potencia-o-de-tarifa-i-quant-costa")}">${_(u"Més informació per modificar les potències contractades</a>")}
         </div>
     </div>
+    <br/>
     <hr/>
 </%def>

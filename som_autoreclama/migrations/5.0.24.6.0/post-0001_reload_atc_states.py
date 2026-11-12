@@ -11,7 +11,7 @@ def up(cursor, installed_version):
 
     logger.info("Updating XML som_autoreclama_state_data.xml")
     load_data_records(
-        cursor, 'som_autoreclama', 'som_autoreclama_state_data.xml',
+        cursor, 'som_autoreclama', 'data/som_autoreclama_state_data.xml',
         [
             'review_state_workflow_polissa',
             'conditions_revisar_to_correct_state_workflow_polissa',

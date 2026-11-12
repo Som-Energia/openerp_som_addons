@@ -1,4 +1,4 @@
-from ..component_utils import dateformat
+from ..component_utils import dateformat, get_description
 
 
 class ProcesATR:
@@ -30,6 +30,12 @@ class ProcesATR:
                 model_obj = wiz.pool.get(r_model)
                 return model_obj.browse(cursor, uid, int(r_id))
         return None
+
+    def get_step_autoconsum_description(self, step):
+        description = False
+        if step.dades_cau and step.dades_cau[0].tipus_autoconsum is not False:
+            description = get_description(step.dades_cau[0].tipus_autoconsum, "TABLA_113_NEW", True)
+        return description
 
     def get_log_date(self, wiz, cursor, uid, step):
 

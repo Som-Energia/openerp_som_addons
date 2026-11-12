@@ -121,10 +121,14 @@ body {
     margin: 5mm 0 5mm 0;
 }
 
-.alert .exclamation{
+/* .alert .exclamation{
     font-size: 25pt;
     color: white;
     font-weight: bold;
+    padding-right: 3mm;
+} */
+
+.alert .emoji{
     padding-right: 3mm;
 }
 

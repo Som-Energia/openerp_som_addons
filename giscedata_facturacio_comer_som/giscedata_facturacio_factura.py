@@ -15,6 +15,20 @@ class GiscedataFacturacioFactura(osv.osv):
     _name = 'giscedata.facturacio.factura'
     _inherit = 'giscedata.facturacio.factura'
 
+    def copy_data(self, cr, uid, id, default=None, context=None):
+        if default is None:
+            default = {}
+        res, x = super(GiscedataFacturacioFactura, self).copy_data(
+            cr, uid, id, default, context
+        )
+        res.update({
+            'enviat_mail_id': False,
+            'enviat': False,
+            'enviat_data': False,
+            'enviat_carpeta': False,
+        })
+        return res, x
+
     # Poweremails hooks
     def poweremail_write_callback(self, cursor, uid, ids, vals, context=None):
         res = True
@@ -46,7 +60,7 @@ class GiscedataFacturacioFactura(osv.osv):
                 if not new_mail_id:  # no new mail
                     continue
 
-                new_mail = mail_obj.browse(cursor, uid, new_mail_id)
+                new_mail = mail_obj.simple_browse(cursor, uid, new_mail_id)
                 if (new_mail.pem_attachments_ids
                         and new_mail.pem_attachments_ids[0].datas_fname == fact_number + '.pdf'):
                     self.write(cursor, uid, fact_id, {'enviat_mail_id': new_mail_id})
@@ -59,7 +73,7 @@ class GiscedataFacturacioFactura(osv.osv):
         context.update({'save_pdf_in_invoice_attachments': True})
 
         conf_obj = self.pool.get("res.config")
-        unsent_store_days = conf_obj.get(cursor, uid, "factura_pdf_unsent_store_days", 60)
+        unsent_store_days = int(conf_obj.get(cursor, uid, "factura_pdf_unsent_store_days", 60))
         date_search = datetime.today() - timedelta(days=unsent_store_days)
 
         query_file = get_module_resource(

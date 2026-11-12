@@ -9,3 +9,4 @@ from . import agrupacio_supramunicipal
 from . import som_consulta_pobresa
 from . import crm
 from . import account_invoice
+from . import giscedata_facturacio_correu_backend

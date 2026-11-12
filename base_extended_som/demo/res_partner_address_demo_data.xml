@@ -1,0 +1,36 @@
+<openerp>
+    <data>
+        <record model="res.partner.address" id="res_partner_address_with_both_phones">
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <field name="street">Carrer de la Indústria, 15</field>
+            <field name="city">Barcelona</field>
+            <field name="zip">08038</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="phone">934567890</field>
+            <field name="mobile">600123456</field>
+        </record>
+        <record model="res.partner.address" id="res_partner_address_with_phone_only">
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <field name="street">Avinguda Diagonal, 123</field>
+            <field name="city">Barcelona</field>
+            <field name="zip">08018</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="phone">932109876</field>
+        </record>
+        <record model="res.partner.address" id="res_partner_address_with_mobile_only">
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <field name="street">Carrer de Balmes, 45</field>
+            <field name="city">Barcelona</field>
+            <field name="zip">08007</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="mobile">612345678</field>
+        </record>
+        <record model="res.partner.address" id="res_partner_address_without_phones">
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <field name="street">Passeig de Gràcia, 67</field>
+            <field name="city">Barcelona</field>
+            <field name="zip">08008</field>
+            <field name="country_id" ref="base.es"/>
+        </record>
+    </data>
+</openerp>

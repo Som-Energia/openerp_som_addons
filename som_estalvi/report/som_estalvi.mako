@@ -4,6 +4,8 @@
 <%namespace file="som_estalvi/report/components/analisi_potencies.mako" import="analisi_potencies"/>
 <%namespace file="som_estalvi/report/components/footer.mako" import="footer"/>
 <%namespace file="som_estalvi/report/components/graphic.mako" import="graphic"/>
+<%namespace file="som_estalvi/report/components/new_web_section_eie.mako" import="new_web_section_eie"/>
+<%namespace file="som_estalvi/report/components/som_serveis_box.mako" import="som_serveis_box"/>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -31,8 +33,10 @@
                 <div class="page-content">
                     <div class="content">
                         ${capcalera(informe['titular'])}
+                        ${new_web_section_eie()}
                         ${resum_facturacio_anual(informe['costs'])}
                         ${analisi_potencies(informe['potencia'])}
+                        ${som_serveis_box()}
                         ${footer()}
                     </div>
                 </div>

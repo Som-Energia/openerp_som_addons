@@ -3,6 +3,7 @@ from datetime import datetime
 from osv import fields, osv
 from tools.translate import _
 import xml.etree.ElementTree as ET
+from osv.orm import DEFAULT_VIEW_VERSION
 
 
 class WizardSubtypeR1(osv.osv_memory):
@@ -107,10 +108,12 @@ class WizardSubtypeR1(osv.osv_memory):
         return res
 
     def fields_view_get(
-        self, cursor, uid, view_id=None, view_type="form", context=None, toolbar=False
+        self, cursor, uid, view_id=None, view_type='form', context=None, toolbar=False,
+        version=DEFAULT_VIEW_VERSION
     ):
         res = super(WizardSubtypeR1, self).fields_view_get(
-            cursor, uid, view_id, view_type, context=context, toolbar=toolbar
+            cursor, uid, view_id, view_type, context=context, toolbar=toolbar,
+            version=version
         )
         # Afegim facturacio_suspesa i refacturacio_pendent a les vistes
         root = ET.fromstring(res["arch"])
@@ -151,6 +154,20 @@ class WizardSubtypeR1(osv.osv_memory):
         subtipus_obj = self.pool.get("giscedata.subtipus.reclamacio")
         subtipus = subtipus_obj.browse(cursor, uid, context.get("subtipus_id"))
         return subtipus.name in ["036", "009"]
+
+    def default_comment_values(self, cursor, uid, polissa, context=None):
+        res = super(WizardSubtypeR1, self).default_comment_values(
+            cursor, uid, polissa, context=context
+        )
+
+        if not context or not context.get("subtipus_id"):
+            return res
+
+        subtipus_obj = self.pool.get('giscedata.subtipus.reclamacio')
+        subtipus = subtipus_obj.browse(cursor, uid, context.get('subtipus_id'))
+        if subtipus.name == "048":
+            res.update({'comentaris': """Buenos días, solicitamos que nos aclaren en detalle el motivo de rechazo de esta solicitud. Gracias, un saludo."""})  # noqa: E501
+        return res
 
     _columns = {
         "facturacio_suspesa": fields.boolean("Marcar contracte amb facturació suspesa"),

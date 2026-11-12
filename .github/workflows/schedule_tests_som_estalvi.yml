@@ -14,3 +14,4 @@ jobs:
       ACCESS_TOKEN_GA: ${{ secrets.ACCESS_TOKEN_GA }}
       ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
       SRID: ${{ secrets.SRID }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -19,6 +19,8 @@ Mòdul per la integració de l'oficina virtual
         "giscedata_lectures_pool",
         "giscedata_facturacio_impagat_comer",
         "giscedata_atc_switching",
+        "som_account_invoice_pending",
+        "som_card_payment",
     ],
     "init_xml": [],
     "demo_xml": [
@@ -31,6 +33,7 @@ Mòdul per la integració de l'oficina virtual
         "wizard/wizard_model_list_from_file_data.xml",
         "security/ir.model.access.csv",
         "ir_attachment_view.xml",
+        "data/pricelist_social_data.xml",
     ],
     "active": False,
     "installable": True,

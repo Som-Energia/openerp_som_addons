@@ -1,2 +1,4 @@
-import som_stash
-import som_stash_setting
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from . import som_stash
+from . import som_stash_setting

@@ -1,52 +1,91 @@
 # -*- coding: utf-8 -*-
-from destral import testing
-from destral.transaction import Transaction
-from datetime import date, timedelta
+from __future__ import absolute_import
+
+from datetime import timedelta, datetime
+from addons import get_module_resource
 import mock
-
-from .. import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
-
-
-def today_str():
-    return date.today().strftime("%Y-%m-%d")
-
-
-def today_minus_str(d):
-    return (date.today() - timedelta(days=d)).strftime("%Y-%m-%d")
-
-
-class SomAutoreclamaBaseTests(testing.OOTestCase):
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    def get_model(self, model_name):
-        return self.openerp.pool.get(model_name)
-
-    def search_in(self, model, params):
-        model_obj = self.get_model(model)
-        found_ids = model_obj.search(self.cursor, self.uid, params)
-        return found_ids[0] if found_ids else None
-
-    def browse_referenced(self, reference):
-        model, id = reference.split(",")
-        model_obj = self.get_model(model)
-        return model_obj.browse(self.cursor, self.uid, int(id))
-
-    def get_object_reference(self, module, semantic_id):
-        ir_obj = self.get_model("ir.model.data")
-        expected_id = ir_obj.get_object_reference(
-            self.cursor, self.uid, module, semantic_id
-        )
-        return expected_id
+from ..models import (
+    giscedata_atc,
+    giscedata_polissa,
+    som_autoreclama_state_history,
+    som_autoreclama_state_updater,
+)
+from .test_som_autoreclama_base import (
+    SomAutoreclamaBaseTests,
+    today_str,
+    today_minus_str,
+)
+from destral.patch import PatchNewCursors
 
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
+    @mock.patch.object(som_autoreclama_state_updater.pooler, "get_db")
+    def test_update_items_does_not_query_coordinator_cursor(self, get_db_mock):
+        coordinator_cursor = mock.Mock()
+        coordinator_cursor.dbname = self.cursor.dbname
+        item_cursor = get_db_mock.return_value.cursor.return_value
+        updater_obj = self.get_model("som.autoreclama.state.updater")
+        context = {
+            "_autoreclama_review_states_cache": {
+                "polissa": [],
+            },
+        }
+
+        with mock.patch.object(
+            updater_obj, "get_autoreclama_state_name", return_value=(1, "state")
+        ) as get_state_mock, mock.patch.object(
+            updater_obj,
+            "update_item_if_possible",
+            return_value=(False, None, "unchanged"),
+        ) as update_item_mock:
+            updater_obj.update_items_if_possible(
+                coordinator_cursor, self.uid, [1], "polissa", False, context
+            )
+
+        get_state_mock.assert_called_once_with(
+            item_cursor, self.uid, 1, "polissa", context
+        )
+        update_item_mock.assert_called_once_with(
+            item_cursor, self.uid, 1, "polissa", context
+        )
+        item_cursor.commit.assert_called_once_with()
+        item_cursor.close.assert_called_once_with()
+        self.assertEqual(coordinator_cursor.method_calls, [])
+
+    @mock.patch.object(som_autoreclama_state_updater.pooler, "get_db")
+    def test_state_updater_releases_coordinator_transaction_before_each_batch(
+        self, get_db_mock
+    ):
+        original_cursor = mock.Mock()
+        original_cursor.dbname = self.cursor.dbname
+        batch_cursor = get_db_mock.return_value.cursor.return_value
+        updater_obj = self.get_model("som.autoreclama.state.updater")
+        update_result = ([], [], [], "actions", "summary")
+        rollback_counts = []
+
+        def update_items(*args, **kwargs):
+            rollback_counts.append(batch_cursor.rollback.call_count)
+            return update_result
+
+        with mock.patch.object(
+            updater_obj, "_ensure_updater_config_context", return_value={}
+        ), mock.patch.object(
+            updater_obj, "get_atc_candidates_to_update", return_value=[]
+        ), mock.patch.object(
+            updater_obj, "get_polissa_candidates_to_update", return_value=[]
+        ), mock.patch.object(
+            updater_obj, "get_review_states", return_value=[]
+        ), mock.patch.object(
+            updater_obj, "update_items_if_possible", side_effect=update_items
+        ) as update_items_mock:
+            updater_obj.state_updater(original_cursor, self.uid)
+
+        self.assertEqual(batch_cursor.rollback.call_count, 4)
+        self.assertEqual(rollback_counts, [1, 2, 3])
+        self.assertEqual(update_items_mock.call_count, 3)
+        batch_cursor.close.assert_called_once_with()
+        self.assertEqual(original_cursor.method_calls, [])
+
     def test_first_state_correct_atc_dummy(self):
         _, correct_state_id = self.get_object_reference(
             "som_autoreclama", "correct_state_workflow_atc"
@@ -279,6 +318,54 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.autoreclama_history_ids[2].end_date, state_1_dt)
         self.assertEqual(atc.autoreclama_history_ids[2].atc_id.id, new_atc_id)
         self.assertEqual(atc.autoreclama_history_ids[2].generated_atc_id.id, False)
+
+    def test_atc_current_state_ignores_newer_closed_history_row(self):
+        atc_obj = self.get_model("giscedata.atc")
+        history_obj = self.get_model("som.autoreclama.state.history.atc")
+
+        atc_id = self.build_atc(r1=True)
+        _, disabled_state_id = self.get_object_reference(
+            "som_autoreclama", "disabled_state_workflow_atc"
+        )
+
+        history_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "atc_id": atc_id,
+                "state_id": disabled_state_id,
+                "change_date": "2020-01-01",
+                "end_date": "2020-01-02",
+            },
+        )
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+        self.assertEqual(atc.autoreclama_state.name, "Correcte")
+        self.assertEqual(atc.autoreclama_state_date, today_str())
+
+    def test_polissa_current_state_ignores_newer_closed_history_row(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        history_obj = self.get_model("som.autoreclama.state.history.polissa")
+
+        pol_id = self.build_polissa(initial_state='correct', data_baixa=False)
+        _, loop_state_id = self.get_object_reference(
+            "som_autoreclama", "loop_state_workflow_polissa"
+        )
+
+        history_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "polissa_id": pol_id,
+                "state_id": loop_state_id,
+                "change_date": "2020-01-01",
+                "end_date": "2020-01-02",
+            },
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, "Correcte")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
 
 
 class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
@@ -554,165 +641,485 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(ref.state, u"open")
         self.assertEqual(ref.ref, u"giscedata.atc, {}".format(atc.id))
 
-
-class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
-    def build_atc(
-        self,
-        subtype="029",
-        r1=False,
-        channel="intercambi",
-        section="client",
-        log_days=3,
-        agent_actual="10",
-        state="pending",
-        active=True,
-        date_closed=None,
-        date=None,
-    ):
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_non_C(self):
         atc_obj = self.get_model("giscedata.atc")
-        _, polissa_id = self.get_object_reference(
-            "giscedata_polissa", "polissa_0002"
-        )
-
-        par1_id = self.search_in("res.partner", [("name", "ilike", "Tiny sprl")])
-        par2_id = self.search_in("res.partner", [("name", "ilike", "ASUStek")])
-        par_obj = self.get_model("res.partner")
-        par_obj.write(self.cursor, self.uid, par1_id, {"ref": "58264"})
-        par_obj.write(self.cursor, self.uid, par2_id, {"ref": "58265"})
-
-        channel_id = self.search_in("res.partner.canal", [("name", "ilike", channel)])
-        section_id = self.search_in("crm.case.section", [("name", "ilike", section)])
-        subtipus_id = self.search_in("giscedata.subtipus.reclamacio", [("name", "=", subtype)])
-
-        new_case_data = {
-            "polissa_id": polissa_id,
-            "descripcio": u"Reclamació per retràs automàtica",
-            "canal_id": channel_id,
-            "section_id": section_id,
-            "subtipus_reclamacio_id": subtipus_id,
-            "comentaris": u"test test test",
-            "sense_responsable": True,
-            "tanca_al_finalitzar_r1": r1,
-            "crear_cas_r1": r1,
-        }
-        atc_id = atc_obj.create_general_atc_r1_case_via_wizard(
-            self.cursor, self.uid, new_case_data, {}
-        )
-        last_write = {
-            "agent_actual": agent_actual,
-            "state": state,
-            "active": active,
-        }
-        if date_closed:
-            last_write['date_closed'] = date_closed
-        if date:
-            last_write['date'] = date
-        atc_obj.write(
-            self.cursor,
-            self.uid,
-            atc_id,
-            last_write,
-        )
-        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
-        log_obj = self.get_model("crm.case.log")
-        log_obj.write(self.cursor, self.uid, atc.log_ids[1].id, {"date": today_minus_str(log_days)})
-
-        return atc_id
-
-    def build_polissa(
-        self,
-        name="polissa_0002",
-        f1_date_days_from_today=None,
-        initial_state=None,
-        data_baixa=None,
-        data_baixa_from_today=None,
-    ):
-        f1i_obj = self.get_model("giscedata.polissa.f1.info")
-        h_obj = self.get_model("som.autoreclama.state.history.polissa")
-
-        _, polissa_id = self.get_object_reference(
-            "giscedata_polissa", name
-        )
-
-        if f1_date_days_from_today is not None:
-            date = today_minus_str(f1_date_days_from_today)
-            f1i_obj.create(
-                self.cursor,
-                self.uid,
-                {
-                    'polissa_id': polissa_id,
-                    'data_ultima_lectura_f1': date,
-                }
-            )
-
-        states = {
-            'correct': "correct_state_workflow_polissa",
-            'loop': "loop_state_workflow_polissa",
-            'disabled': "disabled_state_workflow_polissa",
-        }
-        if initial_state in states:
-            _, st_id = self.get_object_reference(
-                "som_autoreclama",
-                states[initial_state]
-            )
-            h_obj.historize(
-                self.cursor, self.uid,
-                polissa_id,
-                st_id,
-                None,
-                None
-            )
-
-        par1_id = self.search_in("res.partner", [("name", "ilike", "Tiny sprl")])
-        par2_id = self.search_in("res.partner", [("name", "ilike", "ASUStek")])
-        par_obj = self.get_model("res.partner")
-        par_obj.write(self.cursor, self.uid, par1_id, {"ref": "58264"})
-        par_obj.write(self.cursor, self.uid, par2_id, {"ref": "58265"})
-
         pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "N",
+        })
+
+        with self.assertRaises(Exception) as context:
+            _ = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+                self.cursor, self.uid, f1_id, {}
+            )
+
+        msg = u"Error en la creació del CAC amb R1 010, F1 no es tipus C id_f1 {}".format(f1_id)
+        self.assertTrue(msg in context.exception.message)
+
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_no_lines(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+
+        with self.assertRaises(Exception) as context:
+            _ = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+                self.cursor, self.uid, f1_id, {}
+            )
+
+        msg = u"Error en la creació del CAC amb R1 010, F1 sense linies id_f1 {}".format(f1_id)
+        self.assertTrue(msg in context.exception.message)
+
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_bad_line(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '04',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        with self.assertRaises(Exception) as context:
+            _ = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+                self.cursor, self.uid, f1_id, {}
+            )
+
+        msg = u"Error en la creació del CAC amb R1 010, F1 no es tipus anomalia o frau id_f1 {}".format(f1_id)  # noqa: E501
+        self.assertTrue(msg in context.exception.message)
+
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_line_anomalia(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        self.create_tags()
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
         pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
-        if data_baixa_from_today:
-            data_baixa = today_minus_str(data_baixa_from_today)
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
 
-        if data_baixa is not None:
-            vals = {"data_baixa": data_baixa}
-            if data_baixa:
-                vals['state'] = 'baixa'
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
 
-            pol_obj.write(self.cursor, self.uid, polissa_id, vals)
+        new_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+            self.cursor, self.uid, f1_id, {}
+        )
 
-        return polissa_id
+        channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
+        subtipus_id = self.search_in("giscedata.subtipus.reclamacio", [("name", "=", "010")])
+        _, section_id = self.get_object_reference(
+            "som_switching", "atc_section_factura"
+        )
 
-    def add_done_006_to_polissa(self, pol_id, days):
-        dat = today_minus_str(days)
-        return self.build_atc(subtype="006", state='done', date_closed=dat, date=dat, r1=False)
+        atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
 
-    def add_correct_to_history(self, pol_id, days, atc_id=None):
-        imd_obj = self.get_model("ir.model.data")
-        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
-        correct_state_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "correct_state_workflow_polissa"
-        )[1]
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, correct_state_id, today_minus_str(days), atc_id)
+        self.assertEqual(atc.name, u"R per defecte expedient")
+        self.assertEqual(atc.canal_id.id, channel_id)
+        self.assertEqual(atc.section_id.id, section_id)
+        self.assertEqual(atc.subtipus_id.id, subtipus_id)
+        self.assertEqual(atc.polissa_id.id, polissa_id)
 
-    def add_review_to_history(self, pol_id, days, atc_id=None):
-        imd_obj = self.get_model("ir.model.data")
-        polh_obj = self.get_model("som.autoreclama.state.history.polissa")
-        review_state_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_autoreclama", "review_state_workflow_polissa"
-        )[1]
-        polh_obj.historize(
-            self.cursor, self.uid, pol_id, review_state_id, today_minus_str(days), atc_id)
+        self.assertEqual(atc.tancar_cac_al_finalitzar_r1, False)
+        self.assertEqual(atc.state, "pending")
+        self.assertEqual(atc.agent_actual, "10")
+
+        model, id = atc.ref.split(",")
+        self.assertEqual(model, "giscedata.switching")
+        model_obj = self.get_model(model)
+        ref = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(ref.proces_id.name, u"R1")
+        self.assertEqual(ref.step_id.name, u"01")
+        self.assertEqual(ref.section_id.name, u"Switching")
+        self.assertEqual(ref.cups_polissa_id.id, polissa_id)
+        self.assertEqual(ref.state, u"open")
+        self.assertEqual(ref.ref, u"giscedata.atc, {}".format(atc.id))
+
+        model, id = ref.step_ids[0].pas_id.split(",")
+        self.assertEqual(model, "giscedata.switching.r1.01")
+        model_obj = self.get_model(model)
+        pas = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(pas.subtipus_id.id, subtipus_id)
+        self.assertEqual(pas.reclamacio_ids[0].num_factura, '1234567890ABCD')
+        txt_file = get_module_resource('som_autoreclama', 'data', 'R1-01-010-legal_text.txt')
+        with open(txt_file, 'r') as f:
+            legal_txt = f.read()
+        self.assertEqual(pas.comentaris, legal_txt)
+
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_line_frau(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        self.create_tags()
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '11',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        new_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+            self.cursor, self.uid, f1_id, {}
+        )
+
+        channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
+        subtipus_id = self.search_in("giscedata.subtipus.reclamacio", [("name", "=", "010")])
+        _, section_id = self.get_object_reference(
+            "som_switching", "atc_section_factura"
+        )
+
+        atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+
+        self.assertEqual(atc.name, u"R per defecte expedient")
+        self.assertEqual(atc.canal_id.id, channel_id)
+        self.assertEqual(atc.section_id.id, section_id)
+        self.assertEqual(atc.subtipus_id.id, subtipus_id)
+        self.assertEqual(atc.polissa_id.id, polissa_id)
+
+        self.assertEqual(atc.tancar_cac_al_finalitzar_r1, False)
+        self.assertEqual(atc.state, "pending")
+        self.assertEqual(atc.agent_actual, "10")
+
+        model, id = atc.ref.split(",")
+        self.assertEqual(model, "giscedata.switching")
+        model_obj = self.get_model(model)
+        ref = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(ref.proces_id.name, u"R1")
+        self.assertEqual(ref.step_id.name, u"01")
+        self.assertEqual(ref.section_id.name, u"Switching")
+        self.assertEqual(ref.cups_polissa_id.id, polissa_id)
+        self.assertEqual(ref.state, u"open")
+        self.assertEqual(ref.ref, u"giscedata.atc, {}".format(atc.id))
+
+        model, id = ref.step_ids[0].pas_id.split(",")
+        self.assertEqual(model, "giscedata.switching.r1.01")
+        model_obj = self.get_model(model)
+        pas = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(pas.subtipus_id.id, subtipus_id)
+        self.assertEqual(pas.reclamacio_ids[0].num_factura, '1234567890ABCD')
+        txt_file = get_module_resource('som_autoreclama', 'data', 'R1-01-010-legal_text.txt')
+        with open(txt_file, 'r') as f:
+            legal_txt = f.read()
+        self.assertEqual(pas.comentaris, legal_txt)
+
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_line_anomalia_x_2_repeated(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        self.create_tags()
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        new_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+            self.cursor, self.uid, f1_id, {}
+        )
+
+        with self.assertRaises(Exception) as context:
+            _ = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+                self.cursor, self.uid, f1_id, {}
+            )
+
+        msg = u"Error en la creació del CAC amb R1 010, ja existeix un R1 obert vinculat a la mateixa factura f1 {}".format(f1_id)  # noqa: E501
+        self.assertTrue(msg in context.exception.message)
+
+        atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+        self.assertEqual(atc.name, u"R per defecte expedient")
+
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_line_anomalia_x_2(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        self.create_tags()
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 1)
+
+        f1A_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1A_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1A_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1A_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1A_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        f1B_id = f1_ids[1]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1B_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1B_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "9876543210ZYX",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1B_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1B_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        A_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+            self.cursor, self.uid, f1A_id, {}
+        )
+
+        B_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+            self.cursor, self.uid, f1B_id, {}
+        )
+
+        channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
+        subtipus_id = self.search_in("giscedata.subtipus.reclamacio", [("name", "=", "010")])
+        _, section_id = self.get_object_reference(
+            "som_switching", "atc_section_factura"
+        )
+        txt_file = get_module_resource('som_autoreclama', 'data', 'R1-01-010-legal_text.txt')
+        with open(txt_file, 'r') as f:
+            legal_txt = f.read()
+
+        atc = atc_obj.browse(self.cursor, self.uid, A_atc_id)
+
+        self.assertEqual(atc.name, u"R per defecte expedient")
+        self.assertEqual(atc.canal_id.id, channel_id)
+        self.assertEqual(atc.section_id.id, section_id)
+        self.assertEqual(atc.subtipus_id.id, subtipus_id)
+        self.assertEqual(atc.polissa_id.id, polissa_id)
+
+        self.assertEqual(atc.tancar_cac_al_finalitzar_r1, False)
+        self.assertEqual(atc.state, "pending")
+        self.assertEqual(atc.agent_actual, "10")
+
+        model, id = atc.ref.split(",")
+        self.assertEqual(model, "giscedata.switching")
+        model_obj = self.get_model(model)
+        ref = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(ref.proces_id.name, u"R1")
+        self.assertEqual(ref.step_id.name, u"01")
+        self.assertEqual(ref.section_id.name, u"Switching")
+        self.assertEqual(ref.cups_polissa_id.id, polissa_id)
+        self.assertEqual(ref.state, u"open")
+        self.assertEqual(ref.ref, u"giscedata.atc, {}".format(atc.id))
+
+        model, id = ref.step_ids[0].pas_id.split(",")
+        self.assertEqual(model, "giscedata.switching.r1.01")
+        model_obj = self.get_model(model)
+        pas = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(pas.subtipus_id.id, subtipus_id)
+        self.assertEqual(pas.reclamacio_ids[0].num_factura, '1234567890ABCD')
+        self.assertEqual(pas.comentaris, legal_txt)
+
+        atc = atc_obj.browse(self.cursor, self.uid, B_atc_id)
+
+        self.assertEqual(atc.name, u"R per defecte expedient")
+        self.assertEqual(atc.canal_id.id, channel_id)
+        self.assertEqual(atc.section_id.id, section_id)
+        self.assertEqual(atc.subtipus_id.id, subtipus_id)
+        self.assertEqual(atc.polissa_id.id, polissa_id)
+
+        self.assertEqual(atc.tancar_cac_al_finalitzar_r1, False)
+        self.assertEqual(atc.state, "pending")
+        self.assertEqual(atc.agent_actual, "10")
+
+        model, id = atc.ref.split(",")
+        self.assertEqual(model, "giscedata.switching")
+        model_obj = self.get_model(model)
+        ref = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(ref.proces_id.name, u"R1")
+        self.assertEqual(ref.step_id.name, u"01")
+        self.assertEqual(ref.section_id.name, u"Switching")
+        self.assertEqual(ref.cups_polissa_id.id, polissa_id)
+        self.assertEqual(ref.state, u"open")
+        self.assertEqual(ref.ref, u"giscedata.atc, {}".format(atc.id))
+
+        model, id = ref.step_ids[0].pas_id.split(",")
+        self.assertEqual(model, "giscedata.switching.r1.01")
+        model_obj = self.get_model(model)
+        pas = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(pas.subtipus_id.id, subtipus_id)
+        self.assertEqual(pas.reclamacio_ids[0].num_factura, '9876543210ZYX')
+        self.assertEqual(pas.comentaris, legal_txt)
 
 
-class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
+class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
     def test_fit_atc_condition__001_c_no(self):
         atc_obj = self.get_model("giscedata.atc")
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         atc_id = self.build_atc(subtype="001", log_days=10)
-        atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+        atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama", "conditions_001_correct_state_workflow_atc"
@@ -726,7 +1133,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         atc_id = self.build_atc(subtype="001", log_days=50, r1=True)
-        atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+        atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama", "conditions_001_correct_state_workflow_atc"
@@ -742,7 +1149,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         test_datas = [
             {
                 "subtype": "001",
-                "log_days": 30 / 2,
+                "log_days": 30 // 2,
                 "result": False,
                 "cond": "conditions_001_correct_state_workflow_atc",
             },
@@ -754,7 +1161,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             },
             {
                 "subtype": "038",
-                "log_days": 30 / 2,
+                "log_days": 30 // 2,
                 "result": False,
                 "cond": "conditions_038_correct_state_workflow_atc",
             },
@@ -766,7 +1173,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             },
             {
                 "subtype": "027",
-                "log_days": 10 / 2,
+                "log_days": 10 // 2,
                 "result": False,
                 "cond": "conditions_027_correct_state_workflow_atc",
             },
@@ -778,7 +1185,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             },
             {
                 "subtype": "039",
-                "log_days": 30 / 2,
+                "log_days": 30 // 2,
                 "result": False,
                 "cond": "conditions_039_correct_state_workflow_atc",
             },
@@ -794,7 +1201,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             atc_id = self.build_atc(
                 subtype=test_data["subtype"], log_days=test_data["log_days"], r1=True
             )
-            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
 
             _, cond_id = self.get_object_reference(
                 "som_autoreclama", test_data["cond"]
@@ -811,19 +1218,18 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         for cond_id in cond_ids:
             cond = cond_obj.browse(self.cursor, self.uid, cond_id)
 
-            print(cond.subtype_id.name)
-            if cond.subtype_id.name == "006":  # unsuported
+            if cond.subtype_id.name in ["006", "009", "036"]:  # unsuported
                 continue
 
             # test more
             atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days * 2, r1=True)
-            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
             ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
             self.assertEqual(ok, True, "Error on More than for condition id {}".format(cond_id))
 
             # test less
-            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days / 2, r1=True)
-            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days // 2, r1=True)
+            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
             ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
             self.assertEqual(ok, False, "Error on Less than for condition id {}".format(cond_id))
 
@@ -832,7 +1238,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=75 + 1)
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, "polissa", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
@@ -847,7 +1253,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=75)
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, "polissa", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
@@ -862,7 +1268,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=60)
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, "polissa", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
@@ -877,7 +1283,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=61)
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, "polissa", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
@@ -898,7 +1304,8 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         self.add_correct_to_history(pol_id, 85, atc1_id)
         self.add_correct_to_history(pol_id, 80, atc2_id)
 
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa", context)
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_correct_2_006_inarow_review_state_workflow_polissa"
@@ -919,7 +1326,8 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         self.add_correct_to_history(pol_id, 85, atc1_id)
         self.add_correct_to_history(pol_id, 20, atc2_id)
 
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa", context)
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_correct_2_006_inarow_review_state_workflow_polissa"
@@ -940,7 +1348,8 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         self.add_correct_to_history(pol_id, 85, atc1_id)
         self.add_correct_to_history(pol_id, 80, atc2_id)
 
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa", context)
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_correct_2_006_inarow_review_state_workflow_polissa"
@@ -961,7 +1370,8 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         self.add_review_to_history(pol_id, 82)
         self.add_correct_to_history(pol_id, 80, atc2_id)
 
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa", context)
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_correct_2_006_inarow_review_state_workflow_polissa"
@@ -971,7 +1381,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(ok, False)
 
 
-class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
+class SomAutoreclamaUpdaterTest(SomAutoreclamaBaseTests):
     def test_get_atc_candidates_to_update__all(self):
         atc_ids = []
 
@@ -1071,6 +1481,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(atc.autoreclama_state_date, today_str())
         self.assertGreaterEqual(len(atc.autoreclama_history_ids), 2)
 
+    @PatchNewCursors()
     def test_update_atcs_if_possible__some_consitions(self):
         atc_n_id = self.build_atc(r1=True)
         atc_y_id = self.build_atc(log_days=60, subtype="001", r1=True)
@@ -1276,7 +1687,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
 
         text = pol.info_gestio_endarrerida.split("/n")[0]
         self.assertEqual(text[:10], today_str())
-        self.assertEqual(text[20:], "Autoreclama passat a estat 'Revisar'")
+        self.assertEqual(text[20:], "Autoreclama 006 passat a estat 'Revisar'")
 
     def test_update_polissa_if_possible__on_correct__nof1_review_between__do_action_full(self):
         pol_obj = self.get_model("giscedata.polissa")
@@ -1357,7 +1768,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             'CACR1006s_in_last_conf_days': 1,
         })
         with mock.patch(
-            'som_autoreclama.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
+            'som_autoreclama.models.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
             mock_funcion
         ):
             updtr_obj = self.get_model("som.autoreclama.state.updater")
@@ -1394,7 +1805,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             'CACR1006s_in_last_conf_days': 1,
         })
         with mock.patch(
-            'som_autoreclama.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
+            'som_autoreclama.models.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
             mock_funcion
         ):
             updtr_obj = self.get_model("som.autoreclama.state.updater")
@@ -1511,10 +1922,12 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         })
 
         # close the ATC and set it up
+        atc_obj.write(self.cursor, self.uid, first_006.id, {
+            "state": 'done'
+        })
         data_close = today_minus_str(21)
         atc_obj.write(self.cursor, self.uid, first_006.id, {
-            "state": 'done',
-            "date_closed": data_close,
+            "date_closed": data_close
         })
 
         # The real test
@@ -1539,6 +1952,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         second_006_id = pol.autoreclama_history_ids[0]['generated_atc_id'].id
         self.assertNotEqual(first_006.id, second_006_id)
 
+    @PatchNewCursors()
     def test_update_polisses_if_possible__some_conditions(self):
         pol_n_id = self.build_polissa(
             name="polissa_0003",
@@ -1564,7 +1978,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(error, [])
 
 
-class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
+class SomAutoreclamaDoActionTest(SomAutoreclamaBaseTests):
     def test_do_action__deactivated(self):
         atc_obj = self.get_model("giscedata.atc")
         state_obj = self.get_model("som.autoreclama.state")
@@ -1692,3 +2106,468 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(pre_atc_history_len, len(atc.autoreclama_history_ids))
         self.assertEqual(pre_atc_state_name, atc.autoreclama_state.name)
         self.assertEqual(pre_atc_data, str(atc.read()))
+
+
+class SomAutoreclamaf1cAutomationTest(SomAutoreclamaBaseTests):
+    def test__get_f1c_candidates_to_reclaim__find_none(self):
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        f1_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
+
+        self.assertEqual(len(f1_ids), 0)
+
+    def test__get_f1c_candidates_to_reclaim__find_one_c(self):
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        f1_ids = f1_obj.search(self.cursor, self.uid, [])
+        self.assertGreater(len(f1_ids), 1)
+        f1_id = f1_ids[0]
+
+        last_hours = (datetime.now() - timedelta(hours=120)).strftime("%Y-%m-%d %H:%M:%S")
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "type_factura": "C",
+            "data_carrega": last_hours,
+        })
+
+        found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
+
+        self.assertEqual(len(found_ids), 0)
+
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "type_factura": "C",
+            "data_carrega": last_hours,
+        })
+
+        found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
+
+        self.assertEqual(len(found_ids), 1)
+        self.assertEqual(found_ids[0], f1_id)
+
+    def test__get_f1c_candidates_to_reclaim__find_one_c_already_reclaimed(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        self.create_tags()
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+            "data_carrega": last_hours,
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        new_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+            self.cursor, self.uid, f1_id, {}
+        )
+
+        found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
+
+        self.assertTrue(f1_id in found_ids)
+
+        atc_obj.write(self.cursor, self.uid, new_atc_id, {
+            'description': u"cosa {} mes cosa {} altre cosa.".format(
+                aut_obj.tag,
+                f1.invoice_number_text,
+            )
+        })
+
+        found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
+
+        self.assertTrue(f1_id not in found_ids)
+
+    def test__reclaim_f1c__none(self):
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        ok, error, msg = aut_obj.reclaim_f1c(self.cursor, self.uid, [], {})
+
+        self.assertEqual(len(ok), 0)
+        self.assertEqual(len(error), 0)
+        self.assertEqual(msg, u"Sumari ATC 010 per F1 tipus C\nF1's tipus C amb ATC generat : .................... 0\nF1's tipus C que han donat error en generar ATC ....0\n\n")  # noqa: E501
+
+    def test__reclaim_f1c__not_c_type(self):
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        f1_ids = f1_obj.search(self.cursor, self.uid, [])
+        self.assertGreater(len(f1_ids), 1)
+        f1_id = f1_ids[0]
+
+        ok, error, msg = aut_obj.reclaim_f1c(self.cursor, self.uid, [f1_id], {})
+
+        self.assertEqual(len(ok), 0)
+        self.assertEqual(len(error), 1)
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 0" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
+        exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus C id_f1 {}".format(error[0])
+        self.assertTrue(exce in msg)
+
+    def test__reclaim_f1c__no_lines(self):
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        f1_ids = f1_obj.search(self.cursor, self.uid, [])
+        self.assertGreater(len(f1_ids), 1)
+        f1_id = f1_ids[0]
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "type_factura": "C",
+        })
+
+        ok, error, msg = aut_obj.reclaim_f1c(self.cursor, self.uid, [f1_id], {})
+
+        self.assertEqual(len(ok), 0)
+        self.assertEqual(len(error), 1)
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 0" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
+        exce = u"Error en la creació del CAC amb R1 010, F1 sense linies id_f1 {}".format(error[0])
+        self.assertTrue(exce in msg)
+
+    def test__reclaim_f1c__one_ok(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        self.create_tags()
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 1)
+
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        ok, error, msg = aut_obj.reclaim_f1c(self.cursor, self.uid, [f1_id], {})
+
+        self.assertEqual(len(ok), 1)
+        self.assertEqual(len(error), 0)
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 1" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....0" in msg)
+        exce = u"F1 {} ha generat cas ATC 010 amb id ".format(f1.name)
+        self.assertTrue(exce in msg)
+
+    def test__automation__none(self):
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        msg = aut_obj.automation(self.cursor, self.uid, {})
+
+        self.assertEqual(msg, u"Sumari ATC 010 per F1 tipus C\nF1's tipus C amb ATC generat : .................... 0\nF1's tipus C que han donat error en generar ATC ....0\n\n")  # noqa: E501
+
+    def test__automation__1_yes(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        self.create_tags()
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 1)
+
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+            "data_carrega": last_hours,
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        msg = aut_obj.automation(self.cursor, self.uid, {})
+
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 1" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....0" in msg)
+        exce = u"F1 {} ha generat cas ATC 010 amb id ".format(f1.name)
+        self.assertTrue(exce in msg)
+
+    def test__automation__2_yes_1_no(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        self.create_tags()
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 2)
+
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+            "data_carrega": last_hours,
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        f1_id = f1_ids[1]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "987654321ZXY",
+            "type_factura": "C",
+            "data_carrega": last_hours,
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '11',
+            'importacio_id': 2,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 2,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        f1_id = f1_ids[2]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        last_hours = (datetime.now() - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "NONONONONONONNONONNONO123",
+            "type_factura": "C",
+            "data_carrega": last_hours,
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '05',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 3,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 3,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        msg = aut_obj.automation(self.cursor, self.uid, {})
+
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 2" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
+        exce = u" ha generat cas ATC 010 amb id "
+        self.assertTrue(exce in msg)
+        exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus anomalia o frau"
+        self.assertTrue(exce in msg)
+
+    def test__automation__1_yes_1_no_1_far(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        self.create_tags()
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 2)
+
+        # F1 ok
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+            "data_carrega": last_hours,
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        # F1 far
+        f1_id = f1_ids[1]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        last_hours = (datetime.now() - timedelta(hours=56)).strftime("%Y-%m-%d %H:%M:%S")
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "546372819OOOOPPPSSSS",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 2,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 2,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        # F1 no ok (tipus 05)
+        f1_id = f1_ids[2]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        last_hours = (datetime.now() - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "NONONONONONONNONONNONO123",
+            "type_factura": "C",
+            "data_carrega": last_hours,
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '04',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 3,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 3,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        msg = aut_obj.automation(self.cursor, self.uid, {})
+
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 1" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
+        exce = u" ha generat cas ATC 010 amb id "
+        self.assertTrue(exce in msg)
+        exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus anomalia o frau id_f1"
+        self.assertTrue(exce in msg)

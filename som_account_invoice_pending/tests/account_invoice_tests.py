@@ -2,6 +2,7 @@
 from destral import testing
 from destral.transaction import Transaction
 from datetime import date
+import mock
 
 
 def get_today_str():
@@ -376,5 +377,285 @@ class TestAccountInvoiceSetPendingAutomations(testing.OOTestCase):
         self.assertEqual(f_data.pending_state.id, extra_df_state_id)
         self.assertEqual(f_data.payment_type.id, previous_payment_type_7)
         self.assertEqual(f_data.comment, previous_comment[idx])
+
+    def test_set_pending__back_to_correct_from_reclama(self):
+        r1_bs_state_id = self.getref(
+            "som_account_invoice_pending", "reclamacio_en_curs_pending_state"
+        )
+        r1_df_state_id = self.getref(
+            "som_account_invoice_pending", "default_reclamacio_en_curs_pending_state"
+        )
+        corr_bs_state_id = self.getref(
+            "giscedata_facturacio_comer_bono_social", "correct_bono_social_pending_state"
+        )
+        corr_df_state_id = self.getref(
+            "account_invoice_pending", "default_invoice_pending_state"
+        )
+        fact_ids, inv_ids = self._load_data_unpaid_invoices(
+            [corr_df_state_id, corr_df_state_id]
+        )
+
+        no_remesa_pt_id = self.create_no_remesable()
+
+        inv_obj = self.pool.get("account.invoice")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        pt_obj = self.pool.get("payment.type")
+        par_obj = self.pool.get("res.partner")
+
+        tr_id = pt_obj.search(self.cursor, self.uid, [('code', '=', u'TRANSFERENCIA_CSB')])[0]
+        re_id = pt_obj.search(self.cursor, self.uid, [('code', '=', u'RECIBO_CSB')])[0]
+
+        p_id = inv_obj.read(self.cursor, self.uid, inv_ids[0], ['partner_id'])['partner_id'][0]
+        par_obj.write(self.cursor, self.uid, p_id, {'payment_type_customer': tr_id})
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], r1_bs_state_id)
+        pre_payment_type_1 = self.read_one(fact_obj, fact_ids[0], 'payment_type')
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], corr_bs_state_id)
+        post_payment_type_1 = self.read_one(fact_obj, fact_ids[0], 'payment_type')
+
+        self.assertEqual(pre_payment_type_1[0], no_remesa_pt_id)
+        self.assertEqual(post_payment_type_1[0], tr_id)
+
+        p_id = inv_obj.read(self.cursor, self.uid, inv_ids[1], ['partner_id'])['partner_id'][0]
+        par_obj.write(self.cursor, self.uid, p_id, {'payment_type_customer': re_id})
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], r1_df_state_id)
+        pre_payment_type_2 = self.read_one(fact_obj, fact_ids[1], 'payment_type')
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], corr_df_state_id)
+        post_payment_type_2 = self.read_one(fact_obj, fact_ids[1], 'payment_type')
+
+        self.assertEqual(pre_payment_type_2[0], no_remesa_pt_id)
+        self.assertEqual(post_payment_type_2[0], re_id)
+
+    def test_set_pending__back_to_correct_from_FUE(self):
+        fue_bs_state_id = self.getref(
+            "som_account_invoice_pending", "fue_bo_social_pending_state"
+        )
+        fue_df_state_id = self.getref(
+            "som_account_invoice_pending", "fue_default_pending_state"
+        )
+        corr_bs_state_id = self.getref(
+            "giscedata_facturacio_comer_bono_social", "correct_bono_social_pending_state"
+        )
+        corr_df_state_id = self.getref(
+            "account_invoice_pending", "default_invoice_pending_state"
+        )
+        fact_ids, inv_ids = self._load_data_unpaid_invoices(
+            [corr_df_state_id, corr_df_state_id]
+        )
+        no_remesa_pt_id = self.create_no_remesable()
+
+        inv_obj = self.pool.get("account.invoice")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        pt_obj = self.pool.get("payment.type")
+        par_obj = self.pool.get("res.partner")
+
+        tr_id = pt_obj.search(self.cursor, self.uid, [('code', '=', u'TRANSFERENCIA_CSB')])[0]
+        re_id = pt_obj.search(self.cursor, self.uid, [('code', '=', u'RECIBO_CSB')])[0]
+
+        p_id = inv_obj.read(self.cursor, self.uid, inv_ids[0], ['partner_id'])['partner_id'][0]
+        par_obj.write(self.cursor, self.uid, p_id, {'payment_type_customer': tr_id})
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], fue_bs_state_id)
+        pre_payment_type_1 = self.read_one(fact_obj, fact_ids[0], 'payment_type')
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], corr_bs_state_id)
+        post_payment_type_1 = self.read_one(fact_obj, fact_ids[0], 'payment_type')
+
+        self.assertEqual(pre_payment_type_1[0], no_remesa_pt_id)
+        self.assertEqual(post_payment_type_1[0], tr_id)
+
+        p_id = inv_obj.read(self.cursor, self.uid, inv_ids[1], ['partner_id'])['partner_id'][0]
+        par_obj.write(self.cursor, self.uid, p_id, {'payment_type_customer': re_id})
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], fue_df_state_id)
+        pre_payment_type_2 = self.read_one(fact_obj, fact_ids[1], 'payment_type')
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], corr_df_state_id)
+        post_payment_type_2 = self.read_one(fact_obj, fact_ids[1], 'payment_type')
+
+        self.assertEqual(pre_payment_type_2[0], no_remesa_pt_id)
+        self.assertEqual(post_payment_type_2[0], re_id)
+
+    def test_set_pending__back_to_correct_from_perdues(self):
+        perd_bs_state_id = self.getref(
+            "som_account_invoice_pending", "perdues_fact_bo_social_pending_state"
+        )
+        perd_df_state_id = self.getref(
+            "som_account_invoice_pending", "perdues_fact_default_pending_state"
+        )
+        corr_bs_state_id = self.getref(
+            "giscedata_facturacio_comer_bono_social", "correct_bono_social_pending_state"
+        )
+        corr_df_state_id = self.getref(
+            "account_invoice_pending", "default_invoice_pending_state"
+        )
+        fact_ids, inv_ids = self._load_data_unpaid_invoices(
+            [corr_df_state_id, corr_df_state_id]
+        )
+        no_remesa_pt_id = self.create_no_remesable()
+
+        inv_obj = self.pool.get("account.invoice")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        pt_obj = self.pool.get("payment.type")
+        par_obj = self.pool.get("res.partner")
+
+        tr_id = pt_obj.search(self.cursor, self.uid, [('code', '=', u'TRANSFERENCIA_CSB')])[0]
+        re_id = pt_obj.search(self.cursor, self.uid, [('code', '=', u'RECIBO_CSB')])[0]
+
+        p_id = inv_obj.read(self.cursor, self.uid, inv_ids[0], ['partner_id'])['partner_id'][0]
+        par_obj.write(self.cursor, self.uid, p_id, {'payment_type_customer': tr_id})
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], perd_bs_state_id)
+        pre_payment_type_1 = self.read_one(fact_obj, fact_ids[0], 'payment_type')
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], corr_bs_state_id)
+        post_payment_type_1 = self.read_one(fact_obj, fact_ids[0], 'payment_type')
+
+        self.assertEqual(pre_payment_type_1[0], no_remesa_pt_id)
+        self.assertEqual(post_payment_type_1[0], tr_id)
+
+        p_id = inv_obj.read(self.cursor, self.uid, inv_ids[1], ['partner_id'])['partner_id'][0]
+        par_obj.write(self.cursor, self.uid, p_id, {'payment_type_customer': re_id})
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], perd_df_state_id)
+        pre_payment_type_2 = self.read_one(fact_obj, fact_ids[1], 'payment_type')
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], corr_df_state_id)
+        post_payment_type_2 = self.read_one(fact_obj, fact_ids[1], 'payment_type')
+
+        self.assertEqual(pre_payment_type_2[0], no_remesa_pt_id)
+        self.assertEqual(post_payment_type_2[0], re_id)
+
+    def test_set_pending__back_to_correct_from_other_no_change(self):
+        other_bs_state_id = self.getref(
+            "som_account_invoice_pending", "tugesto_bo_social_pending_state"
+        )
+        other_df_state_id = self.getref(
+            "som_account_invoice_pending", "tugesto_default_pending_state"
+        )
+        r1_bs_state_id = self.getref(
+            "som_account_invoice_pending", "reclamacio_en_curs_pending_state"
+        )
+        r1_df_state_id = self.getref(
+            "som_account_invoice_pending", "default_reclamacio_en_curs_pending_state"
+        )
+        corr_bs_state_id = self.getref(
+            "giscedata_facturacio_comer_bono_social", "correct_bono_social_pending_state"
+        )
+        corr_df_state_id = self.getref(
+            "account_invoice_pending", "default_invoice_pending_state"
+        )
+        fact_ids, inv_ids = self._load_data_unpaid_invoices(
+            [corr_df_state_id, corr_df_state_id]
+        )
+        no_remesa_pt_id = self.create_no_remesable()
+
+        inv_obj = self.pool.get("account.invoice")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        pt_obj = self.pool.get("payment.type")
+        par_obj = self.pool.get("res.partner")
+
+        tr_id = pt_obj.search(self.cursor, self.uid, [('code', '=', u'TRANSFERENCIA_CSB')])[0]
+        re_id = pt_obj.search(self.cursor, self.uid, [('code', '=', u'RECIBO_CSB')])[0]
+
+        p_id = inv_obj.read(self.cursor, self.uid, inv_ids[0], ['partner_id'])['partner_id'][0]
+        par_obj.write(self.cursor, self.uid, p_id, {'payment_type_customer': tr_id})
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], r1_bs_state_id)
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], other_bs_state_id)
+        pre_payment_type_1 = self.read_one(fact_obj, fact_ids[0], 'payment_type')
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], corr_bs_state_id)
+        post_payment_type_1 = self.read_one(fact_obj, fact_ids[0], 'payment_type')
+
+        self.assertEqual(pre_payment_type_1[0], no_remesa_pt_id)
+        self.assertEqual(post_payment_type_1[0], no_remesa_pt_id)
+
+        p_id = inv_obj.read(self.cursor, self.uid, inv_ids[1], ['partner_id'])['partner_id'][0]
+        par_obj.write(self.cursor, self.uid, p_id, {'payment_type_customer': re_id})
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], r1_df_state_id)
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], other_df_state_id)
+        pre_payment_type_2 = self.read_one(fact_obj, fact_ids[1], 'payment_type')
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], corr_df_state_id)
+        post_payment_type_2 = self.read_one(fact_obj, fact_ids[1], 'payment_type')
+
+        self.assertEqual(pre_payment_type_2[0], no_remesa_pt_id)
+        self.assertEqual(post_payment_type_2[0], no_remesa_pt_id)
+
+
+class TestAccountInvoiceProviderUnpaidAutomations(testing.OOTestCase):
+    def setUp(self):
+        self.txn = Transaction().start(self.database)
+
+        self.cursor = self.txn.cursor
+        self.uid = self.txn.user
+        self.pool = self.openerp.pool
+
+    def tearDown(self):
+        self.txn.stop()
+
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test_no_send_mail_when_unpaid_no_apo(self, mocked_send_mail):
+        ai_obj = self.pool.get("account.invoice")
+        ai_id = ai_obj.search(self.cursor, self.uid, [('name', '=', 'PURCHASE-SMOKE-TEST-1')])[0]
+
+        wiz_o = self.pool.get("wizard.unpay")
+        context = {"active_ids": [ai_id], "active_id": ai_id, "model": "account.invoice"}
+
+        values = {
+            "pay_journal_id": 47,
+            "pay_account_id": 1718,
+            "date": date.today().strftime("%Y-%m-%d"),
+        }
+        wiz_id = wiz_o.create(self.cursor, self.uid, values, context=context)
+        wiz_o.unpay(self.cursor, self.uid, [wiz_id], context=context)
+
+        mocked_send_mail.assert_not_called()
+
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test_send_mail_when_unpaid_apo(self, mocked_send_mail):
+
+        ai_obj = self.pool.get("account.invoice")
+        ai_id = ai_obj.search(self.cursor, self.uid, [('name', '=', 'PURCHASE-SMOKE-TEST-1')])[0]
+
+        IrModel = self.pool.get("ir.model.data")
+        journal_id = IrModel.get_object_reference(
+            self.cursor, self.uid, "som_generationkwh", "apo_journal"
+        )[1]
+        payment_type_id = IrModel.get_object_reference(
+            self.cursor, self.uid, "account_payment", "payment_type_demo"
+        )[1]
+
+        ai_obj.write(self.cursor, self.uid, ai_id, {
+                     "journal_id": journal_id, "payment_type": payment_type_id, "name": 'APO_001'})
+        wiz_o = self.pool.get("wizard.unpay")
+        context = {"active_ids": [ai_id], "active_id": ai_id, "model": "account.invoice"}
+
+        values = {
+            "pay_journal_id": 47,
+            "pay_account_id": 1718,
+            "date": date.today().strftime("%Y-%m-%d"),
+        }
+        wiz_id = wiz_o.create(self.cursor, self.uid, values, context=context)
+        wiz_o.unpay(self.cursor, self.uid, [wiz_id], context=context)
+
+        mocked_send_mail.assert_called_once()
+
+        # template_id = IrModel.get_object_reference(
+        #     self.cursor, self.uid, "som_account_invoice_pending",
+        #     "email_interessos_aportacions_retornat"
+        # )[1]
+        # account_obj = self.pool.get("poweremail.core_accounts")
+        # email_from = account_obj.search(
+        #     self.cursor, self.uid, [("email_id", "=", "aporta@somenergia.coop")]
+        # )[0]
+        # expected_ctx = {
+        #     'unpay_move_pending_state': 1,
+        #     'from': email_from,
+        #     'journal_id': 47,
+        #     'priority': '0',
+        #     'src_model': 'account.invoice',
+        #     'state': 'single',
+        #     'period_id': 5,
+        #     'use_account_id': False,
+        #     'date_p': '2025-05-28',
+        #     'src_rec_ids': [ai_id],
+        #     'model': 'account.invoice',
+        #     'active_ids': [ai_id],
+        #     'type': 'in_invoice',
+        #     'template_id': template_id,
+        #     'active_id': ai_id,
+        # }
+        # mocked_send_mail.assert_called_with(self.cursor, self.uid, [1], context = expected_ctx)
+
 
 # vim: et ts=4 sw=4

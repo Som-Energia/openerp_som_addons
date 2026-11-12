@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 from osv import fields, osv
 from tools.translate import _
 import datetime
+import netsvc
 
 ACC_CODE_WIDTH = 12
+MEMBER_FEE_PURPOSE = "QUOTA SOCI"
 
 
 class ResPartner(osv.osv):
@@ -252,21 +255,131 @@ class ResPartner(osv.osv):
         else:
             return False
 
+    def create_member_fee_payment(
+            self, cursor, uid, partner_id, iban, member_number, invoice_number,
+            context=None):
+        if context is None:
+            context = {}
+
+        iban = iban.replace(" ", "")
+
+        invoice_o = self.pool.get("account.invoice")
+        account_o = self.pool.get("account.account")
+        journal_o = self.pool.get("account.journal")
+        payment_type_o = self.pool.get("payment.type")
+        payment_mode_o = self.pool.get("payment.mode")
+        payment_order_o = self.pool.get("payment.order")
+        payment_line_o = self.pool.get("payment.line")
+        mandate_o = self.pool.get("payment.mandate")
+        bank_o = self.pool.get("res.partner.bank")
+        currency_o = self.pool.get("res.currency")
+        conf_o = self.pool.get("res.config")
+        ir_model_o = self.pool.get("ir.model.data")
+
+        payment_mode_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_partner_account", "mode_pagament_socis_factura"
+        )[1]
+        payment_mode = payment_mode_o.read(
+            cursor, uid, payment_mode_id, ["name", "sepa_creditor_code"], context=context
+        )
+
+        mandate_id = mandate_o.get_or_create_payment_mandate(
+            cursor,
+            uid,
+            partner_id,
+            iban,
+            MEMBER_FEE_PURPOSE,
+            creditor_code=payment_mode["sepa_creditor_code"],
+            payment_type="one_payment",
+            context=context,
+        )
+        socia_fee_amount = conf_o.get(cursor, uid, "socia_member_fee_amount", "100")
+        euro_id = currency_o.search(cursor, uid, [("code", "=", "EUR")])[0]
+        invoice_account_id = account_o.search(
+            cursor, uid, [("code", "=", "100000000000")], context=context
+        )[0]
+        bank_id = bank_o.search(
+            cursor, uid, [("iban", "=", iban), ("partner_id", "=", partner_id)],
+            limit=1, context=context
+        )[0]
+        journal_id = journal_o.search(
+            cursor, uid, [("code", "=", "SOCIS")], context=context
+        )[0]
+        payment_type_id = payment_type_o.search(
+            cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
+        )[0]
+        invoice_vals = {
+            "number": invoice_number,
+            "partner_id": partner_id,
+            "type": "out_invoice",
+            "invoice_line": [(0, 0, {
+                "name": MEMBER_FEE_PURPOSE,
+                "account_id": invoice_account_id,
+                "price_unit": socia_fee_amount,
+                "quantity": 1,
+                "uom_id": 1,
+                "company_currency_id": euro_id,
+            })],
+            "origin_date_invoice": datetime.datetime.today().strftime("%Y-%m-%d"),
+            "date_invoice": datetime.datetime.today().strftime("%Y-%m-%d"),
+            "mandate_id": mandate_id,
+            "sii_to_send": False,
+            "account_id": invoice_account_id,
+            "journal_id": journal_id,
+        }
+        invoice_vals.update(invoice_o.onchange_partner_id(
+            cursor, uid, [], "out_invoice", partner_id).get("value", {})
+        )
+        invoice_vals.update({
+            "payment_type": payment_type_id,
+            "partner_bank": bank_id,
+            "sii_to_send": False,
+        })
+
+        invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
+        invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
+
+        wf_service = netsvc.LocalService("workflow")
+        wf_service.trg_validate(uid, "account.invoice", invoice_id, "invoice_open", cursor)
+        invoice_o.write(cursor, uid, [invoice_id], {"sii_to_send": False}, context=context)
+
+        payment_order_id = payment_order_o.get_or_create_open_payment_order(
+            cursor, uid, payment_mode["name"], use_invoice=True,
+            context={"type": "receivable"}
+        )
+        invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id, context=context)
+
+        payment_line_ids = payment_line_o.search(
+            cursor, uid,
+            [
+                ("partner_id", "=", partner_id),
+                ("communication", "=", invoice_number),
+                ("order_id", "=", payment_order_id),
+            ],
+            context=context
+        )
+        payment_line_o.write(
+            cursor, uid, payment_line_ids, {"name": member_number}, context=context
+        )
+        return invoice_id
+
     def become_member(self, cursor, uid, id, context=None):
+        if not context:
+            context = {}
+
         imd_obj = self.pool.get("ir.model.data")
         soci_obj = self.pool.get("somenergia.soci")
         ir_seq = self.pool.get("ir.sequence")
         soci_cat = imd_obj._get_obj(cursor, uid, "som_partner_account", "res_partner_category_soci")
 
-        # Assign Member category
+        # Assign Member category and ref code
+        partner_vals = {}
         partner = self.read(cursor, uid, id, ["ref", "category_id"])
         if soci_cat.id not in partner["category_id"]:
-            self.write(cursor, uid, partner["id"], {"category_id": [(4, soci_cat.id)]})
+            partner_vals["category_id"] = [(4, soci_cat.id)]
 
-        # Assign Member ref code
-        if not partner["ref"] or partner["ref"][0] != "S":
-            codi = ir_seq.get(cursor, uid, "res.partner.soci")
-            self.write(cursor, uid, partner["id"], {"ref": codi})
+        partner_vals['ref'] = context.get('force_ref', ir_seq.get(cursor, uid, "res.partner.soci"))
+        self.write(cursor, uid, partner["id"], partner_vals)
 
         # Create Member instance
         soci_ids = soci_obj.search(
@@ -316,9 +429,11 @@ class ResPartner(osv.osv):
                 ),
             )
 
-            return soci_id
+        if not soci_ids:
+            context['mailchimp_from'] = 'become_member: partner_id {}'.format(partner["id"])
+            soci_ids = [soci_obj.create_one_soci(cursor, uid, id, context)]
 
-        return soci_obj.create_one_soci(cursor, uid, partner["id"])
+        return soci_ids[0]
 
     def adopt_contracts_as_member(self, cursor, uid, partner_id, context=None):
         contract_obj = self.pool.get("giscedata.polissa")

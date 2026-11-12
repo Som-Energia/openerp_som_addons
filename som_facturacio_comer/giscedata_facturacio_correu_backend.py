@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
 from mako.template import Template
+from datetime import date
 
 
 class ReportBackendInvoiceEmail(ReportBackend):
@@ -43,10 +44,11 @@ class ReportBackendInvoiceEmail(ReportBackend):
 
         if energetica:
             data[
-                "logo"
-            ] = "https://blog.somenergia.coop/wp-content/uploads/2018/10/som-energia-energetica-logos.jpg"  # noqa: E501
-        else:
-            data["logo"] = "http://www.somenergia.coop/wp-content/uploads/2014/07/logo.png"
+                "dark_logo"
+            ] = "https://www.somenergia.coop/factura/logo-factura-energetica-fosc.png"  # noqa: E501
+            data[
+                "light_logo"
+            ] = "https://www.somenergia.coop/factura/logo-factura-energetica-clar.png"  # noqa: E501
 
         return data
 
@@ -74,6 +76,16 @@ class ReportBackendInvoiceEmail(ReportBackend):
                 ppu[line.name] = line.price_unit
         return False
 
+    def _flag_message_replacecement_counters_edistri(self, cursor, uid, fra, context=None):
+        date_from = date(2025, 2, 1)
+        date_to = date(2025, 4, 30)
+        id_edistri = 2273  # hardcoded because not xml_id found
+        if date_from <= date.today() <= date_to and fra.polissa_id.distribuidora.id == id_edistri:
+            return True
+        else:
+            return False
+
+    @report_browsify
     def get_factura(self, cursor, uid, fra, context=None):
         if context is None:
             context = {}
@@ -82,6 +94,11 @@ class ReportBackendInvoiceEmail(ReportBackend):
         data = report_o.get_factura(cursor, uid, fra, context=context)
 
         data["isTariffChange"] = self._isTariffChange(cursor, uid, fra, context=context)
+
+        polissa_o = self.pool.get("giscedata.polissa")
+        ctxt = {"date": fra.data_final.val}
+        pol = polissa_o.browse(cursor, uid, fra.polissa_id.id, context=ctxt)
+        data["has_autoconsum_pdf_flag"] = pol.te_autoconsum(amb_o_sense_excedents=2, context=ctxt)
 
         return data
 
@@ -131,6 +148,9 @@ class ReportBackendInvoiceEmail(ReportBackend):
         cups_id = cups_o.search(fra._cr, fra._uid, [('name', '=', data["cups"]["codi"])])
         cups = cups_o.browse(fra._cr, fra._uid, cups_id)[0]
         data["cups"]["is_peninsula"] = cups.id_municipi.subsistema_id.code == "PE"
+        data["flag_msg_counters_edistri"] = self._flag_message_replacecement_counters_edistri(
+            cursor, uid, fra, context=context
+        )
 
         return data
 

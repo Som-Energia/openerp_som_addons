@@ -6,6 +6,7 @@
 var factura_id = ${energy.fact_id}
 var data_consum = ${energy.historic_json}
 var esgran = ${energy.is_big and 'true' or 'false'}
+var average_text = "${energy.average_text}"
 </script>
 <div class="chart_consum_container_big">
     <div class="chart_consum" id="chart_consum_${energy.fact_id}"></div>

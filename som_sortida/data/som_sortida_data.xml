@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Emails -->
+        <record model="poweremail.templates" id="email_ct_ss_1mes">
+            <field name="name">Campanya CT SS falta 1 mes</field>
+            <field name="object_name" model="ir.model"
+                search="[('model', '=', 'giscedata.polissa')]" />
+            <field eval="0" name="save_to_drafts" />
+            <field name="model_int_name">giscedata.polissa</field>
+            <field eval="0" name="use_filter" />
+            <field name="def_to">${object.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email" />
+            <field eval="0" name="use_sign" />
+            <field name="def_subject">Ja fa quasi un any! 🎂</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create" />
+            <field name="lang">${object.titular.lang}</field>
+            <field eval="0" name="send_on_write" />
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Comercialització Som Energia')]"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+        </record>
+        <record model="poweremail.templates" id="email_ct_ss_15dies">
+            <field name="name">Campanya CT SS falten 15 dies</field>
+            <field name="object_name" model="ir.model"
+                search="[('model', '=', 'giscedata.polissa')]" />
+            <field eval="0" name="save_to_drafts" />
+            <field name="model_int_name">giscedata.polissa</field>
+            <field eval="0" name="use_filter" />
+            <field name="def_to">${object.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email" />
+            <field eval="0" name="use_sign" />
+            <field name="def_subject">No volem dir-te adéu…</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create" />
+            <field name="lang">${object.titular.lang}</field>
+            <field eval="0" name="send_on_write" />
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Comercialització Som Energia')]"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+        </record>
+        <!-- SMS -->
+        <record model="powersms.templates" id="sms_ct_ss_7dies">
+            <field name="name">Campanya CT SS falten 7 dies</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
+            <field name="def_from">Info</field>
+            <field name="model_int_name">giscedata.polissa</field>
+            <field name="def_to">${object.titular.www_phone}, ${object.titular.www_mobile}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'Som Energia')]"/>
+            <!-- \ are added to avoid line breaks https://docs.makotemplates.org/en/latest/syntax.html#newline-filters -->
+            <field name="def_body_text"><![CDATA[\
+<%
+p_obj = object.pool.get('res.partner')
+nom_titular = ', ' + p_obj.separa_cognoms(object._cr, object._uid, object.titular.name)['nom'] if not p_obj.vat_es_empresa(object._cr, object._uid, object.titular.vat) else ""
+data_enviament_cor = object.cor_submission_date.strftime('%d/%m/%Y') if object.cor_submission_date else "????"
+%>\
+% if object.titular.lang == "ca_ES":
+Hola${nom_titular}, tal com t’hem comunicat per email, et recordem que, si no t’associes a Som Energia o vincules el teu contracte de llum a altra persona socia abans del ${data_enviament_cor}, no et podrem renovar el contracte i aquest passarà a la comercialitzadora de referència. Per a dubtes: info@somenergia.coop, 872202550. Salutacions, Som Energia.\
+% else:
+Hola${nom_titular}, tal como te hemos comunicado por email, te recordamos que si no te asocias a Som Energia o vinculas tu contrato de luz a otra persona socia antes del ${data_enviament_cor}, no podremos renovarte el contrato, que pasará a la comercializadora de referencia. Si tienes dudas: info@somenergia.coop, 872202550. Saludos, Som Energia.\
+% endif
+]]></field> <!-- This is needed to avoid extra spaces in the SMS -->
+        </record>
+    </data>
+    <data>
+        <record model="res.config" id="config_llista_nifs_socia_ct_ss">
+            <field name="description">Llista de NIFs de sòcies de la campanya CT SS de 1 any de durada</field>
+            <field name="name">llista_nifs_socia_ct_ss</field>
+            <field name="value">["ES99999998T"]</field>
+        </record>
+        <!-- Estats del flux de sortida -->
+        <record model="account.invoice.pending.state.process" id="enviar_cor_state_process">
+            <field name="name">Enviar a la COR</field>
+            <field name="days_type">natural</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_correcte_pending_state">
+            <field name="name">Correcte</field>
+            <field name="weight">0</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_contrate_sense_socia_pending_state">
+            <field name="name">Contrate sense sòcia</field>
+            <field name="weight">10</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">335</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_pendent_falta_un_mes_pending_state">
+            <field name="name">Pendent enviar falta un mes</field>
+            <field name="weight">19</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">0</field>
+            <field name="template_id" ref="email_ct_ss_1mes"/>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_falta_un_mes_pending_state">
+            <field name="name">Enviat falta un mes</field>
+            <field name="weight">20</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">15</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_pendent_falta_15_dies_pending_state">
+            <field name="name">Pendent enviar falten 15 dies</field>
+            <field name="weight">29</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">0</field>
+            <field name="template_id" ref="email_ct_ss_15dies"/>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_falta_15_dies_pending_state">
+            <field name="name">Enviat falten 15 dies</field>
+            <field name="weight">30</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">8</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_pendent_falta_7_dies_pending_state">
+            <field name="name">Pendent enviar falten 7 dies</field>
+            <field name="weight">39</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">0</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_falta_7_dies_pending_state">
+            <field name="name">Enviat falten 7 dies</field>
+            <field name="weight">40</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">7</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_pendent_crear_b1_dies_pending_state">
+            <field name="name">Pendent crear cas B1</field>
+            <field name="weight">50</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="b2_02_create">True</field>
+            <field name="pending_days">0</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_cas_b1_error_pending_state">
+            <field name="name">No es pot crear el cas B1</field>
+            <field name="weight">51</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days">0</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_cas_b1_creat_pending_state">
+            <field name="name">Cas B1 creat</field>
+            <field name="weight">60</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_enviat_cor_pending_state">
+            <field name="name">Enviat a la COR</field>
+            <field name="weight">70</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record id="ir_cron_update_som_sortida_states" model="ir.cron" forcecreate="1">
+            <field name="name">Update som_sortida polisses states</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall"/>
+            <field eval="False" name="active"/>
+            <field eval="'update.pending.states'" name="model"/>
+            <field eval="'update_polisses'" name="function"/>
+            <field eval="'({},)'" name="args"/>
+        </record>
+        <record model="res.config" id="mailchimp_clients_ctss_list">
+            <field name="name">mailchimp_clients_ctss_list</field>
+            <field name="value">[arco] Butlletí usuàries</field>
+            <field name="description">Nom exacte de la llista de mailchimp on es subscriuen o actualizen l'estat les persones titulars no sòcies que venen d'un Canvi de Titular sense sòcia (Campanya CTSS).</field>
+        </record>
+    </data>
+</openerp>

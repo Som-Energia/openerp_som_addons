@@ -51,14 +51,13 @@
             <field name="view_id" ref="view_wizard_presentacio_redsaras_form"/>
             <field name="context">{'from_model': True}</field>
         </record>
-        <record model="ir.values" id="value_wizard_create_atc_from_polissa_gas">
+        <record model="ir.values" id="value_action_wizard_presentacio_redsaras_form_action">
             <field name="object" eval="1"/>
-            <field name="name">Enviar sol·licitud carta pagament</field>
+            <field name="name">Enviar sol·licitud carta pagament RedSaras</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">som.municipal.taxes.config</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_presentacio_redsaras_form_action'))" />
         </record>
-
     </data>
 </openerp>

@@ -22,6 +22,14 @@ class ReportBackendSomEstalvi(ReportBackend):
         ('potencia', 'optimizations', 'optimal_powers_P6'): 3,
     }
 
+    def _get_py2_py3_compatible_value(self, data_dict, key):
+        if key in data_dict:
+            return data_dict[key]
+        try:
+            return data_dict[key.encode('utf-8')]
+        except KeyError:
+            raise KeyError(key)
+
     def get_lang(self, cursor, uid, record_id, context=None):
         if context is None:
             context = {}
@@ -45,11 +53,14 @@ class ReportBackendSomEstalvi(ReportBackend):
 
         factura_id = factura_obj.search(
             cursor, uid, search_params, context=context, order="data_final DESC", limit=1
-        )[0]
+        )
 
-        end_date = factura_obj.read(
-            cursor, uid, factura_id, ['data_final'], context=context
-        )["data_final"]
+        if factura_id:
+            end_date = factura_obj.read(
+                cursor, uid, factura_id[0], ['data_final'], context=context
+            )["data_final"]
+        else:
+            end_date = pol.data_alta.strftime("%Y-%m-%d")
         start_date = datetime.strftime(
             datetime.strptime(
                 end_date, "%Y-%m-%d"
@@ -186,9 +197,12 @@ class ReportBackendSomEstalvi(ReportBackend):
         )[pol.id]
 
         data["energia"] = dades_factures['Energia activa'] + dades_factures['MAG']
-        data["exces"] = dades_factures[b'Excés potència']
-        data["potencia"] = dades_factures[b'Potència']
-        data["reactiva"] = dades_factures[b'Penalització reactiva']
+        data["exces"] = self._get_py2_py3_compatible_value(
+            dades_factures, u'Excés potència')
+        data["potencia"] = self._get_py2_py3_compatible_value(
+            dades_factures, u'Potència')
+        data["reactiva"] = self._get_py2_py3_compatible_value(
+            dades_factures, u'Penalització reactiva')
         data["descompte_generacio"] = dades_factures['Flux Solar'] + dades_factures['Excedents']
 
         return data

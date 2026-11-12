@@ -41,6 +41,7 @@ highlight() {
     # It draws a red outline and
     # sets a semi transparent white background to dimm the document
     run convert "$1" \
+        -channel RGB \
         -morphology Dilate Square:2 -negate -edge 3 \
         -channel rgb -fill "red" -opaque white \
         -channel rgba -fill "rgba(255,255,255,.4)" -opaque black \
@@ -55,11 +56,33 @@ sidebyside() {
     run pdfjam -q "$1" "$2" --nup 2x1 --landscape -o "$3" 2> /dev/null
 }
 join() {
-    run pdfjoin "${@:2}" -o "$1"
+    run pdfjam --fitpaper true --rotateoversize true "${@:2}" -o "$1"
     #run pdftk "${@:2}" cat output "$1"
 }
 rasterjoin() {
 	convert "${@:2}" "$1"
+}
+
+count_pages() {
+    ls "$1"/page_*.png 2>/dev/null | wc -l
+}
+
+create_blank_page() {
+    page_num=$(printf "%03d" "$2")
+    png_path="$1/page_${page_num}.png"
+    pdf_path="$1/page_${page_num}.pdf"
+
+    run convert -size 595x842 xc:white "$png_path"
+    run convert "$png_path" "$pdf_path"
+}
+
+pad_with_blank_pages() {
+    current_pages=$(count_pages "$1")
+
+    while [ "$current_pages" -lt "$2" ]; do
+        current_pages=$((current_pages + 1))
+        create_blank_page "$1" "$current_pages"
+    done
 }
 
 mkdir -p "${TMPDIR}/input_a"
@@ -71,6 +94,17 @@ mkdir -p "${TMPDIR}/merged"
 
 run split  "${INPUT_A}"  "${TMPDIR}/input_a/page_%03d.png"
 run split  "${INPUT_B}"  "${TMPDIR}/input_b/page_%03d.png"
+
+pages_a=$(count_pages "${TMPDIR}/input_a")
+pages_b=$(count_pages "${TMPDIR}/input_b")
+
+max_pages="$pages_a"
+if [ "$pages_b" -gt "$max_pages" ]; then
+    max_pages="$pages_b"
+fi
+
+pad_with_blank_pages "${TMPDIR}/input_a" "$max_pages"
+pad_with_blank_pages "${TMPDIR}/input_b" "$max_pages"
 
 for page in ${TMPDIR}/input_a/page_*.png; do
     $verbose && step "Comparing $(basename $page .png)..."

@@ -1,7 +1,7 @@
 ## -*- coding: utf-8 -*-
 <%def name="resum_facturacio_anual(costs)">
     <div class="seccio container-resum">
-        <span>${_(u"RESUM DE LA TEVA FACTURACIÓ ANUAL")}</span>
+        <span>${_(u"RESUM DE LA VOSTRA FACTURACIÓ ANUAL")}</span>
         <hr/>
     </div>
     <div class="container">
@@ -14,7 +14,7 @@
                 <tr>
                     <td>
                         <p><b>${_(u"Cost de l'electricitat utilitzada:")}</b></p>
-                        <p class="secondary-text">${_(u"Oferim 2 tarifes diferents:")} <a href="${_(u"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-periodes/")}">${_(u"períodes")}</a> ${_(u"i")} <a href="${_(u"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-indexada/")}">${_(u"indexada")}</a>.</p>
+                        <p class="secondary-text">${_(u"Oferim 2 tarifes diferents:")} <a href="${_(u"https://www.somenergia.coop/ca/tarifes-llum/empresa-periodes/")}">${_(u"períodes")}</a> ${_(u"i")} <a href="${_(u"https://www.somenergia.coop/ca/tarifes-llum/empresa-indexada/")}">${_(u"indexada")}</a>.</p>
                     </td>
                     <td><b><span style="color: #4d4d4d">${costs['energia']} €</span></b></td>
                 </tr>
@@ -65,14 +65,5 @@
             </span>
         </div>
     </div>
-    <div class="container alert">
-        <div class="exclamation">
-            <span><b>!</b></span>
-        </div>
-        <div>
-            <p class="alert-text">
-                ${_(u"Pots consultar i descarregar les corbes horàries d'ús d'energia per dies, setmanes, mesos i anys, i fer comparatives entre aquests períodes a l'")}<a href="${_(u"https://oficinavirtual.somenergia.coop/ca/")}">${_(u"Oficina Virtual")}</a>, <b>${_(u"a l'apartat Infoenergia > Veure l'ús de l'energia")}</b>.
-            </p>
-        </div>
-    </div>
+
 </%def>

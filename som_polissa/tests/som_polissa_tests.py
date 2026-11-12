@@ -90,7 +90,7 @@ class TestSomPolissa(testing.OOTestCase):
             sorted(self.getCategories(self.contract2_id)),
         )
 
-    @mock.patch("som_polissa.giscedata_polissa.GiscedataPolissa.set_category_eie")
+    @mock.patch("som_polissa.models.giscedata_polissa.GiscedataPolissa.set_category_eie")
     def test__set_category_eie_on_change_contract(self, mock_func):
         self.getCategories(self.contract1_id)
         titular_id = self.get_ref("som_polissa", "res_partner_domestic")
@@ -99,7 +99,7 @@ class TestSomPolissa(testing.OOTestCase):
 
         self.assertEqual(mock_func.call_count, 1)
 
-    @mock.patch("som_polissa.giscedata_polissa.GiscedataPolissa.set_category_eie")
+    @mock.patch("som_polissa.models.giscedata_polissa.GiscedataPolissa.set_category_eie")
     def test__set_category_eie_on_create_contract(self, mock_func):
         self.getCategories(self.contract1_id)
         titular_id = self.get_ref("som_polissa", "res_partner_domestic")

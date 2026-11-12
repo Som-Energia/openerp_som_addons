@@ -7,3 +7,7 @@
 "access_wizard_generate_cau_migration_file_r","wizard.generate.cau.migration.file","model_wizard_generate_cau_migration_file","giscedata_cups.group_giscedata_cups_r",1,0,0,0
 "access_wizard_generate_cau_migration_file_w","wizard.generate.cau.migration.file","model_wizard_generate_cau_migration_file","giscedata_cups.group_giscedata_cups_w",1,1,1,0
 "access_wizard_generate_cau_migration_file_u","wizard.generate.cau.migration.file","model_wizard_generate_cau_migration_file","giscedata_cups.group_giscedata_cups_u",1,1,1,1
+"access_wizard_cancel_draft_polisses_rcwd","wizard.cancel.draft.polisses","model_wizard_cancel_draft_polisses","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_report_backend_mandat_sepa_u","report.backend.mandat.sepa","model_report_backend_mandat_sepa","account.group_account_user",1,1,1,1
+"access_report_backend_mandat_sepa_w","report.backend.mandat.sepa","model_report_backend_mandat_sepa","account.group_account_user",1,1,1,0
+"access_report_backend_mandat_sepa_r","report.backend.mandat.sepa","model_report_backend_mandat_sepa","account.group_account_user",1,0,0,0

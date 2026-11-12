@@ -11,6 +11,7 @@
     ${css}
     body {
       margin: 5% 7% 5% 7%;
+      color: #0B2E34;
     }
     h1, h2, h3, p, ol, ul {
       font-family: Roboto;
@@ -39,6 +40,8 @@
     }
     .LogoPpal img {
       display: block;
+      width: 150px;
+      height: auto;
       margin-top: -10px;
     }
     .sotalogo {
@@ -99,7 +102,7 @@
     }
     .TitolCaixa {
       margin-top: 50px;
-      background: #4D4D4D;
+      background: #0B2E34;
     }
     .TitolCaixa h2, .CaixaTit h3, .CaixaTitNum h3 {
       font-size: 0.55em;
@@ -190,7 +193,7 @@
         <div class="LogoPpal">
         <a href="https://www.somenergia.coop" target="_blank">
         <!-- 150px mida logo -->
-        <img src="https://www.somenergia.coop/iconespdf/logo_som_energia.svg" alt="Logo Som Energia" width="150" height="75" /></a><br>
+        <img src="${addons_path}/som_inversions/report/logo_som2.png" alt="Logo Som Energia" /></a><br>
         <p class="sotalogo"><b>${data.somenergia.partner_name}</b><br>${_(u"CIF:")} ${data.somenergia.partner_vat.replace('ES','')}<br>${_(u"Domicili:")} ${data.somenergia.address_street} ${data.somenergia.address_zip} - ${data.somenergia.address_city}<br>
             ${_(u"Adreça electrònica:")} <a href="mailto:aporta@somenergia.coop">${_(u"aporta@somenergia.coop")}</a>
     </div>
@@ -380,7 +383,7 @@
     </div>
     <div class="contingutTXT">
             <div class="paragraf">
-            <p style="margin-top:60px;">${_(u"Aquest import serà transferit al teu compte corrent número:")}   <b>${(data.partner_iban[:-9] or '')}***</b>.</p>
+            <p style="margin-top:60px;">${_(u"Aquest import serà transferit al teu compte corrent número:")}   <b>${(data.partner_iban or '')[-4:].rjust(len(data.partner_iban or ''), '*')}</b>.</p>
             <p>${_(u"Actualment les teves aportacions en títols participatius de SOM ENERGIA SCCL sumen")}   <b>${formatLang(abs(inv.partner_id.property_account_titols.balance),monetary=True)} €</b>. </p>
             <p style="margin-top:20px;">${_(u"Gràcies a les aportacions com la teva, la cooperativa finança projectes i pot generar cada vegada més energia provinent de fonts renovables.")}</p>
             </div>

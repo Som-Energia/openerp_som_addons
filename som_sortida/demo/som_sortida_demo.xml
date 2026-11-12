@@ -1,0 +1,28 @@
+<openerp>
+    <data>
+        <!-- Afegim camp sortida_state_id a la pòlissa demo 1 -->
+        <record id="giscedata_polissa.polissa_0001" model="giscedata.polissa">
+            <field name="sortida_state_id" ref="enviar_cor_contrate_sense_socia_pending_state"/>
+            <field name="soci" ref="som_polissa_soci.res_partner_soci"/>
+        </record>
+        <record id="som_polissa_soci.res_partner_address_soci" model="res.partner.address">
+            <field name="phone">612345678</field>
+        </record>
+        <record id="socia_campanya_ctss_address" model="res.partner.address">
+            <field name="partner_id" ref="base.res_partner_c2c"/>
+            <field name="street">Carrer Falsa, 123</field>
+            <field name="zip">08001</field>
+            <field name="id_municipi" ref="base_extended.ine_08019"/>
+            <field name="city">Barcelona</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="phone">600123456</field>
+        </record>
+        <record id="som_generationkwh.res_partner_address_inversor1" model="res.partner.address">
+            <field name="id_municipi" ref="base_extended.ine_08022"/>
+        </record>
+        <record id="giscedata_polissa.polissa_0004" model="giscedata.polissa">
+            <field name="sortida_state_id" ref="enviar_cor_contrate_sense_socia_pending_state"/>
+            <field name="soci" ref="som_polissa_soci.res_partner_soci_ct"/>
+        </record>
+    </data>
+</openerp>

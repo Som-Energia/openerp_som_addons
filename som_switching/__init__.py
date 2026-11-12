@@ -1,8 +1,4 @@
-import giscedata_switching_r1
-import giscedata_switching_helpers
-import wizard
-import giscedata_switching
-import giscedata_atc
-import giscedata_polissa
-import giscedata_switching_b1
-import giscedata_switching_m1
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from .models import *
+from .wizard import *

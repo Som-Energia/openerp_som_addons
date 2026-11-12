@@ -6,10 +6,9 @@
             <field name="name" eval="'Dashboards Contractes SOM'"/>
         </record>
         <!-- END SOM BOARD-->
-
         <!-- START Indicador de canvis d'intexada -->
-        <record model="ir.ui.view" id="views_dashboard_som_canvis_a_indexada_1_line_1">
-            <field name="name">views_dashboard_som_canvis_a_indexada_1_line_1</field>
+        <record model="ir.ui.view" id="views_dashboard_som_canvis_a_index_period_1_line_1">
+            <field name="name">views_dashboard_som_canvis_a_index_period_1_line_1</field>
             <field name="model">custom.search.results</field>
             <field name="type">graph</field>
             <field name="priority" eval="16000"/>
@@ -17,33 +16,531 @@
             <field name="arch" type="xml">
                 <graph type="line">
                     <field name="dates" axis="x"/>
-                    <field name="canvis" operator="+" axis="y"/>
-                    <field name="altes" operator="+" axis="y"/>
+                    <field name="canvis_index" operator="+" axis="y"/>
+                    <field name="canvis_periodes" operator="+" axis="y"/>
+                    <field name="canvis_index_peninsula" operator="+" axis="y"/>
+                    <field name="canvis_periodes_peninsula" operator="+" axis="y"/>
+                    <field name="canvis_index_balears" operator="+" axis="y"/>
+                    <field name="canvis_periodes_balears" operator="+" axis="y"/>
+                    <field name="canvis_index_canaries" operator="+" axis="y"/>
+                    <field name="canvis_periodes_canaries" operator="+" axis="y"/>
                 </graph>
             </field>
         </record>
-        <record model="ir.actions.act_window" id="action_dashboard_som_canvis_a_indexada_1_line_1">
-            <field name="name">Número de canvis i altes a indexada acumulats en els últims 30 dies</field>
+        <record model="ir.actions.act_window" id="action_dashboard_som_canvis_a_index_period_1_line_1">
+            <field name="name">Número de canvis indexada i períodes acumulades en els últims 30 dies per sistema</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
             <field name="limit" eval="0"/>
             <field name="res_model">custom.search.results</field>
-            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_canvis_a_indexada')}"/>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_canvis_a_index_period')}"/>
             <field name="domain">[]</field>
         </record>
-        <record model="ir.actions.act_window.view" id="action_view_dashboard_dashboard_som_canvis_a_indexada_1_line_1">
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_canvis_a_index_period_1_line_1">
             <field name="sequence" eval="1"/>
             <field name="view_mode">graph</field>
-            <field name="view_id" ref="views_dashboard_som_canvis_a_indexada_1_line_1"/>
-            <field name="act_window_id" ref="action_dashboard_som_canvis_a_indexada_1_line_1"/>
+            <field name="view_id" ref="views_dashboard_som_canvis_a_index_period_1_line_1"/>
+            <field name="act_window_id" ref="action_dashboard_som_canvis_a_index_period_1_line_1"/>
         </record>
-        <record model="board.board.line" id="board_line_som_canvis_a_indexada_1_line_1">
+        <record model="board.board.line" id="board_line_som_canvis_a_index_period_1_line_1">
             <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
             <field name="sequence" eval="10"/>
-            <field name="name">Número de canvis i altes a indexada acumulats en els últims 30 dies</field>
-            <field name="action_id" ref="action_dashboard_som_canvis_a_indexada_1_line_1"/>
+            <field name="name">Número de canvis a indexada i períodes acumulades en els últims 30 dies per sistema</field>
+            <field name="action_id" ref="action_dashboard_som_canvis_a_index_period_1_line_1"/>
         </record>
         <!-- END Indicador de canvis d'indexada -->
+        <!-- START Indicador d'altes de contractes -->
+        <record model="ir.ui.view" id="views_dashboard_som_altes_contractes_index_1_line_1">
+            <field name="name">views_dashboard_som_altes_contractes_index_1_line_1</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="altes" operator="+" axis="y"/>
+                    <field name="altes_indexada" operator="+" axis="y"/>
+                    <field name="altes_periodes" operator="+" axis="y"/>
+                    <field name="altes_indexada_peninsula" operator="+" axis="y"/>
+                    <field name="altes_periodes_peninsula" operator="+" axis="y"/>
+                    <field name="altes_indexada_balears" operator="+" axis="y"/>
+                    <field name="altes_periodes_balears" operator="+" axis="y"/>
+                    <field name="altes_indexada_canaries" operator="+" axis="y"/>
+                    <field name="altes_periodes_canaries" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_altes_contractes_index_1_line_1">
+            <field name="name">Número d'altes amb indexada i períodes acumulades en els últims 30 dies per sistema</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_altes_index')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_altes_contractes_index_1_line_1">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_altes_contractes_index_1_line_1"/>
+            <field name="act_window_id" ref="action_dashboard_som_altes_contractes_index_1_line_1"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_altes_index_1_line_1">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número d'altes amb indexada i períodes acumulades en els últims 30 dies per sistema</field>
+            <field name="action_id" ref="action_dashboard_som_altes_contractes_index_1_line_1"/>
+        </record>
+        <!-- END Indicador d'altes de contractes -->
+        <!-- START Indicador de canvis d'intexada per tarifa -->
+        <record model="ir.ui.view" id="views_dashboard_som_canvis_a_index_period_tariff_1_line_1">
+            <field name="name">views_dashboard_som_canvis_a_index_period_tariff_1_line_1</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="canvis_index" operator="+" axis="y"/>
+                    <field name="canvis_periodes" operator="+" axis="y"/>
+                    <field name="canvis_index_20td" operator="+" axis="y"/>
+                    <field name="canvis_periodes_20td" operator="+" axis="y"/>
+                    <field name="canvis_index_30td" operator="+" axis="y"/>
+                    <field name="canvis_periodes_30td" operator="+" axis="y"/>
+                    <field name="canvis_index_61td" operator="+" axis="y"/>
+                    <field name="canvis_periodes_61td" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_canvis_a_index_period_tariff_1_line_1">
+            <field name="name">Número de canvis indexada i períodes acumulades en els últims 30 dies per tarifa</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_canvis_a_index_period_tariff')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_canvis_a_index_period_tariff_1_line_1">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_canvis_a_index_period_tariff_1_line_1"/>
+            <field name="act_window_id" ref="action_dashboard_som_canvis_a_index_period_tariff_1_line_1"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_canvis_a_index_period_tariff_1_line_1">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número de canvis a indexada i períodes acumulades en els últims 30 dies per tarifa</field>
+            <field name="action_id" ref="action_dashboard_som_canvis_a_index_period_tariff_1_line_1"/>
+        </record>
+        <!-- END Indicador de canvis d'indexada per tarifa-->
+        <!-- START Indicador d'altes de contractes per tarifa-->
+        <record model="ir.ui.view" id="views_dashboard_som_altes_contractes_index_tariff_1_line_1">
+            <field name="name">views_dashboard_som_altes_contractes_index_1_line_1</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="altes" operator="+" axis="y"/>
+                    <field name="altes_indexada" operator="+" axis="y"/>
+                    <field name="altes_periodes" operator="+" axis="y"/>
+                    <field name="altes_indexada_20td" operator="+" axis="y"/>
+                    <field name="altes_periodes_20td" operator="+" axis="y"/>
+                    <field name="altes_indexada_30td" operator="+" axis="y"/>
+                    <field name="altes_periodes_30td" operator="+" axis="y"/>
+                    <field name="altes_indexada_61td" operator="+" axis="y"/>
+                    <field name="altes_periodes_61td" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_altes_contractes_index_tariff_1_line_1">
+            <field name="name">Número d'altes amb indexada i períodes acumulades en els últims 30 dies per tarifa</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_altes_index_tariff')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_altes_contractes_index_tariff_1_line_1">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_altes_contractes_index_tariff_1_line_1"/>
+            <field name="act_window_id" ref="action_dashboard_som_altes_contractes_index_tariff_1_line_1"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_altes_index_tariff_1_line_1">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número d'altes amb indexada i períodes acumulades en els últims 30 dies per tarifa</field>
+            <field name="action_id" ref="action_dashboard_som_altes_contractes_index_tariff_1_line_1"/>
+        </record>
+        <!-- END Indicador d'altes de contractes per tarifa-->
+        <!-- START Indicador de baixes de contractes -->
+        <record model="ir.ui.view" id="views_dashboard_som_baixes_contractes_index_1_line_1">
+            <field name="name">views_dashboard_som_baixes_contractes_index_1_line_1</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="baixes" operator="+" axis="y"/>
+                    <field name="baixes_indexada" operator="+" axis="y"/>
+                    <field name="baixes_periodes" operator="+" axis="y"/>
+                    <field name="baixes_indexada_peninsula" operator="+" axis="y"/>
+                    <field name="baixes_periodes_peninsula" operator="+" axis="y"/>
+                    <field name="baixes_indexada_balears" operator="+" axis="y"/>
+                    <field name="baixes_periodes_balears" operator="+" axis="y"/>
+                    <field name="baixes_indexada_canaries" operator="+" axis="y"/>
+                    <field name="baixes_periodes_canaries" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_baixes_contractes_index_1_line_1">
+            <field name="name">Número de baixes amb indexada i períodes acumulades en els últims 30 dies per sistema</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_baixes_index')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_baixes_contractes_index_1_line_1">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_baixes_contractes_index_1_line_1"/>
+            <field name="act_window_id" ref="action_dashboard_som_baixes_contractes_index_1_line_1"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_baixes_index_1_line_1">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número de baixes amb indexada i períodes acumulades en els últims 30 dies per sistema</field>
+            <field name="action_id" ref="action_dashboard_som_baixes_contractes_index_1_line_1"/>
+        </record>
+        <!-- END Indicador de baixes de contractes -->
+        <!-- START Indicador de baixes de contractes per tarifes-->
+        <record model="ir.ui.view" id="views_dashboard_som_baixes_contractes_index_tariff_1_line_1">
+            <field name="name">views_dashboard_som_baixes_contractes_index_tariff_1_line_1</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="baixes" operator="+" axis="y"/>
+                    <field name="baixes_indexada" operator="+" axis="y"/>
+                    <field name="baixes_periodes" operator="+" axis="y"/>
+                    <field name="baixes_indexada_20td" operator="+" axis="y"/>
+                    <field name="baixes_periodes_20td" operator="+" axis="y"/>
+                    <field name="baixes_indexada_30td" operator="+" axis="y"/>
+                    <field name="baixes_periodes_30td" operator="+" axis="y"/>
+                    <field name="baixes_indexada_61td" operator="+" axis="y"/>
+                    <field name="baixes_periodes_61td" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_baixes_contractes_index_tariff_1_line_1">
+            <field name="name">Número de baixes amb indexada i períodes acumulades en els últims 30 dies per tarifa</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_baixes_index_tariff')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_baixes_contractes_index_tariff_1_line_1">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_baixes_contractes_index_tariff_1_line_1"/>
+            <field name="act_window_id" ref="action_dashboard_som_baixes_contractes_index_tariff_1_line_1"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_baixes_index_tariff_1_line_1">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número de baixes amb indexada i períodes acumulades en els últims 30 dies per tarifa</field>
+            <field name="action_id" ref="action_dashboard_som_baixes_contractes_index_tariff_1_line_1"/>
+        </record>
+        <!-- END Indicador de baixes de contractes tarifes-->
+        <!-- START Indicador de canvis d'intexada anual-->
+        <record model="ir.ui.view" id="views_dashboard_som_canvis_a_index_period_1_line_1_year">
+            <field name="name">views_dashboard_som_canvis_a_index_period_1_line_1_year</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="canvis_index" operator="+" axis="y"/>
+                    <field name="canvis_periodes" operator="+" axis="y"/>
+                    <field name="canvis_index_peninsula" operator="+" axis="y"/>
+                    <field name="canvis_periodes_peninsula" operator="+" axis="y"/>
+                    <field name="canvis_index_balears" operator="+" axis="y"/>
+                    <field name="canvis_periodes_balears" operator="+" axis="y"/>
+                    <field name="canvis_index_canaries" operator="+" axis="y"/>
+                    <field name="canvis_periodes_canaries" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_canvis_a_index_period_1_line_1_year">
+            <field name="name">Número de canvis indexada i períodes acumulades en l'últim any per sistema</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_canvis_a_index_period_year')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_canvis_a_index_period_1_line_1_year">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_canvis_a_index_period_1_line_1_year"/>
+            <field name="act_window_id" ref="action_dashboard_som_canvis_a_index_period_1_line_1_year"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_canvis_a_index_period_1_line_1_year">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número de canvis a indexada i períodes acumulades en l'últim any per sistema</field>
+            <field name="action_id" ref="action_dashboard_som_canvis_a_index_period_1_line_1_year"/>
+        </record>
+        <!-- END Indicador de canvis d'indexada anual-->
+        <!-- START Indicador d'altes de contractes anual-->
+        <record model="ir.ui.view" id="views_dashboard_som_altes_contractes_index_1_line_1_year">
+            <field name="name">views_dashboard_som_altes_contractes_index_1_line_1_year</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="altes" operator="+" axis="y"/>
+                    <field name="altes_indexada" operator="+" axis="y"/>
+                    <field name="altes_periodes" operator="+" axis="y"/>
+                    <field name="altes_indexada_peninsula" operator="+" axis="y"/>
+                    <field name="altes_periodes_peninsula" operator="+" axis="y"/>
+                    <field name="altes_indexada_balears" operator="+" axis="y"/>
+                    <field name="altes_periodes_balears" operator="+" axis="y"/>
+                    <field name="altes_indexada_canaries" operator="+" axis="y"/>
+                    <field name="altes_periodes_canaries" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_altes_contractes_index_1_line_1_year">
+            <field name="name">Número d'altes amb indexada i períodes acumulades en l'últim any per sistema</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_altes_index_year')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_altes_contractes_index_1_line_1_year">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_altes_contractes_index_1_line_1_year"/>
+            <field name="act_window_id" ref="action_dashboard_som_altes_contractes_index_1_line_1_year"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_altes_index_1_line_1_year">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número d'altes amb indexada i períodes acumulades en l'últim any per sistema</field>
+            <field name="action_id" ref="action_dashboard_som_altes_contractes_index_1_line_1_year"/>
+        </record>
+        <!-- END Indicador d'altes de contractes anual-->
+        <!-- START Indicador de canvis d'intexada per tarifa anual-->
+        <record model="ir.ui.view" id="views_dashboard_som_canvis_a_index_period_tariff_1_line_1_year">
+            <field name="name">views_dashboard_som_canvis_a_index_period_tariff_1_line_1_year</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="canvis_index" operator="+" axis="y"/>
+                    <field name="canvis_periodes" operator="+" axis="y"/>
+                    <field name="canvis_index_20td" operator="+" axis="y"/>
+                    <field name="canvis_periodes_20td" operator="+" axis="y"/>
+                    <field name="canvis_index_30td" operator="+" axis="y"/>
+                    <field name="canvis_periodes_30td" operator="+" axis="y"/>
+                    <field name="canvis_index_61td" operator="+" axis="y"/>
+                    <field name="canvis_periodes_61td" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_canvis_a_index_period_tariff_1_line_1_year">
+            <field name="name">Número de canvis indexada i períodes acumulades en l'últim any per tarifa</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_canvis_a_index_period_tariff_year')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_canvis_a_index_period_tariff_1_line_1_year">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_canvis_a_index_period_tariff_1_line_1_year"/>
+            <field name="act_window_id" ref="action_dashboard_som_canvis_a_index_period_tariff_1_line_1_year"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_canvis_a_index_period_tariff_1_line_1_year">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número de canvis a indexada i períodes acumulades en l'últim any per tarifa</field>
+            <field name="action_id" ref="action_dashboard_som_canvis_a_index_period_tariff_1_line_1_year"/>
+        </record>
+        <!-- END Indicador de canvis d'indexada per tarifa anual-->
+        <!-- START Indicador d'altes de contractes per tarifa anual-->
+        <record model="ir.ui.view" id="views_dashboard_som_altes_contractes_index_tariff_1_line_1_year">
+            <field name="name">views_dashboard_som_altes_contractes_index_1_line_1_year</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="altes" operator="+" axis="y"/>
+                    <field name="altes_indexada" operator="+" axis="y"/>
+                    <field name="altes_periodes" operator="+" axis="y"/>
+                    <field name="altes_indexada_20td" operator="+" axis="y"/>
+                    <field name="altes_periodes_20td" operator="+" axis="y"/>
+                    <field name="altes_indexada_30td" operator="+" axis="y"/>
+                    <field name="altes_periodes_30td" operator="+" axis="y"/>
+                    <field name="altes_indexada_61td" operator="+" axis="y"/>
+                    <field name="altes_periodes_61td" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_altes_contractes_index_tariff_1_line_1_year">
+            <field name="name">Número d'altes amb indexada i períodes acumulades en l'últim any per tarifa</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_altes_index_tariff_year')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_altes_contractes_index_tariff_1_line_1_year">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_altes_contractes_index_tariff_1_line_1_year"/>
+            <field name="act_window_id" ref="action_dashboard_som_altes_contractes_index_tariff_1_line_1_year"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_altes_index_tariff_1_line_1_year">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número d'altes amb indexada i períodes acumulades en l'últim any per tarifa</field>
+            <field name="action_id" ref="action_dashboard_som_altes_contractes_index_tariff_1_line_1_year"/>
+        </record>
+        <!-- END Indicador d'altes de contractes per tarifa anual-->
+        <!-- START Indicador de baixes de contractes anual-->
+        <record model="ir.ui.view" id="views_dashboard_som_baixes_contractes_index_1_line_1_year">
+            <field name="name">views_dashboard_som_baixes_contractes_index_1_line_1_year</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="baixes" operator="+" axis="y"/>
+                    <field name="baixes_indexada" operator="+" axis="y"/>
+                    <field name="baixes_periodes" operator="+" axis="y"/>
+                    <field name="baixes_indexada_peninsula" operator="+" axis="y"/>
+                    <field name="baixes_periodes_peninsula" operator="+" axis="y"/>
+                    <field name="baixes_indexada_balears" operator="+" axis="y"/>
+                    <field name="baixes_periodes_balears" operator="+" axis="y"/>
+                    <field name="baixes_indexada_canaries" operator="+" axis="y"/>
+                    <field name="baixes_periodes_canaries" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_baixes_contractes_index_1_line_1_year">
+            <field name="name">Número de baixes amb indexada i períodes acumulades en l'últim any per sistema</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_baixes_index_year')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_baixes_contractes_index_1_line_1_year">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_baixes_contractes_index_1_line_1_year"/>
+            <field name="act_window_id" ref="action_dashboard_som_baixes_contractes_index_1_line_1_year"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_baixes_index_1_line_1_year">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número de baixes amb indexada i períodes acumulades en l'últim any per sistema</field>
+            <field name="action_id" ref="action_dashboard_som_baixes_contractes_index_1_line_1_year"/>
+        </record>
+        <!-- END Indicador de baixes de contractes anual-->
+        <!-- START Indicador de baixes de contractes per tarifes anual-->
+        <record model="ir.ui.view" id="views_dashboard_som_baixes_contractes_index_tariff_1_line_1_year">
+            <field name="name">views_dashboard_som_baixes_contractes_index_tariff_1_line_1_year</field>
+            <field name="model">custom.search.results</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16000"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="line">
+                    <field name="dates" axis="x"/>
+                    <field name="baixes" operator="+" axis="y"/>
+                    <field name="baixes_indexada" operator="+" axis="y"/>
+                    <field name="baixes_periodes" operator="+" axis="y"/>
+                    <field name="baixes_indexada_20td" operator="+" axis="y"/>
+                    <field name="baixes_periodes_20td" operator="+" axis="y"/>
+                    <field name="baixes_indexada_30td" operator="+" axis="y"/>
+                    <field name="baixes_periodes_30td" operator="+" axis="y"/>
+                    <field name="baixes_indexada_61td" operator="+" axis="y"/>
+                    <field name="baixes_periodes_61td" operator="+" axis="y"/>
+                </graph>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_dashboard_som_baixes_contractes_index_tariff_1_line_1_year">
+            <field name="name">Número de baixes amb indexada i períodes acumulades en l'últim any per tarifa</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">custom.search.results</field>
+            <field name="context" eval="{b'search_id': ref('custom_search_dashboard_som_baixes_index_tariff_year')}"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_dashboard_som_baixes_contractes_index_tariff_1_line_1_year">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="views_dashboard_som_baixes_contractes_index_tariff_1_line_1_year"/>
+            <field name="act_window_id" ref="action_dashboard_som_baixes_contractes_index_tariff_1_line_1_year"/>
+        </record>
+        <record model="board.board.line" id="board_line_som_baixes_index_tariff_1_line_1_year">
+            <field name="board_id" ref="dashboard_som_contracts_dashboards"/>
+            <field name="sequence" eval="10"/>
+            <field name="name">Número de baixes amb indexada i períodes acumulades en l'últim any per tarifa</field>
+            <field name="action_id" ref="action_dashboard_som_baixes_contractes_index_tariff_1_line_1_year"/>
+        </record>
+        <!-- END Indicador de baixes de contractes tarifes anual-->
     </data>
 </openerp>

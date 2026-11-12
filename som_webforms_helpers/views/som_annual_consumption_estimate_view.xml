@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_simulation_annual_consumption_estimate_tree">
+            <field name="name">som.annual.consumption.estimate.tree</field>
+            <field name="model">som.annual.consumption.estimate</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Anual consumption estimation by power">
+                    <field name="power"/>
+                    <field name="consumption"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_simulation_annual_consumption_estimate_form">
+            <field name="name">som.annual.consumption.estimate.form</field>
+            <field name="model">som.annual.consumption.estimate</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Anual consumption estimation by power">
+                    <group colspan="4">
+                        <field name="power"/>
+                        <field name="consumption"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 from osv import osv, fields
 from tools.translate import _
-import mailchimp_marketing as MailchimpMarketing
-from tools import config
+
+from base_extended_som.utils import is_dry_run
 
 
 class WizardSubscribeClientMailchimp(osv.osv_memory):
@@ -14,6 +15,8 @@ class WizardSubscribeClientMailchimp(osv.osv_memory):
     def subscribe_client_address(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
+        if is_dry_run(context):
+            return False
 
         address_ids = context.get("active_ids", False)
         info_wizard = "S'ha iniciat el procés de subscripció de les adreces següents: \n"
@@ -27,14 +30,11 @@ class WizardSubscribeClientMailchimp(osv.osv_memory):
 
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_list", None)
 
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(
-                api_key=config.options.get("mailchimp_apikey"),
-                server=config.options.get("mailchimp_server_prefix"),
-            )
-        )
+        MAILCHIMP_CLIENT = address_obj._get_mailchimp_client(context=context)
         try:
-            list_client_id = address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+            list_client_id = address_obj.get_mailchimp_list_id(
+                list_name, MAILCHIMP_CLIENT, context=context
+            )
         except Exception as e:
             # import pudb;pu.db
             raise osv.except_osv(u"Error", str(e))
@@ -54,7 +54,8 @@ class WizardSubscribeClientMailchimp(osv.osv_memory):
             else:
                 client_data = address_obj.fill_merge_fields_clients(cursor, uid, address)
                 address_obj.subscribe_mail_in_list(
-                    cursor, uid, [client_data], list_client_id, MAILCHIMP_CLIENT
+                    cursor, uid, [client_data], list_client_id, MAILCHIMP_CLIENT,
+                    context=context
                 )
 
                 info_wizard += address_data["email"] + "\n"

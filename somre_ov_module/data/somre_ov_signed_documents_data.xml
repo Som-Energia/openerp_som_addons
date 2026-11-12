@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="type_ovrepresenta_rgpd" model="somre.ov.signed.document.type">
+            <field name="name">Oficina Virtual Representa: RGPD</field>
+            <field name="code">RGPD_OV_REPRESENTA</field>
+        </record>
+        <record id="version_type_ovrepresenta_rgpd_2023" model="somre.ov.signed.document.type.version">
+            <field name="type" ref="type_ovrepresenta_rgpd"></field>
+            <field name="date">2023-11-09</field>
+        </record>
+    </data>
+</openerp>

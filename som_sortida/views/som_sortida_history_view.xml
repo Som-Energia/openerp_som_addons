@@ -1,0 +1,43 @@
+<openerp>
+    <data>
+        <!-- History view for Som Sortida History-->
+        <record model="ir.ui.view" id="view_som_sortida_history_form">
+            <field name="name">som.sortida.history.form</field>
+            <field name="model">som.sortida.history</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Historial de sortides">
+                    <group>
+                        <field name="polissa_id"/>
+                        <field name="pending_state_id"/>
+                        <field name="change_date"/>
+                        <field name="end_date"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_sortida_history_tree">
+            <field name="name">som.sortida.history.tree</field>
+            <field name="model">som.sortida.history</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Historial de sortides">
+                    <field name="pending_state_id" select="1"/>
+                    <field name="change_date" select="1"/>
+                    <field name="end_date" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_som_sortida_history">
+            <field name="name">Historial de sortides</field>
+            <field name="res_model">som.sortida.history</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="context">{}</field>
+        </record>
+        <menuitem name="Historial de sortides"
+            action="action_som_sortida_history"
+            id="menu_som_sortida_history"
+            parent="giscedata_polissa.menu_principal"/>
+    </data>
+</openerp>

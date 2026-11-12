@@ -133,20 +133,77 @@ class ReportTest(osv.osv):
             'result_log': log,
         })
 
-    def _exists_file(self, cursor, uid, file_name, test_id, context=None):
+    def attach_best(self, cursor, uid, test_ids, context=None):
+        if context is None:
+            context = {}
+
+        result = ""
+        fields = ['priority', 'active', 'name']
+        tests_data = self.read(cursor, uid, test_ids, fields)
+        for test_data in sorted(tests_data, key=lambda e: e['priority']):
+            if test_data['active']:
+                one_result = self.attach_one_best(cursor, uid, test_data['id'], context)
+                result += _(" - Afegint pdf '{}' --> {} \n".format(
+                    test_data['name'],
+                    one_result
+                ))
+            else:
+                result += _(" - Afegint pdf '{}' --> no actiu!! \n".format(
+                    test_data['name']
+                ))
+
+        return result
+
+    def attach_one_best(self, cursor, uid, id, context=None):
+
+        pdf = self._get_result_attachment(cursor, uid, id, context=context)
+        if not pdf:
+            pdf = self._get_expected_attachment(cursor, uid, id, context=context)
+            if not pdf:
+                return _("Error sense fitxers per adjuntar!")
+
+        data = self.browse(cursor, uid, id)
+        if data.interpreter not in ['id_fact', 'id']:
+            return _("Selecció no suportada!!")
+
+        if data.report.model != 'giscedata.facturacio.factura':
+            return _("Model no soportat!!")
+
+        res_id, message = self._get_resource_id(cursor, uid, id, context=context)
+        if not res_id:
+            return _("No es pot resoldre l'id: ") + message
+
+        fact_model = "giscedata.facturacio.factura"
+        fact_obj = self.pool.get(fact_model)
+        fact_data = fact_obj.read(
+            cursor, uid,
+            res_id, ['number', 'state'],
+            context=context
+        )
+        if fact_data['state'] not in ['open', 'paid']:
+            return _("Factura amb estat incorrecte: ") + fact_data['state']
+
+        if not fact_data['number']:
+            return _("Factura sense número")
+
+        file_name = 'STORED_{}.pdf'.format(fact_data['number'])
+        self._store_file(cursor, uid, pdf, file_name, res_id, model=fact_model, context=context)
+        return _("Fitxer adjuntat")
+
+    def _exists_file(self, cursor, uid, file_name, test_id, model='report.test', context=None):
 
         att_obj = self.pool.get("ir.attachment")
         att_ids = att_obj.search(cursor, uid, [
             ('name', '=', file_name),
-            ('res_model', '=', 'report.test'),
+            ('res_model', '=', model),
             ('res_id', '=', test_id),
         ])
         return att_ids
 
-    def _store_file(self, cursor, uid, content, file_name, test_id, context=None):
+    def _store_file(self, cursor, uid, content, file_name, test_id, model='report.test', context=None):  # noqa E501
         att_obj = self.pool.get("ir.attachment")
         b64_content = base64.b64encode(content)
-        att_ids = self._exists_file(cursor, uid, file_name, test_id, context=context)
+        att_ids = self._exists_file(cursor, uid, file_name, test_id, model=model, context=context)
         if att_ids:
             att_id = att_ids[0]
 
@@ -159,7 +216,7 @@ class ReportTest(osv.osv):
                 "name": file_name,
                 "datas": b64_content,
                 "datas_fname": file_name,
-                "res_model": "report.test",
+                "res_model": model,
                 "res_id": test_id,
             }
             attachment_id = att_obj.create(
@@ -334,6 +391,18 @@ class ReportTest(osv.osv):
                 diff_pdf = f.read()
             shutil.rmtree(tmp_dir)
             return False, diff_pdf
+
+    def get_active_results(self, cursor, uid, test_ids, context=None):
+        if context is None:
+            context = {}
+
+        results = []
+        tests_data = self.read(cursor, uid, test_ids, ['active', 'result'], context)
+        for test_data in tests_data:
+            if test_data['active']:
+                results.append(test_data['result'])
+
+        return results
 
     _columns = {
         "name": fields.char(

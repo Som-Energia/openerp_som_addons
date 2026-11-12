@@ -1,0 +1,7 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_som_sortida_state_r","som.sortida.state","model_som_sortida_state","base_extended.group_base_extended_u",1,0,0,0
+"access_som_sortida_state_w","som.sortida.state","model_som_sortida_state","base_extended.group_base_extended_w",1,1,1,1
+"access_som_sortida_state_u","som.sortida.state","model_som_sortida_state","base_extended.group_base_extended_r",1,1,1,0
+"access_som_sortida_history_r","som.sortida.history","model_som_sortida_history","base_extended.group_base_extended_u",1,0,0,0
+"access_som_sortida_history_w","som.sortida.history","model_som_sortida_history","base_extended.group_base_extended_w",1,1,1,1
+"access_som_sortida_history_u","som.sortida.history","model_som_sortida_history","base_extended.group_base_extended_r",1,1,1,0

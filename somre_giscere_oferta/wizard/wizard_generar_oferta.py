@@ -4,6 +4,10 @@ from ast import literal_eval
 from datetime import datetime, timedelta
 from osv import osv
 import logging
+import time
+
+
+MAX_RETRIES = 3  # OMIE send retries by offer
 
 
 class WizardGisceReGenerarOfertaSom(osv.osv_memory):
@@ -46,7 +50,7 @@ class WizardGisceReGenerarOfertaSom(osv.osv_memory):
         self.pool.get('poweremail.templates').generate_mail(
             cursor, uid, template_id, [1], context=ctx)
 
-    def _cron_giscere_daily_offer(self, cursor, uid, context=None):
+    def _cron_giscere_daily_offer(self, cursor, uid, context=None):  # noqa: C901
         """
         CREATE a daily offer for day D+1 for each Offer Unit
         :param cursor: OpenERP DB cursor
@@ -73,6 +77,9 @@ class WizardGisceReGenerarOfertaSom(osv.osv_memory):
             cursor, uid, 'representacio_auto_publicar_oferta_omie', '0'))
         auto_mail_notify = literal_eval(conf_obj.get(
             cursor, uid, 'representacio_auto_omie_mail_notification', '0'))
+        data_inici_previsions_qh = conf_obj.get(cursor, uid,
+                                                'giscere_oferta_utilitzar_previsions_qh',
+                                                '2025-10-01')
 
         info = []
         energia = []
@@ -92,9 +99,11 @@ class WizardGisceReGenerarOfertaSom(osv.osv_memory):
                 unitat_oferta = unitat_obj.read(cursor, uid, unitat, ['name'])['name']
                 try:
                     # Generem l'Oferta de Representació
-                    wiz_id = self.create(
-                        cursor, uid, {'data_oferta': data_oferta, 'unitat_oferta': unitat})
-                    wiz_oferta = self.browse(cursor, uid, wiz_id, context=context)
+                    wiz_vals = {'data_oferta': data_oferta, 'unitat_oferta': unitat}
+                    if data_oferta >= data_inici_previsions_qh:
+                        wiz_vals.update({'qh_forecast': True, 'use_qh_forecasts': True})
+                    wiz_id = self.create(cursor, uid, wiz_vals)
+                    wiz_oferta = self.simple_browse(cursor, uid, wiz_id, context=context)
                     oferta_id = wiz_oferta.action_generar()
                     if oferta_id:
                         msg = "S'ha creat l'oferta diària amb ID {} per la Unitat d'Oferta {} pel día {}".format(  # noqa: E501
@@ -125,8 +134,16 @@ class WizardGisceReGenerarOfertaSom(osv.osv_memory):
                                     if auto_publish_omie:
                                         omie_oferta_id = oferta_data.get('oferta_omie_id')
                                         omie_oferta_id = int(omie_oferta_id.split(',')[1])
-                                        omie_oferta_obj.enviar_oferta(
-                                            cursor, uid, [omie_oferta_id], context=context)
+                                        for attempt in range(1, MAX_RETRIES + 1):
+                                            try:
+                                                omie_oferta_obj.enviar_oferta(
+                                                    cursor, uid, [omie_oferta_id], context=context)
+                                                break
+                                            except Exception as e:
+                                                if attempt == MAX_RETRIES:
+                                                    raise
+                                                sleep_time = attempt * 3
+                                                time.sleep(sleep_time)
                                         oferta_new_state = oferta_obj.read(
                                             cursor, uid, oferta_id, ['oferta_a_omie'])
                                         if oferta_new_state.get('oferta_a_omie', 'generada') == 'enviada':  # noqa: E501

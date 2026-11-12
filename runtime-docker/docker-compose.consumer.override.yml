@@ -1,0 +1,8 @@
+services:
+  erp-runtime:
+    # Local/dev mode: mount local repos over image content.
+    # Copy this file to docker-compose.consumer.override.yml and adjust paths.
+    volumes:
+      - ../:/opt/somenergia/src/openerp_som_addons
+      # Uncomment if your local changes require this sibling repo:
+      # - ../../giscedata_facturacio_indexada_som:/opt/somenergia/src/giscedata_facturacio_indexada_som

@@ -24,11 +24,11 @@
                         <br />
                         <h2 style="text-align: center;">
                         ${_(u"Annex III")}
-                        </h1>
+                        </h2>
                         <br />
                         <h2 style="text-align: center;">
                         ${_(u"Confirmació de baixa en autoconsum col·lectiu")}
-                        </h1>
+                        </h2>
                         <br />
                         % if not informe["is_enterprise"]:
                         <p>

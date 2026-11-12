@@ -1,0 +1,347 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, print_function, unicode_literals
+import errno
+import io
+import os
+import subprocess
+import ast
+
+"""
+Aquest script crea scripts de migració per a mòduls d'OpenERP 5.0.
+Per a cada mòdul, comprova els fitxers modificats i crea un script de migració
+per actualitzar els camps i vistes dels models afectats.
+
+Execució des de l'arrel del repositori:
+    python scripts/create_migration_script.py
+"""
+# Intentionally manual source of truth. Update when the installed ERP migration
+# version changes; do not replace this with auto-detection.
+TARGET_VERSION = "5.0.25.5.0"
+
+
+def to_unicode(value):
+    """Retorna text unicode tant en Python 2 com en Python 3."""
+    if isinstance(value, bytes):
+        return value.decode('utf-8')
+    return value
+
+
+def get_ast_string_value(node):
+    """Extreu el valor string d'un node AST compatible amb Python 2 i 3."""
+    if isinstance(node, ast.Str):
+        return node.s
+    if hasattr(ast, 'Constant') and isinstance(node, ast.Constant):
+        if isinstance(node.value, str):
+            return node.value
+    return None
+
+
+def parse_python_file(file_path):
+    """Analitza un fitxer Python mantenint compatibilitat entre Python 2 i 3."""
+    with io.open(file_path, 'rb') as f:
+        source = f.read()
+
+    return ast.parse(source)
+
+
+def get_modified_files():
+    """Retorna un diccionari amb els mòduls i
+        els seus fitxers modificats (XML, CSV, Python i PO)."""
+    cmd = "git diff --name-only main"
+    result = to_unicode(subprocess.check_output(cmd.split()))
+
+    modified_files = {}
+    for file_path in result.splitlines():
+        if 'demo' not in file_path:
+            # Processar només XML, CSV de security, Python que no siguin wizards i fitxers .po
+            is_security_csv = file_path.endswith('.csv') and '/security/' in file_path
+            is_xml = file_path.endswith('.xml')
+            is_py = (file_path.endswith('.py')
+                     and 'wizard' not in file_path.lower()
+                     and '/wizard/' not in file_path
+                     and 'scripts/' not in file_path)
+            is_po = file_path.endswith('.po')
+
+            if is_security_csv or is_xml or is_py or is_po:
+                parts = file_path.split('/', 1)
+                if len(parts) == 2:
+                    module_name, relative_path = parts
+                    if module_name not in modified_files:
+                        modified_files[module_name] = {
+                            'data': [], 'py': [], 'security': [], 'po': []}
+                    if is_security_csv:
+                        modified_files[module_name]['security'].append(relative_path)
+                    elif is_xml:
+                        modified_files[module_name]['data'].append(relative_path)
+                    elif is_py:
+                        modified_files[module_name]['py'].append(relative_path)
+                    elif is_po:
+                        modified_files[module_name]['po'].append(relative_path)
+
+    return modified_files
+
+
+def find_new_fields(file_path):
+    """Analitza un fitxer Python per trobar nous camps en _columns."""
+    try:
+        tree = parse_python_file(file_path)
+
+        models = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                model_name = None
+                has_columns = False
+
+                # Buscar _name i _columns
+                for item in node.body:
+                    if isinstance(item, ast.Assign):
+                        for target in item.targets:
+                            if isinstance(target, ast.Name):
+                                if target.id == '_name':
+                                    model_name = get_ast_string_value(item.value)
+                                elif target.id == '_columns':
+                                    has_columns = True
+
+                if model_name and has_columns:
+                    models.append(model_name)
+
+        return models
+    except Exception as e:
+        print("Error analitzant {0}: {1}".format(file_path, str(e)))
+        return []
+
+
+def is_manually_modified(file_path):
+    """Comprova si un fitxer ha estat modificat manualment."""
+    if not os.path.exists(file_path):
+        return False
+
+    cmd = "git diff --name-only {0}".format(file_path)
+    result = to_unicode(subprocess.check_output(cmd.split()))
+    return bool(result.strip())
+
+
+def get_current_branch():
+    """Obté el nom de la branca actual de git."""
+    cmd = "git rev-parse --abbrev-ref HEAD"
+    return to_unicode(subprocess.check_output(cmd.split())).strip()
+
+
+def get_next_script_number(migration_dir):
+    """Obté el següent número de seqüència per l'script de migració."""
+    if not os.path.exists(migration_dir):
+        return '0001'
+
+    # Buscar tots els scripts de migració existents
+    existing_scripts = [f for f in os.listdir(migration_dir)
+                        if f.startswith('post-') and f.endswith('.py')]
+
+    if not existing_scripts:
+        return '0001'
+
+    # Extreure els números de seqüència
+    numbers = []
+    for script in existing_scripts:
+        try:
+            num = int(script.split('-')[1].split('_')[0])
+            numbers.append(num)
+        except (IndexError, ValueError):
+            continue
+
+    next_num = max(numbers + [0]) + 1
+    return str(next_num).zfill(4)
+
+
+def get_script_name(files, next_num, branch_name):
+    script_name = 'post-{0}_{1}_migrate'.format(next_num, branch_name)
+    if files.get('py'):
+        script_name += '_fields'
+    if files.get('data'):
+        script_name += '_data'
+    if files.get('security'):
+        script_name += '_security'
+    if files.get('po'):
+        script_name += '_translations'
+    script_name += '.py'
+    return script_name
+
+
+def report_migration_candidate(module_name, files, models_to_init,
+                               script_path):
+    """Report the actions that a migration script would contain."""
+    print("Migration candidate for module: {0}".format(module_name))
+    if models_to_init:
+        print("  Python/model initialization: {0}".format(
+            ', '.join(models_to_init)))
+    if files['data']:
+        print("  XML/data loading: {0}".format(', '.join(files['data'])))
+    if files['security']:
+        print("  Security loading: {0}".format(', '.join(files['security'])))
+    if files.get('po'):
+        print("  Translations: {0}".format(', '.join(files['po'])))
+    print("  Proposed path: {0}".format(script_path))
+
+
+def create_migration_script(module_name, files, dry_run=False, replace=False):  # noqa: C901
+    """Crea un script de migració pel mòdul especificat."""
+    # Primer comprovem si hi ha canvis a fer
+    models_to_init = []
+    for py_file in files['py']:
+        full_path = os.path.join(module_name, py_file)
+        models = find_new_fields(full_path)
+        models_to_init.extend(models)
+
+    # Si no hi ha ni models per inicialitzar ni fitxers data per actualitzar ni po, sortim
+    if not models_to_init and not files['data'] and not files.get('po'):
+        return
+
+    migration_dir = os.path.join(module_name, 'migrations', TARGET_VERSION)
+
+    # Obtenir el següent número de seqüència i el nom de la branca
+    next_num = get_next_script_number(migration_dir)
+    branch_name = get_current_branch().replace('/', '_')
+
+    # Crear el nom de l'script
+    script_name = get_script_name(files, next_num, branch_name)
+    script_path = os.path.join(migration_dir, script_name)
+
+    # Comprovar si ja existeix un script per aquesta branca
+    existing_branch_script = None
+    if os.path.exists(migration_dir):
+        for f in os.listdir(migration_dir):
+            if f.endswith('.py') and branch_name in f:
+                existing_branch_script = os.path.join(migration_dir, f)
+                break
+
+    if existing_branch_script:
+        script_name = os.path.basename(existing_branch_script)
+        script_path = existing_branch_script
+
+    if dry_run:
+        report_migration_candidate(module_name, files, models_to_init,
+                                   script_path)
+        if existing_branch_script:
+            print("  Existing script: {0}".format(existing_branch_script))
+            if replace:
+                print("  Action: replace existing script")
+            else:
+                print("  Action: skip existing script (use --replace to overwrite)")
+        else:
+            print("  Action: create migration script")
+        return
+
+    if existing_branch_script and not replace:
+        print("L'script {0} ja existeix. No es sobreescriurà; usa --replace "
+              "per substituir-lo.".format(
+                  existing_branch_script))
+        return
+
+    # Crear directori si no existeix (compatible amb Python 2)
+    try:
+        os.makedirs(migration_dir)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
+    if existing_branch_script:
+        os.remove(existing_branch_script)
+
+    with io.open(script_path, 'w', encoding='utf-8') as f:
+        f.write(
+            '''# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
+import logging
+'''
+        )
+        if files.get('data') or files.get('security'):
+            f.write('''from oopgrade.oopgrade import load_data\n''')
+        if models_to_init:
+            f.write('''import pooler\n''')
+        if files.get('po'):
+            f.write('''from tools.translate import trans_load\nfrom tools import config\n''')
+        f.write('''
+
+def up(cursor, installed_version):
+    if not installed_version:
+        return
+
+    logger = logging.getLogger('openerp.migration')
+''')
+        # Afegir _auto_init per models amb nous camps
+        if models_to_init:
+            f.write('\n    logger.info("Initializing new fields")\n')
+            f.write('\n    pool = pooler.get_pool(cursor.dbname)\n')
+            for model in models_to_init:
+                f.write('''    pool.get("{0}")._auto_init(
+        cursor, context={{'module': '{1}'}}
+    )\n'''.format(model, module_name))
+
+        # Afegir load_data per XMLs modificats
+        if files['data']:
+            f.write('\n    logger.info("Updating XML files")\n')
+            f.write('    data_files = [\n')
+            for data_file in files['data']:
+                f.write("        '{0}',\n".format(data_file))
+            f.write('    ]\n')
+            f.write('''    for data_file in data_files:
+        load_data(
+            cursor, '{0}', data_file,
+            idref=None, mode='update'
+        )\n'''.format(module_name))
+
+        # Afegir load_data per CSVs security modificats
+        if files['security']:
+            f.write('\n    logger.info("Updating CSV security files")\n')
+            f.write('    security_files = [\n')
+            for data_file in files['security']:
+                f.write("        '{0}',\n".format(data_file))
+            f.write('    ]\n')
+            f.write('''    for security_file in security_files:
+        load_data(
+            cursor, '{0}', security_file,
+            idref=None, mode='update'
+        )\n'''.format(module_name))
+
+        # Afegir bloc per traduccions si hi ha .po
+        if files.get('po'):
+            for po_file in files['po']:
+                if po_file == 'i18n/es_ES.po':
+                    f.write('    logger.info("Updating translations")\n')
+                    f.write(
+                        '    trans_load(cursor, "{{}}/{{}}/i18n/es_ES.po".format(config[\'addons_path\'], "{0}"), \'es_ES\')  # noqa: E501\n'.format(module_name))  # noqa: E501
+                    f.write('    logger.info("Translations succesfully updated.")\n')
+        f.write('''    logger.info("Migration completed successfully.")
+
+
+def down(cursor, installed_version):
+    pass
+
+
+migrate = up
+''')
+
+    print("Created migration script: {0}".format(script_path))
+
+
+def main(dry_run=False, replace=False):
+    modified_files = get_modified_files()
+    for module_name, files in modified_files.items():
+        if files['data'] or files['py'] or files.get('po'):  # Crear script si hi ha canvis
+            create_migration_script(module_name, files, dry_run, replace)
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='Create migration scripts from changes against main.')
+    parser.add_argument(
+        '--dry-run', action='store_true',
+        help='Report candidate migration actions without changing files.')
+    parser.add_argument(
+        '--replace', action='store_true',
+        help='Replace an existing migration script for the current branch.')
+    args = parser.parse_args()
+    main(args.dry_run, args.replace)
+    exit(0)

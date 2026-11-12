@@ -21,7 +21,7 @@ class SomCrawlersConfig(osv.osv):
         ),
         "contrasenya": fields.char(
             "Contrasenya del portal",
-            size=30,
+            size=100,
             help="Contrasenya del portal web o servidor FTP/SFTP",
         ),
         "url_portal": fields.char(
@@ -125,11 +125,10 @@ class SomCrawlersConfig(osv.osv):
         else:
             self.write(cursor, uid, ids, {"contrasenya": contrasenya}, context=None)
             message = (
-                "S'ha actualitzat la contrasenya: \""
+                "S'ha actualitzat la contrasenya: "
                 + str(contrasenya_antiga)
-                + '" -> "'
+                + ' -> '
                 + str(contrasenya)
-                + '"'
             )
             self._log(cursor, uid, ids, message)
 

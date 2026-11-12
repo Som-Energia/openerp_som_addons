@@ -2,11 +2,11 @@
 from __future__ import absolute_import
 from osv import osv, fields
 from tools.translate import _
-from gestionatr.defs import TABLA_113
 import re
 import logging
+from gestionatr.defs import TABLA_133
 
-TIPO_AUTOCONSUMO_SEL = [(ac[0], "[{}] - {}".format(ac[0], ac[1])) for ac in TABLA_113]
+TIPO_SUBSECCIO_SEL = [(ac[0], u"[{}] - {}".format(ac[0], ac[1])) for ac in TABLA_133]
 
 
 class GiscedataFacturacioContracteLot(osv.osv):
@@ -54,7 +54,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         except Exception as e:
             logger = logging.getLogger("openerp" + __name__)
             logger.error(
-                "Error calculant el camp funcio date_invoice del contracte_lot ID {}. {}".format(
+                u"Error calculant el camp funcio date_invoice del contracte_lot ID {}. {}".format(
                     id, e
                 )
             )
@@ -116,7 +116,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         except Exception as e:
             logger = logging.getLogger("openerp" + __name__)
             logger.error(
-                "Error calculant el camp funcio te_generation del contracte_lot ID {}. {}".format(
+                u"Error calculant el camp funcio te_generation del contracte_lot ID {}. {}".format(
                     id, e
                 )
             )
@@ -155,7 +155,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         except Exception as e:
             logger = logging.getLogger("openerp" + __name__)
             logger.error(
-                "Error calculant el camp funcio te_generation del contracte_lot ID %s: %s ", id, e
+                u"Error calculant el camp funcio data_final del contracte_lot ID %s: %s ", id, e
             )
 
     def _ff_import_factures(self, cr, uid, ids, name, args, context=None):
@@ -187,7 +187,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         return res
 
     def _ff_update_fields(self, cr, uid, ids, name, args, context=None):
-        res = {id: {"total_incidencies": 0} for id in ids}
+        res = {id: {} for id in ids}
         for id in ids:
             res[id]["total_incidencies"] = self.total_incidencies(cr, uid, id)
             res[id]["date_invoice"] = self.date_invoice(cr, uid, id)
@@ -207,10 +207,17 @@ class GiscedataFacturacioContracteLot(osv.osv):
         ),
         "autoconsum": fields.related(
             "polissa_id",
-            "autoconsumo",
+            "tipus_subseccio",
             type="selection",
-            selection=TIPO_AUTOCONSUMO_SEL,
+            selection=TIPO_SUBSECCIO_SEL,
             string="Autoconsum",
+            readonly=True,
+        ),
+        "collectiu": fields.related(
+            "polissa_id",
+            "is_autoconsum_collectiu",
+            type="boolean",
+            string="Col·lectiu",
             readonly=True,
         ),
         "tarifaATR": fields.related(

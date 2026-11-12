@@ -1,9 +1,12 @@
+from __future__ import absolute_import
+
 import os
 import uuid
 import pooler
 import pypdftk
 import tempfile
 from base64 import b64decode
+from datetime import datetime
 from report.interface import report_int
 
 
@@ -17,12 +20,20 @@ class RepresentantGurbReport(report_int):
         gurb_cups_o = pool.get("som.gurb.cups")
         ir_attachment_o = pool.get("ir.attachment")
 
-        for gurb_id in ids:
+        for gurb_cau_id in ids:
             reports = []
 
+            today = datetime.today().strftime('%Y-%m-%d')
             search_params = [
-                ("gurb_id", "=", gurb_id),
-                ("active", "=", True)
+                ("gurb_cau_id", "=", gurb_cau_id),
+                ("active", "=", True),
+                ("inscription_date", "<=", today),
+                ("state", "in", [
+                    "comming_registration",
+                    "comming_modification",
+                    "active",
+                    "atr_pending",
+                ]),
             ]
 
             gurb_cups_ids = gurb_cups_o.search(cursor, uid, search_params, context=context)
