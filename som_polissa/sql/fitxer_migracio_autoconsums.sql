@@ -14,4 +14,3 @@ where
 hist.data_inici <= %(data_inici)s and (hist.data_final is null or hist.data_final >= %(data_final)s)
 order by
 distri.ref asc, cups.name asc, auto.cau asc, gen.cil asc;
-

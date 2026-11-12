@@ -110,11 +110,12 @@ class WizardGenerateCAUMigrationFile(osv.osv_memory):
                 res[codi_distri][cups][cau]['generadors'][gen] = {
                     'DatosInstGen_y': datos_inst_gen_y}
 
+            pot_inst_gen = record['potinstaladagen'] * 1000 if record['potinstaladagen'] else 0
             res[codi_distri][cups][cau]['generadors'][gen].update({
                 'CIL': record['cil'],
                 'TecGenerador': record['tecgenerador'],
                 'Combustible': record['combustible'],
-                'PotInstaladaGen': record['potinstaladagen'] * 1000 if record['potinstaladagen'] else 0,
+                'PotInstaladaGen': pot_inst_gen,
                 'TipoInstalacion': record['tipoinstalacion'],
                 'EsquemaMedida': record['esquemamedida'],
                 'SSAA': record['ssaa'],
