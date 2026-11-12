@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import
+
 import zipfile
 from datetime import datetime
 from addons import get_module_resource
@@ -6,9 +8,9 @@ from tools.translate import _
 from osv import osv, fields
 
 try:
-    from StringIO import StringIO  ## for Python 2
+    from StringIO import StringIO  # for Python 2
 except ImportError:
-    from io import StringIO  ## for Python 3
+    from io import StringIO  # for Python 3
 import csv
 import base64
 
@@ -105,7 +107,8 @@ class WizardGenerateCAUMigrationFile(osv.osv_memory):
             if not cil or gen not in res[codi_distri][cups][cau]['generadors']:
                 nou_comptador_gen = len(res[codi_distri][cups][cau]['generadors'].keys()) + 1
                 datos_inst_gen_y = 'DatosInstGen_{}'.format(nou_comptador_gen)
-                res[codi_distri][cups][cau]['generadors'][gen] = {'DatosInstGen_y': datos_inst_gen_y}
+                res[codi_distri][cups][cau]['generadors'][gen] = {
+                    'DatosInstGen_y': datos_inst_gen_y}
 
             res[codi_distri][cups][cau]['generadors'][gen].update({
                 'CIL': record['cil'],
