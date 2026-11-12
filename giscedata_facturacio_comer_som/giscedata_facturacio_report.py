@@ -4720,5 +4720,27 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         mime = "image/jpeg" if image.startswith("/9j/") else "image/png"
         return "data:{};base64,{}".format(mime, image)
 
+    def get_is_social_tariff(self, fact, pol):
+        """Use the invoice-end policy price and current business categories.
+
+        ``pol`` must already be browsed at ``fact.data_final``.
+        """
+        polissa_obj = self.pool.get("giscedata.polissa")
+        social_prices = polissa_obj.mapping_tarifa_social(self.cursor, self.uid).values()
+        if pol.llista_preu and pol.llista_preu.id in social_prices:
+            return True
+
+        categories = polissa_obj.read(
+            self.cursor, self.uid, pol.id, ["category_id"], context={}
+        )["category_id"]
+        imd_obj = self.pool.get("ir.model.data")
+        company_category = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa", "categ_tarifa_empresa"
+        )[1]
+        social_category = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_tarifa_social", "categ_tarifa_social"
+        )[1]
+        return company_category in categories and social_category in categories
+
 
 GiscedataFacturacioFacturaReport()
