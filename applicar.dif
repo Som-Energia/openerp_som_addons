@@ -1,0 +1,1281 @@
+diff --git a/som_leads_polissa/__terp__.py b/som_leads_polissa/__terp__.py
+index 0cd18ca31..f124bbce0 100644
+--- a/som_leads_polissa/__terp__.py
++++ b/som_leads_polissa/__terp__.py
+@@ -20,6 +20,7 @@
+         "l10n_ES_aeat_mod347",
+         "account_account_som",
+         "som_partner_account",
++        "som_card_payment",
+     ],
+     "init_xml": [],
+     "demo_xml": [
+diff --git a/som_leads_polissa/migrations/5.0.25.5.0/post-0001_add_billing_payment_method_field.py b/som_leads_polissa/migrations/5.0.25.5.0/post-0001_add_billing_payment_method_field.py
+new file mode 100644
+index 000000000..c34a7df26
+--- /dev/null
++++ b/som_leads_polissa/migrations/5.0.25.5.0/post-0001_add_billing_payment_method_field.py
+@@ -0,0 +1,33 @@
++# -*- coding: utf-8 -*-
++from __future__ import absolute_import
++
++import logging
++import pooler
++
++
++def up(cursor, installed_version):
++    logger = logging.getLogger('openerp.migration')
++
++    logger.info("Adding billing_payment_method column to giscedata_crm_lead")
++
++    pool = pooler.get_pool(cursor.dbname)
++
++    pool.get("giscedata.crm.lead")._auto_init(
++        cursor, context={'module': 'som_leads_polissa'}
++    )
++
++    cursor.execute(
++        """
++        UPDATE giscedata_crm_lead
++        SET billing_payment_method = 'remesa'
++        WHERE billing_payment_method IS NULL
++        """
++    )
++    logger.info("billing_payment_method column added and initialized")
++
++
++def down(cursor, installed_version):
++    pass
++
++
++migrate = up
+diff --git a/som_leads_polissa/migrations/5.0.25.5.0/post-0002_add_creditcard_fields_to_lead.py b/som_leads_polissa/migrations/5.0.25.5.0/post-0002_add_creditcard_fields_to_lead.py
+new file mode 100644
+index 000000000..2080716c6
+--- /dev/null
++++ b/som_leads_polissa/migrations/5.0.25.5.0/post-0002_add_creditcard_fields_to_lead.py
+@@ -0,0 +1,24 @@
++# -*- coding: utf-8 -*-
++from __future__ import absolute_import
++
++import logging
++import pooler
++
++
++def up(cursor, installed_version):
++    logger = logging.getLogger('openerp.migration')
++
++    logger.info("Adding credit card lead fields to giscedata_crm_lead")
++
++    pool = pooler.get_pool(cursor.dbname)
++
++    pool.get("giscedata.crm.lead")._auto_init(
++        cursor, context={'module': 'som_leads_polissa'}
++    )
++
++
++def down(cursor, installed_version):
++    pass
++
++
++migrate = up
+diff --git a/som_leads_polissa/migrations/5.0.25.5.0/post-0003_update_lead_payment_view.py b/som_leads_polissa/migrations/5.0.25.5.0/post-0003_update_lead_payment_view.py
+new file mode 100644
+index 000000000..eaf9aab6d
+--- /dev/null
++++ b/som_leads_polissa/migrations/5.0.25.5.0/post-0003_update_lead_payment_view.py
+@@ -0,0 +1,36 @@
++# -*- coding: utf-8 -*-
++from __future__ import absolute_import
++
++import logging
++
++from oopgrade.oopgrade import load_data_records
++
++
++def up(cursor, installed_version):
++    if not installed_version:
++        return
++
++    logger = logging.getLogger('openerp.migration')
++
++    logger.info("Updating lead payment view fields")
++
++    list_of_records = [
++        "giscedata_crm_leads_som_view",
++    ]
++
++    load_data_records(
++        cursor,
++        'som_leads_polissa',
++        'views/giscedata_crm_lead_view.xml',
++        list_of_records,
++        mode='update'
++    )
++
++    logger.info("Lead payment view fields updated")
++
++
++def down(cursor, installed_version):
++    pass
++
++
++migrate = up
+diff --git a/som_leads_polissa/models/giscedata_crm_lead.py b/som_leads_polissa/models/giscedata_crm_lead.py
+index b685d6592..3af951f70 100644
+--- a/som_leads_polissa/models/giscedata_crm_lead.py
++++ b/som_leads_polissa/models/giscedata_crm_lead.py
+@@ -1,4 +1,6 @@
+ # -*- coding: utf-8 -*-
++from __future__ import absolute_import
++
+ from datetime import datetime
+ from time import sleep
+ from osv import fields, osv
+@@ -18,6 +20,11 @@
+     ("tpv", "Passarel·la de pagament")
+ ]
+ 
++_billing_payment_methods = [
++    ("remesa", "Remesa"),
++    ("card_recurrent", "Targeta recurrent")
++]
++
+ WWW_DATA_FORM_HEADER = "**** DADES DEL FORMULARI ****"
+ _MEMBER_FEE_PURPOSE = 'QUOTA SOCI'
+ 
+@@ -25,6 +32,13 @@
+ class GiscedataCrmLead(osv.OsvInherits):
+     _inherit = "giscedata.crm.lead"
+ 
++    _CREDITCARD_REQUIRED_FIELDS = [
++        "creditcard_token",
++        "creditcard_masked_number",
++        "creditcard_expiry_date",
++        "creditcard_cof_txnid",
++    ]
++
+     def __init__(self, *args, **kwargs):
+         super(GiscedataCrmLead, self).__init__(*args, **kwargs)
+         self.lead_titular_adr_to_adr["titular_phone_prefix"] = "phone_prefix"
+@@ -138,6 +152,86 @@ def create_entity_polissa(self, cursor, uid, crml_id, context=None):
+             polissa_o.write(cursor, uid, polissa_id, values, context=context)
+         return res
+ 
++    def _get_card_payment_polissa_values(self, cursor, uid, lead, pagador_id, context=None):
++        if context is None:
++            context = {}
++
++        missing_fields = [
++            field for field in self._CREDITCARD_REQUIRED_FIELDS if not getattr(lead, field, False)
++        ]
++        if missing_fields:
++            raise osv.except_osv(
++                "MISSING_CARD_DATA",
++                "Falten dades de targeta recurrents al lead."
++            )
++
++        ir_model_o = self.pool.get("ir.model.data")
++        card_o = self.pool.get("res.partner.creditcard")
++
++        payment_type_id = ir_model_o.get_object_reference(
++            cursor, uid, "som_card_payment", "payment_type_card_recurrent"
++        )[1]
++        payment_mode_id = ir_model_o.get_object_reference(
++            cursor, uid, "som_card_payment", "payment_mode_card_recurrent"
++        )[1]
++
++        card_ids = card_o.search(
++            cursor, uid, [("token", "=", lead.creditcard_token)], context=context
++        )
++
++        if card_ids:
++            card = card_o.browse(cursor, uid, card_ids[0], context=context)
++            if card.partner_id.id != pagador_id:
++                raise osv.except_osv(
++                    "INVALID_CARD_TOKEN",
++                    "Ja existeix una targeta amb aquest token per un altre partner."
++                )
++            if (
++                card.masked_number != lead.creditcard_masked_number
++                or card.expiry_date != lead.creditcard_expiry_date
++            ):
++                raise osv.except_osv(
++                    "INVALID_CARD_TOKEN_DATA",
++                    "Ja existeix una targeta amb aquest token pero amb dades diferents."
++                )
++            card_id = card.id
++        else:
++            card_id = card_o.create(
++                cursor,
++                uid,
++                {
++                    "partner_id": pagador_id,
++                    "token": lead.creditcard_token,
++                    "cof_txnid": lead.creditcard_cof_txnid,
++                    "expiry_date": lead.creditcard_expiry_date,
++                    "masked_number": lead.creditcard_masked_number,
++                },
++                context=context,
++            )
++
++        return {
++            "payment_mode_id": payment_mode_id,
++            "tipo_pago": payment_type_id,
++            "creditcard": card_id,
++        }
++
++    def compute_extra_polissa_vals(self, cursor, uid, crml_id, polissa_vals, context=None):
++        if context is None:
++            context = {}
++
++        res = super(GiscedataCrmLead, self).compute_extra_polissa_vals(
++            cursor, uid, crml_id, polissa_vals, context=context
++        )
++
++        lead = self.browse(cursor, uid, crml_id, context=context)
++        if lead.billing_payment_method == "card_recurrent":
++            pagador_id = polissa_vals.get("pagador") or polissa_vals.get("titular")
++            polissa_vals.update(self._get_card_payment_polissa_values(
++                cursor, uid, lead, pagador_id, context=context
++            ))
++
++        return res
++
+     def onchange_set_custom_potencia(self, cursor, uid, ids, set_custom_potencia):
+         res = {
+             "value": {},
+@@ -471,6 +565,12 @@ def _send_mail(self, cr, uid, lead_id, context=None):
+         "create_new_member": fields.boolean("Sòcia de nova creació"),
+         "member_quota_payment_type": fields.selection(
+             _member_quota_payment_types, "Forma pagament quota sòcia"),
++        "billing_payment_method": fields.selection(
++            _billing_payment_methods, "Forma pagament facturacio"),
++        "creditcard_token": fields.char("Token targeta", size=128),
++        "creditcard_masked_number": fields.char("Numero targeta", size=32),
++        "creditcard_expiry_date": fields.char("Data caducitat targeta", size=5),
++        "creditcard_cof_txnid": fields.char("COF TxnId targeta", size=128),
+         "donation": fields.boolean("Donatiu voluntari"),
+         "referral_source": fields.char("Com ens ha conegut", size=255),
+         "birthdate": fields.date("Data de naixement"),
+@@ -487,6 +587,7 @@ def _send_mail(self, cr, uid, lead_id, context=None):
+     _defaults = {
+         "tipus_tarifa_lead": lambda *a: "tarifa_existent",
+         "set_custom_potencia": lambda *a: False,
++        "billing_payment_method": lambda *a: "remesa",
+         "donation": lambda *a: False,
+         "comercial_info_accepted": lambda *a: False,
+         "crm_lead_id": lambda *a: 0,
+diff --git a/som_leads_polissa/tests/__init__.py b/som_leads_polissa/tests/__init__.py
+index 173ae3378..237da385e 100644
+--- a/som_leads_polissa/tests/__init__.py
++++ b/som_leads_polissa/tests/__init__.py
+@@ -2,6 +2,8 @@
+ from __future__ import absolute_import
+ 
+ from .test_lead_www_creation import *
++from .test_lead_www_card_data import *
++from .test_lead_www_card_activation import *
+ from .test_lead_www_self_consumption import *
+ from .test_lead_www_member_linking import *
+ from .test_lead_www_member_payment import *
+diff --git a/som_leads_polissa/tests/base_som_lead_www.py b/som_leads_polissa/tests/base_som_lead_www.py
+index 3df8c6a62..dc24e3478 100644
+--- a/som_leads_polissa/tests/base_som_lead_www.py
++++ b/som_leads_polissa/tests/base_som_lead_www.py
+@@ -1,4 +1,6 @@
+ # -*- encoding: utf-8 -*-
++from __future__ import absolute_import
++
+ from destral import testing
+ from destral.transaction import Transaction
+ from oopgrade import oopgrade
+@@ -79,7 +81,7 @@ def setUp(self):
+                 },
+             },
+             "iban": "ES7712341234161234567890",
+-            "member_payment_type": "tpv",
++            "member_payment_type": "remesa",
+             "donation": False,
+             "general_contract_terms_accepted": True,
+             "particular_contract_terms_accepted": True,
+diff --git a/som_leads_polissa/tests/test_lead_www_card_activation.py b/som_leads_polissa/tests/test_lead_www_card_activation.py
+new file mode 100644
+index 000000000..2722b19ab
+--- /dev/null
++++ b/som_leads_polissa/tests/test_lead_www_card_activation.py
+@@ -0,0 +1,198 @@
++# -*- encoding: utf-8 -*-
++from __future__ import absolute_import
++
++from osv import osv
++
++from .base_som_lead_www import BaseSomLeadWwwTest
++
++
++class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
++    def _get_existing_member_values(self):
++        member_o = self.get_model("somenergia.soci")
++        ir_model_o = self.get_model("ir.model.data")
++
++        member_id = ir_model_o.get_object_reference(
++            self.cursor, self.uid, "som_polissa_soci", "soci_0001"
++        )[1]
++        member = member_o.browse(self.cursor, self.uid, member_id)
++        vat = member.partner_id.vat.replace("ES", "")
++
++        values = self._basic_values
++        del values["new_member_info"]
++        values["linked_member"] = "already_member"
++        values["linked_member_info"] = {
++            "vat": vat,
++            "code": member.partner_id.ref.replace("S", ""),
++        }
++        return values, member.partner_id.id
++
++    def _card_vals(self, token="tok_lead_123", masked_number="**** **** **** 4242"):
++        return {
++            "token": token,
++            "masked_number": masked_number,
++            "expiry_date": "12/30",
++            "cof_txnid": "cof_123",
++        }
++
++    def test_activate_lead_assigns_recurrent_card_payment(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++        ir_model_o = self.get_model("ir.model.data")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        www_lead_o.add_payment_card_data(
++            self.cursor, self.uid, result["lead_id"], self._card_vals()
++        )
++
++        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
++
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++        polissa = lead.polissa_id
++
++        payment_type_id = ir_model_o.get_object_reference(
++            self.cursor, self.uid, "som_card_payment", "payment_type_card_recurrent"
++        )[1]
++        payment_mode_id = ir_model_o.get_object_reference(
++            self.cursor, self.uid, "som_card_payment", "payment_mode_card_recurrent"
++        )[1]
++
++        self.assertEqual(polissa.tipo_pago.id, payment_type_id)
++        self.assertEqual(polissa.payment_mode_id.id, payment_mode_id)
++        self.assertTrue(polissa.creditcard)
++        self.assertEqual(polissa.creditcard.partner_id.id, polissa.pagador.id)
++        self.assertEqual(polissa.creditcard.token, "tok_lead_123")
++        self.assertEqual(polissa.creditcard.masked_number, "**** **** **** 4242")
++        self.assertEqual(polissa.creditcard.expiry_date, "12/30")
++        self.assertEqual(polissa.creditcard.cof_txnid, "cof_123")
++
++    def test_create_lead_marks_error_when_card_recurrent_has_no_card_data(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++        ir_model_o = self.get_model("ir.model.data")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++
++        error_stage_id = ir_model_o.get_object_reference(
++            self.cursor, self.uid, "som_leads_polissa", "webform_stage_error"
++        )[1]
++
++        self.assertTrue(result["error"])
++        self.assertEqual(lead.crm_id.state, 'pending')
++        self.assertEqual(lead.crm_id.stage_id.id, error_stage_id)
++
++        with self.assertRaises(osv.except_osv):
++            www_lead_o.activate_lead(
++                self.cursor, self.uid, result["lead_id"], context={"sync": True})
++
++    def test_add_payment_card_data_revalidates_error_card_lead(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++        ir_model_o = self.get_model("ir.model.data")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++
++        error_stage_id = ir_model_o.get_object_reference(
++            self.cursor, self.uid, "som_leads_polissa", "webform_stage_error"
++        )[1]
++        received_stage_id = ir_model_o.get_object_reference(
++            self.cursor, self.uid, "som_leads_polissa", "webform_stage_recieved"
++        )[1]
++
++        self.assertTrue(result["error"])
++        self.assertEqual(lead.crm_id.state, 'pending')
++        self.assertEqual(lead.crm_id.stage_id.id, error_stage_id)
++
++        card_result = www_lead_o.add_payment_card_data(
++            self.cursor, self.uid, result["lead_id"], self._card_vals()
++        )
++
++        self.assertEqual(card_result["lead_id"], result["lead_id"])
++        self.assertFalse(card_result["error"])
++
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++        self.assertEqual(lead.crm_id.state, 'open')
++        self.assertEqual(lead.crm_id.stage_id.id, received_stage_id)
++
++        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++        self.assertTrue(lead.polissa_id)
++
++    def test_activate_lead_reuses_existing_card_with_same_token_and_data(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++        card_o = self.get_model("res.partner.creditcard")
++
++        values, partner_id = self._get_existing_member_values()
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        existing_card_id = card_o.create(
++            self.cursor,
++            self.uid,
++            {
++                "partner_id": partner_id,
++                "token": "tok_existing_member",
++                "masked_number": "**** **** **** 1111",
++                "expiry_date": "12/30",
++                "cof_txnid": "cof_existing",
++            },
++        )
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        www_lead_o.add_payment_card_data(
++            self.cursor,
++            self.uid,
++            result["lead_id"],
++            self._card_vals(token="tok_existing_member", masked_number="**** **** **** 1111"),
++        )
++
++        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
++
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++        self.assertEqual(lead.polissa_id.creditcard.id, existing_card_id)
++
++    def test_activate_lead_fails_when_existing_token_data_does_not_match(self):
++        www_lead_o = self.get_model("som.lead.www")
++        card_o = self.get_model("res.partner.creditcard")
++
++        values, partner_id = self._get_existing_member_values()
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        card_o.create(
++            self.cursor,
++            self.uid,
++            {
++                "partner_id": partner_id,
++                "token": "tok_existing_member",
++                "masked_number": "**** **** **** 9999",
++                "expiry_date": "12/30",
++                "cof_txnid": "cof_existing",
++            },
++        )
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        www_lead_o.add_payment_card_data(
++            self.cursor,
++            self.uid,
++            result["lead_id"],
++            self._card_vals(token="tok_existing_member", masked_number="**** **** **** 1111"),
++        )
++
++        with self.assertRaises(osv.except_osv):
++            www_lead_o.activate_lead(
++                self.cursor, self.uid, result["lead_id"], context={"sync": True})
+diff --git a/som_leads_polissa/tests/test_lead_www_card_data.py b/som_leads_polissa/tests/test_lead_www_card_data.py
+new file mode 100644
+index 000000000..5d71cfef2
+--- /dev/null
++++ b/som_leads_polissa/tests/test_lead_www_card_data.py
+@@ -0,0 +1,175 @@
++# -*- encoding: utf-8 -*-
++from __future__ import absolute_import
++
++import mock
++from osv import osv
++
++from .base_som_lead_www import BaseSomLeadWwwTest
++
++
++class TestLeadWwwCardData(BaseSomLeadWwwTest):
++    def test_add_payment_card_data_stores_credit_card_fields(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++
++        card_result = www_lead_o.add_payment_card_data(
++            self.cursor,
++            self.uid,
++            result["lead_id"],
++            {
++                "token": "tok_lead_123",
++                "masked_number": "**** **** **** 4242",
++                "expiry_date": "12/30",
++                "cof_txnid": "cof_123",
++            },
++        )
++
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++
++        self.assertEqual(card_result["lead_id"], result["lead_id"])
++        self.assertFalse(card_result["error"])
++        self.assertEqual(lead.creditcard_token, "tok_lead_123")
++        self.assertEqual(lead.creditcard_masked_number, "**** **** **** 4242")
++        self.assertEqual(lead.creditcard_expiry_date, "12/30")
++        self.assertEqual(lead.creditcard_cof_txnid, "cof_123")
++
++    def test_add_payment_card_data_returns_revalidation_error_when_lead_remains_blocked(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++        ir_model_o = self.get_model("ir.model.data")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        error_info = {"code": "Unactivable", "error": "still blocked", "trace": []}
++
++        with mock.patch.object(
++            www_lead_o, "_check_lead_can_be_activated", return_value=error_info
++        ):
++            card_result = www_lead_o.add_payment_card_data(
++                self.cursor,
++                self.uid,
++                result["lead_id"],
++                {
++                    "token": "tok_lead_123",
++                    "masked_number": "**** **** **** 4242",
++                    "expiry_date": "12/30",
++                    "cof_txnid": "cof_123",
++                },
++            )
++
++        error_stage_id = ir_model_o.get_object_reference(
++            self.cursor, self.uid, "som_leads_polissa", "webform_stage_error"
++        )[1]
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++
++        self.assertEqual(card_result["lead_id"], result["lead_id"])
++        self.assertEqual(card_result["error"], error_info)
++        self.assertEqual(lead.crm_id.state, 'pending')
++        self.assertEqual(lead.crm_id.stage_id.id, error_stage_id)
++
++    def test_add_payment_card_data_fails_for_non_card_recurrent_method(self):
++        www_lead_o = self.get_model("som.lead.www")
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
++
++        with self.assertRaises(osv.except_osv):
++            www_lead_o.add_payment_card_data(
++                self.cursor,
++                self.uid,
++                result["lead_id"],
++                {
++                    "token": "tok_lead_123",
++                    "masked_number": "**** **** **** 4242",
++                    "expiry_date": "12/30",
++                    "cof_txnid": "cof_123",
++                },
++            )
++
++    def test_add_payment_card_data_fails_when_card_already_defined(self):
++        www_lead_o = self.get_model("som.lead.www")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++
++        card_vals = {
++            "token": "tok_lead_123",
++            "masked_number": "**** **** **** 4242",
++            "expiry_date": "12/30",
++            "cof_txnid": "cof_123",
++        }
++
++        www_lead_o.add_payment_card_data(
++            self.cursor, self.uid, result["lead_id"], card_vals
++        )
++
++        with self.assertRaises(osv.except_osv):
++            www_lead_o.add_payment_card_data(
++                self.cursor, self.uid, result["lead_id"], card_vals
++            )
++
++    def test_add_payment_card_data_fails_when_lead_is_already_activated(self):
++        www_lead_o = self.get_model("som.lead.www")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        www_lead_o.add_payment_card_data(
++            self.cursor,
++            self.uid,
++            result["lead_id"],
++            {
++                "token": "tok_lead_123",
++                "masked_number": "**** **** **** 4242",
++                "expiry_date": "12/30",
++                "cof_txnid": "cof_123",
++            },
++        )
++        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
++
++        with self.assertRaises(osv.except_osv):
++            www_lead_o.add_payment_card_data(
++                self.cursor,
++                self.uid,
++                result["lead_id"],
++                {
++                    "token": "tok_lead_123",
++                    "masked_number": "**** **** **** 4242",
++                    "expiry_date": "12/30",
++                    "cof_txnid": "cof_123",
++                },
++            )
++
++    def test_add_payment_card_data_requires_all_card_fields(self):
++        www_lead_o = self.get_model("som.lead.www")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++
++        with self.assertRaises(osv.except_osv):
++            www_lead_o.add_payment_card_data(
++                self.cursor,
++                self.uid,
++                result["lead_id"],
++                {
++                    "token": "tok_lead_123",
++                    "masked_number": "**** **** **** 4242",
++                    "expiry_date": "12/30",
++                },
++            )
+diff --git a/som_leads_polissa/tests/test_lead_www_creation.py b/som_leads_polissa/tests/test_lead_www_creation.py
+index 3fae09c62..554e015f1 100644
+--- a/som_leads_polissa/tests/test_lead_www_creation.py
++++ b/som_leads_polissa/tests/test_lead_www_creation.py
+@@ -9,6 +9,42 @@
+ 
+ 
+ class TestLeadWwwCreation(BaseSomLeadWwwTest):
++    def test_create_lead_starts_without_credit_card_data(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++
++        self.assertFalse(lead.creditcard_token)
++        self.assertFalse(lead.creditcard_masked_number)
++        self.assertFalse(lead.creditcard_expiry_date)
++        self.assertFalse(lead.creditcard_cof_txnid)
++
++    def test_lead_can_store_credit_card_data(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
++        lead_o.write(
++            self.cursor,
++            self.uid,
++            result["lead_id"],
++            {
++                "creditcard_token": "tok_lead_123",
++                "creditcard_masked_number": "**** **** **** 4242",
++                "creditcard_expiry_date": "12/30",
++                "creditcard_cof_txnid": "cof_123",
++            },
++        )
++
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++
++        self.assertEqual(lead.creditcard_token, "tok_lead_123")
++        self.assertEqual(lead.creditcard_masked_number, "**** **** **** 4242")
++        self.assertEqual(lead.creditcard_expiry_date, "12/30")
++        self.assertEqual(lead.creditcard_cof_txnid, "cof_123")
++
+     def test_create_simple_domestic_lead(self):
+         www_lead_o = self.get_model("som.lead.www")
+         lead_o = self.get_model("giscedata.crm.lead")
+diff --git a/som_leads_polissa/tests/test_lead_www_member_payment.py b/som_leads_polissa/tests/test_lead_www_member_payment.py
+index fc3667eff..26200b7ed 100644
+--- a/som_leads_polissa/tests/test_lead_www_member_payment.py
++++ b/som_leads_polissa/tests/test_lead_www_member_payment.py
+@@ -3,11 +3,96 @@
+ 
+ from datetime import datetime
+ from destral.patch import PatchNewCursors
++from osv import osv
+ 
+ from .base_som_lead_www import BaseSomLeadWwwTest
+ 
+ 
+ class TestLeadWwwMemberPayment(BaseSomLeadWwwTest):
++    def test_create_lead_defaults_card_recurrent_for_tpv_member_payment(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++
++        self.assertEqual(lead.member_quota_payment_type, "tpv")
++        self.assertEqual(lead.billing_payment_method, "card_recurrent")
++
++    def test_create_lead_defaults_remesa_for_remesa_member_payment(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++
++        values = self._basic_values
++        values["member_payment_type"] = "remesa"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++
++        self.assertEqual(lead.member_quota_payment_type, "remesa")
++        self.assertEqual(lead.billing_payment_method, "remesa")
++
++    def test_create_lead_accepts_explicit_tpv_card_recurrent_pair(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "card_recurrent"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++
++        self.assertEqual(lead.member_quota_payment_type, "tpv")
++        self.assertEqual(lead.billing_payment_method, "card_recurrent")
++
++    def test_create_lead_accepts_explicit_remesa_pair(self):
++        www_lead_o = self.get_model("som.lead.www")
++        lead_o = self.get_model("giscedata.crm.lead")
++
++        values = self._basic_values
++        values["member_payment_type"] = "remesa"
++        values["billing_payment_method"] = "remesa"
++
++        result = www_lead_o.create_lead(self.cursor, self.uid, values)
++        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
++
++        self.assertEqual(lead.member_quota_payment_type, "remesa")
++        self.assertEqual(lead.billing_payment_method, "remesa")
++
++    def test_create_lead_rejects_tpv_with_remesa_billing(self):
++        www_lead_o = self.get_model("som.lead.www")
++
++        values = self._basic_values
++        values["member_payment_type"] = "tpv"
++        values["billing_payment_method"] = "remesa"
++
++        with self.assertRaises(osv.except_osv):
++            www_lead_o.create_lead(self.cursor, self.uid, values)
++
++    def test_create_lead_rejects_remesa_with_card_recurrent_billing(self):
++        www_lead_o = self.get_model("som.lead.www")
++
++        values = self._basic_values
++        values["member_payment_type"] = "remesa"
++        values["billing_payment_method"] = "card_recurrent"
++
++        with self.assertRaises(osv.except_osv):
++            www_lead_o.create_lead(self.cursor, self.uid, values)
++
++    def test_create_lead_rejects_card_recurrent_without_member_payment_type(self):
++        www_lead_o = self.get_model("som.lead.www")
++
++        values = self._basic_values
++        del values["member_payment_type"]
++        values["billing_payment_method"] = "card_recurrent"
++
++        with self.assertRaises(osv.except_osv):
++            www_lead_o.create_lead(self.cursor, self.uid, values)
++
+     def test_create_lead_with_remesable_member(self):
+         www_lead_o = self.get_model("som.lead.www")
+         account_invoice_o = self.get_model("account.invoice")
+diff --git a/som_leads_polissa/views/giscedata_crm_lead_view.xml b/som_leads_polissa/views/giscedata_crm_lead_view.xml
+index ada07b4f1..56dc4a069 100644
+--- a/som_leads_polissa/views/giscedata_crm_lead_view.xml
++++ b/som_leads_polissa/views/giscedata_crm_lead_view.xml
+@@ -14,6 +14,15 @@
+                 </xpath>
+                 <xpath expr="//field[@name='llista_preu']" position="replace">
+                 </xpath>
++                <xpath expr="//page[@string='Sobre el Pago']" position="inside">
++                    <group string="Pagament lead web" colspan="4" col="4">
++                        <field name="member_quota_payment_type" colspan="4" col="4"/>
++                        <field name="billing_payment_method" colspan="4" col="4"/>
++                        <field name="creditcard_masked_number" colspan="4" col="4" readonly="1"/>
++                        <field name="creditcard_expiry_date" colspan="4" col="4" readonly="1"/>
++                        <field name="initial_invoice_id" colspan="4" col="4"/>
++                    </group>
++                </xpath>
+                 <xpath expr="//page[@string='Sobre el Pago']" position="after">
+                     <page string="Sobre la Tarifa">
+                         <field name="llista_preu" colspan="4" col="4"/>
+@@ -50,8 +59,6 @@
+                         <field name="member_number" colspan="4" col="4"/>
+                         <field name="titular_number" colspan="4" col="4"/>
+                         <field name="donation" colspan="4" col="4"/>
+-                        <field name="member_quota_payment_type" colspan="4" col="4"/>
+-                        <field name="initial_invoice_id" colspan="4" col="4"/>
+                         <field name="comercial_info_accepted" colspan="4" col="4"/>
+                         <field name="crm_lead_id" colspan="4" col="4" readonly="1"/>
+                     </page>
+diff --git a/som_leads_polissa/www/som_lead_www.py b/som_leads_polissa/www/som_lead_www.py
+index 3517c4e0c..1decf0d82 100644
+--- a/som_leads_polissa/www/som_lead_www.py
++++ b/som_leads_polissa/www/som_lead_www.py
+@@ -1,4 +1,6 @@
+ # -*- encoding: utf-8 -*-
++from __future__ import absolute_import, division
++
+ import logging
+ import traceback
+ import sys
+@@ -22,16 +24,91 @@ class SomLeadWww(osv.osv_memory):
+     def create_lead(self, cr, uid, www_vals, context=None):
+         if context is None:
+             context = {}
+-        imd_o = self.pool.get("ir.model.data")
+         lead_o = self.pool.get("giscedata.crm.lead")
++        ir_model_o = self.pool.get("ir.model.data")
++
++        payment_data = self._resolve_payment_configuration(cr, uid, www_vals, context=context)
++        contract_data = self._resolve_contract_data(cr, uid, www_vals, context=context)
++        member_type, member = self._resolve_member_data(cr, uid, www_vals, context=context)
++        member = self._normalize_member_data(cr, uid, member, context=context)
++
++        values = self._build_lead_values(
++            cr, uid, www_vals, member_type, member, contract_data, payment_data, context=context
++        )
++        values = self._apply_self_consumption_values(cr, uid, values, www_vals, context=context)
++        values = self._finalize_lead_values(values)
++
++        lead_id = lead_o.create(cr, uid, values, context=context)
++        self._create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)
++        self._save_www_data_in_history(cr, uid, lead_id, www_vals, context=context)
++        lead_o.copy_base_attr_gen_from_titular(cr, uid, lead_id)
++        lead_o.assign_contract_number(cr, uid, lead_id, context=context)
++
++        # similar to lead.contract_pdf but simpler (contract_pdf fails because the 2nd cursor)
++        error_info = self._check_lead_can_be_activated(cr, uid, lead_id, context=context)
++
++        if error_info:
++            # Set the stage to error and state to pending
++            error_stage_id = ir_model_o.get_object_reference(
++                cr, uid, "som_leads_polissa", "webform_stage_error"
++            )[1]
++            lead_o.write(
++                cr, uid, lead_id,
++                {'stage_id': error_stage_id, 'state': 'pending'},
++                context=context
++            )
++
++        return {
++            "lead_id": lead_id,
++            "error": error_info,
++        }
++
++    def _resolve_payment_configuration(self, cr, uid, www_vals, context=None):
++        if context is None:
++            context = {}
++
+         payment_mode_o = self.pool.get("payment.mode")
++        ir_model_o = self.pool.get("ir.model.data")
++
++        member_payment_type = www_vals.get("member_payment_type")
++        billing_payment_method = www_vals.get("billing_payment_method")
++
++        if not billing_payment_method:
++            billing_payment_method = (
++                "card_recurrent" if member_payment_type == "tpv" else "remesa"
++            )
++
++        valid_payment_configuration = (
++            (member_payment_type == "tpv" and billing_payment_method == "card_recurrent")
++            or (member_payment_type == "remesa" and billing_payment_method == "remesa")
++        )
++        if not valid_payment_configuration:
++            raise osv.except_osv(
++                "INVALID_PAYMENT_CONFIGURATION",
++                "La forma de pagament de la quota i la de la facturacio han de ser coherents."
++            )
++
++        if billing_payment_method == 'card_recurrent':
++            payment_mode_id = ir_model_o.get_object_reference(
++                cr, uid, "som_card_payment", "payment_mode_card_recurrent"
++            )[1]
++        else:
++            payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
++
++        return {
++            "member_payment_type": member_payment_type,
++            "billing_payment_method": billing_payment_method,
++            "payment_mode_id": payment_mode_id,
++        }
++
++    def _resolve_contract_data(self, cr, uid, www_vals, context=None):
++        if context is None:
++            context = {}
++
++        imd_o = self.pool.get("ir.model.data")
+         polissa_o = self.pool.get("giscedata.polissa")
+         tarifa_o = self.pool.get("giscedata.polissa.tarifa")
+-        partner_o = self.pool.get("res.partner")
+         cnae_o = self.pool.get("giscemisc.cnae")
+-        self.pool.get("giscedata.cups.ps")
+-        selfcons_o = self.pool.get("giscedata.autoconsum")
+-        ir_model_o = self.pool.get("ir.model.data")
+ 
+         contract_info = www_vals["contract_info"]
+         contract_address = contract_info["cups_address"]
+@@ -42,25 +119,38 @@ def create_lead(self, cr, uid, www_vals, context=None):
+         tensio_id = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', tensio_xml_id)[1]
+ 
+         tarifa_id = tarifa_o.search(cr, uid, [("name", "=", contract_info["tariff"])])[0]
+-        payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
+         tariff_mode = 'index' if contract_info["is_indexed"] else 'atr'
+         llista_preu_id = polissa_o.get_pricelist_from_tariff_and_location(
+-            cr, uid, contract_info["tariff"], tariff_mode, contract_address["city_id"], context).id
++            cr, uid, contract_info["tariff"], tariff_mode, contract_address["city_id"], context
++        ).id
+ 
+         try:
+             cnae_id = cnae_o.search(cr, uid, [("name", "=", contract_info["cnae"])])[0]
+         except IndexError:
+-            cnae_id = None  # TODO: Probably new CNAE 2025, by the moment we avoid to fail
++            cnae_id = None
+ 
+-        distri_ref = get_dso(contract_info["cups"])
++        return {
++            "contract_info": contract_info,
++            "contract_address": contract_address,
++            "tensio_id": tensio_id,
++            "tarifa_id": tarifa_id,
++            "llista_preu_id": llista_preu_id,
++            "cnae_id": cnae_id,
++            "distri_ref": get_dso(contract_info["cups"]),
++        }
+ 
+-        member_type = www_vals["linked_member"]
++    def _resolve_member_data(self, cr, uid, www_vals, context=None):
++        if context is None:
++            context = {}
+ 
++        member_type = www_vals["linked_member"]
+         if member_type == "new_member":
+             self._check_member_vat_dont_exists(
+-                cr, uid, www_vals["new_member_info"]["vat"], context=context)
+-            member = www_vals["new_member_info"]
+-        elif member_type in ["sponsored", "already_member"]:
++                cr, uid, www_vals["new_member_info"]["vat"], context=context
++            )
++            return member_type, www_vals["new_member_info"]
++
++        if member_type in ["sponsored", "already_member"]:
+             self._check_member_vat_number_matching(
+                 cr, uid, www_vals["linked_member_info"]["vat"],
+                 www_vals["linked_member_info"]["code"], context=context
+@@ -73,36 +163,54 @@ def create_lead(self, cr, uid, www_vals, context=None):
+                     "vat": www_vals["linked_member_info"]["vat"],
+                     "address": {},
+                 }
+-
+-            # Complying with the format seq_som_partner_seq format
+             member["number"] = "S" + www_vals["linked_member_info"]["code"].zfill(6)
+-        else:
+-            raise osv.except_osv(
+-                "Error",
+-                "linked_member value not valid: %s" % member_type
+-            )
++            return member_type, member
++
++        raise osv.except_osv(
++            "Error",
++            "linked_member value not valid: %s" % member_type
++        )
++
++    def _normalize_member_data(self, cr, uid, member, context=None):
++        if context is None:
++            context = {}
++
++        partner_o = self.pool.get("res.partner")
+ 
+-        # Split phone and prefix
+         member["phone_prefix"], member["phone"] = self._split_phone_prefix(
+-            cr, uid, member.get("phone"))
++            cr, uid, member.get("phone")
++        )
+         member["mobile_prefix"], member["phone2"] = self._split_phone_prefix(
+-            cr, uid, member.get("phone2"))
++            cr, uid, member.get("phone2")
++        )
+ 
+-        # Prepare name and surname for the ERP standards
+         if member.get("name") and member.get("surname"):
+             names = partner_o.separa_cognoms(
+-                cr, uid, "{}, {}".format(member["surname"], member["name"]))
++                cr, uid, "{}, {}".format(member["surname"], member["name"])
++            )
+             member.update({
+                 'name': names['nom'],
+                 'surname': names['cognoms'][0],
+                 'surname2': names['cognoms'][1],
+             })
+ 
++        return member
++
++    def _build_lead_values(
++        self, cr, uid, www_vals, member_type, member, contract_data, payment_data, context=None
++    ):
++        if context is None:
++            context = {}
++
++        ir_model_o = self.pool.get("ir.model.data")
++        contract_info = contract_data["contract_info"]
++        contract_address = contract_data["contract_address"]
++
+         values = {
+             "state": "open",
+             "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
+             "cups": contract_info["cups"],
+-            "codigoEmpresaDistribuidora": distri_ref,
++            "codigoEmpresaDistribuidora": contract_data["distri_ref"],
+             "cups_ref_catastral": contract_info.get("cups_cadastral_reference"),
+             "cups_zip": contract_address["postal_code"],
+             "cups_id_municipi": contract_address["city_id"],
+@@ -112,20 +220,20 @@ def create_lead(self, cr, uid, www_vals, context=None):
+             "cups_es": contract_address.get("stair"),
+             "cups_pu": contract_address.get("door"),
+             "cups_bq": contract_address.get("block"),
+-            "cnae": cnae_id,
+-            "tarifa": tarifa_id,
++            "cnae": contract_data["cnae_id"],
++            "tarifa": contract_data["tarifa_id"],
+             "facturacio_potencia": 'max' if contract_info["tariff"] == '3.0TD' else 'icp',
+-            "tensio_normalitzada": tensio_id,
++            "tensio_normalitzada": contract_data["tensio_id"],
+             "atr_proces_name": contract_info['process'],
+             "change_adm": contract_info['process'] == 'C2',
+             "contract_type": self._CONTRACT_TYPE_ANUAL,
+-            "llista_preu": llista_preu_id,
++            "llista_preu": contract_data["llista_preu_id"],
+             "facturacio": self._FACTURACIO_MENSUAL,
+             "iban": www_vals["iban"],
+-            "payment_mode_id": payment_mode_id,
++            "payment_mode_id": payment_data["payment_mode_id"],
+             "enviament": "email",
+             "create_new_member": member_type == "new_member",
+-            "autoconsumo": "00",  # Without self-consumption by default
++            "autoconsumo": "00",
+             "member_number": member.get("number"),
+             "titular_vat": 'ES%s' % member["vat"].upper(),
+             "titular_nom": member.get("name"),
+@@ -147,7 +255,8 @@ def create_lead(self, cr, uid, www_vals, context=None):
+             "titular_mobile_prefix": member.get("mobile_prefix"),
+             "use_cont_address": False,
+             "donation": www_vals.get("donation", False),
+-            "member_quota_payment_type": www_vals.get("member_payment_type"),
++            "member_quota_payment_type": payment_data["member_payment_type"],
++            "billing_payment_method": payment_data["billing_payment_method"],
+             "gender": member.get("gender"),
+             "birthdate": member.get("birthdate"),
+             "referral_source": member.get("referral_source"),
+@@ -157,11 +266,9 @@ def create_lead(self, cr, uid, www_vals, context=None):
+         values["user_id"] = ir_model_o.get_object_reference(
+             cr, uid, "base_extended_som", "res_users_webforms"
+         )[1]
+-
+         values["stage_id"] = ir_model_o.get_object_reference(
+             cr, uid, "som_leads_polissa", "webform_stage_recieved"
+         )[1]
+-
+         values["section_id"] = ir_model_o.get_object_reference(
+             cr, uid, "som_leads_polissa", "webform_section"
+         )[1]
+@@ -177,54 +284,107 @@ def create_lead(self, cr, uid, www_vals, context=None):
+         if member.get("lang", False):
+             values["lang"] = member["lang"]
+ 
+-        if www_vals.get("self_consumption"):
+-            values["seccio_registre"] = self._127_WITH_SURPLUSES
+-            values["subseccio"] = self._128_SIMPLIFIED_SURPLUSES
+-            values["tipus_cups"] = self._131_CONSUMPTION
+-
+-            values["cau"] = www_vals["self_consumption"]["cau"]
+-            values["collectiu"] = www_vals["self_consumption"]["collective_installation"]
+-            values["tec_generador"] = www_vals["self_consumption"]["technology"]
+-            values["pot_instalada_gen"] = float(
+-                www_vals["self_consumption"]["installation_power"]
+-            ) / 1000
+-            values["tipus_installacio"] = www_vals["self_consumption"]["installation_type"]
+-            values["ssaa"] = 'S' if www_vals["self_consumption"]['aux_services'] else 'N'
+-
+-            values["autoconsumo"] = selfcons_o.get_ree_autoconsum_type_from_attrs(
+-                values["seccio_registre"], values["subseccio"], int(values["collectiu"]),
+-                int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
+-            )
+-
+         values["is_new_contact"] = (
+-            not self._already_has_contract(cr, uid, values["titular_vat"], context=context))
++            not self._already_has_contract(cr, uid, values["titular_vat"], context=context)
++        )
++
++        return values
++
++    def _apply_self_consumption_values(self, cr, uid, values, www_vals, context=None):
++        if context is None:
++            context = {}
+ 
+-        # Remove None values to let the lead get them if exists in the bbdd
++        if not www_vals.get("self_consumption"):
++            return values
++
++        selfcons_o = self.pool.get("giscedata.autoconsum")
++        values["seccio_registre"] = self._127_WITH_SURPLUSES
++        values["subseccio"] = self._128_SIMPLIFIED_SURPLUSES
++        values["tipus_cups"] = self._131_CONSUMPTION
++        values["cau"] = www_vals["self_consumption"]["cau"]
++        values["collectiu"] = www_vals["self_consumption"]["collective_installation"]
++        values["tec_generador"] = www_vals["self_consumption"]["technology"]
++        values["pot_instalada_gen"] = float(
++            www_vals["self_consumption"]["installation_power"]
++        ) / 1000
++        values["tipus_installacio"] = www_vals["self_consumption"]["installation_type"]
++        values["ssaa"] = 'S' if www_vals["self_consumption"]['aux_services'] else 'N'
++        values["autoconsumo"] = selfcons_o.get_ree_autoconsum_type_from_attrs(
++            values["seccio_registre"], values["subseccio"], int(values["collectiu"]),
++            int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
++        )
++        return values
++
++    def _finalize_lead_values(self, values):
+         for field, value in values.items():
+             if value is None:
+                 del values[field]
+-
+-        # Avoid filling poblacio from existing values because it can be wrong
+         values["titular_id_poblacio"] = None
++        return values
+ 
+-        lead_id = lead_o.create(cr, uid, values, context=context)
+-        self._create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)
+-        self._save_www_data_in_history(cr, uid, lead_id, www_vals, context=context)
+-        lead_o.copy_base_attr_gen_from_titular(cr, uid, lead_id)
+-        lead_o.assign_contract_number(cr, uid, lead_id, context=context)
++    def add_payment_card_data(self, cr, uid, lead_id, card_vals, context=None):
++        if context is None:
++            context = {}
+ 
+-        # similar to lead.contract_pdf but simpler (contract_pdf fails because the 2nd cursor)
+-        error_info = self._check_lead_can_be_activated(cr, uid, lead_id, context=context)
++        lead_o = self.pool.get("giscedata.crm.lead")
++        ir_model_o = self.pool.get("ir.model.data")
++        lead = lead_o.browse(cr, uid, lead_id, context=context)
+ 
+-        if error_info:
+-            # Set the stage to error and state to pending
+-            error_stage_id = ir_model_o.get_object_reference(
+-                cr, uid, "som_leads_polissa", "webform_stage_error"
++        if lead.billing_payment_method != "card_recurrent":
++            raise osv.except_osv(
++                "INVALID_PAYMENT_METHOD",
++                "El lead no te configurat el pagament per targeta recurrent."
++            )
++
++        if lead.polissa_id:
++            raise osv.except_osv(
++                "LEAD_ALREADY_ACTIVATED",
++                "No es poden afegir dades de targeta a un lead ja activat."
++            )
++
++        if lead.creditcard_token:
++            raise osv.except_osv(
++                "CARD_ALREADY_DEFINED",
++                "Aquest lead ja te dades de targeta informades."
++            )
++
++        required_fields = ["token", "masked_number", "expiry_date", "cof_txnid"]
++        missing_fields = [field for field in required_fields if not card_vals.get(field)]
++        if missing_fields:
++            raise osv.except_osv(
++                "INVALID_CARD_DATA",
++                "Falten dades obligatories de la targeta: {}".format(", ".join(missing_fields))
++            )
++
++        payment_mode_id = ir_model_o.get_object_reference(
++            cr, uid, "som_card_payment", "payment_mode_card_recurrent"
++        )[1]
++
++        lead_o.write(
++            cr,
++            uid,
++            lead_id,
++            {
++                "payment_mode_id": payment_mode_id,
++                "creditcard_token": card_vals["token"],
++                "creditcard_masked_number": card_vals["masked_number"],
++                "creditcard_expiry_date": card_vals["expiry_date"],
++                "creditcard_cof_txnid": card_vals["cof_txnid"],
++            },
++            context=context,
++        )
++
++        error_info = self._check_lead_can_be_activated(cr, uid, lead_id, context=context)
++        if not error_info:
++            received_stage_id = ir_model_o.get_object_reference(
++                cr, uid, "som_leads_polissa", "webform_stage_recieved"
+             )[1]
+             lead_o.write(
+-                cr, uid, lead_id,
+-                {'stage_id': error_stage_id, 'state': 'pending'},
+-                context=context
++                cr,
++                uid,
++                lead_id,
++                {"stage_id": received_stage_id, "state": "open"},
++                context=context,
+             )
+ 
+         return {
+

@@ -1,0 +1,32 @@
+diff --git a/som_polissa_condicions_generals/models/giscedata_polissa.py b/som_polissa_condicions_generals/models/giscedata_polissa.py
+index a5607dbb..43c1a762 100644
+--- a/som_polissa_condicions_generals/models/giscedata_polissa.py
++++ b/som_polissa_condicions_generals/models/giscedata_polissa.py
+@@ -11,15 +11,23 @@ class GiscedataPolissa(osv.osv):
+         if context is None:
+             context = {}
+ 
+-        polissa = self.browse(cursor, uid, polissa_id, context=context)
+-
++        import pudb; pu.db
++        
+         fp_obj = self.pool.get('account.fiscal.position')
++        res_partner_obj = self.pool.get("res.partner")
+         atax_obj = self.pool.get('account.tax')
+         conf_obj = self.pool.get('res.config')
+ 
+-        fiscal_position = polissa.fiscal_position_id
++        fiscal_position = self.read(
++            cursor, uid, polissa_id, ["fiscal_position_id"], context=context
++        )["fiscal_position_id"]
++
+         if not fiscal_position:
+-            fiscal_position = polissa.titular.property_account_position
++            titular_id = self.read(
++                cursor, uid, polissa_id, ["titular"], context=context
++            )["titular"]
++            titular = res_partner_obj.browse(cursor, uid, titular_id, context=context)
++            fiscal_position = titular.property_account_position
+ 
+         iva_tax_id = int(conf_obj.get(cursor, uid, 'default_iva_21_tax_id'))
+         iese_tax_id = int(conf_obj.get(cursor, uid, 'default_iese_tax_id'))

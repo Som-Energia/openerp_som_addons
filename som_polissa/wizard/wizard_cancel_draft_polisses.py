@@ -14,6 +14,7 @@ class WizardCancelDraftPolisses(osv.osv_memory):
         if context is None:
             context = {}
 
+        import pudb; pu.db
         self.pool.get("giscedata.polissa")._cron_cancel_draft_polisses(
             cursor, uid, context=context
         )

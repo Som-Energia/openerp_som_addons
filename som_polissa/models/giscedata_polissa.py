@@ -65,6 +65,7 @@ class GiscedataPolissa(osv.osv):
 
     def _get_contracts_a_sincronitzar_data_ultima_lectura(self, cursor, uid, context=None):
         """Return draft policies created before reference_date."""
+        import pudb;pu.db
         query = """
             SELECT
                 p.id,
