@@ -57,6 +57,37 @@ class EnergeticaTests(testing.OOTestCase):
             expect(res).to(be_true)
             expect(prod_data["default_code"]).to(equal("DN02"))
 
+    def test_is_candela(self):
+        contract_obj = self.openerp.pool.get("giscedata.polissa")
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        rp_obj = self.openerp.pool.get("res.partner")
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            candela_soci_id = rp_obj.search(
+                cursor, uid, [("ref", "=", "S076331")], limit=1
+            )[0]
+
+            contract_id = imd_obj.get_object_reference(
+                cursor, uid, "giscedata_polissa", "polissa_0001"
+            )[1]
+
+            # No soci
+            res = contract_obj.is_candela(cursor, uid, contract_id)
+            expect(res).to(be_false)
+
+            # soci no Candela
+            self.set_soci(cursor, uid, contract_id, 1)
+            res = contract_obj.is_candela(cursor, uid, contract_id)
+            expect(res).to(be_false)
+
+            # soci Candela
+            self.set_soci(cursor, uid, contract_id, candela_soci_id)
+            res = contract_obj.is_candela(cursor, uid, contract_id)
+            expect(res).to(be_true)
+
     def test_bad_energetica_partners(self):
         contract_obj = self.openerp.pool.get("giscedata.polissa")
         imd_obj = self.openerp.pool.get("ir.model.data")
@@ -296,3 +327,65 @@ class EnergeticaTests(testing.OOTestCase):
             partners_list.append(contract.direccio_notificacio.partner_id.id)
 
         return list(set(partners_list))
+
+    def test_get_donatiu_product_som_energia(self):
+        facturador_obj = self.openerp.pool.get("giscedata.facturacio.facturador")
+        product_obj = self.openerp.pool.get("product.product")
+        imd_obj = self.openerp.pool.get("ir.model.data")
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            contract_id = imd_obj.get_object_reference(
+                cursor, uid, "giscedata_polissa", "polissa_0001"
+            )[1]
+
+            dona_id = facturador_obj.get_donatiu_product(cursor, uid, contract_id)
+
+            prod_data = product_obj.read(cursor, uid, dona_id, ["default_code"])
+            expect(prod_data["default_code"]).to(equal("DN01"))
+
+    def test_get_donatiu_product_energetica(self):
+        facturador_obj = self.openerp.pool.get("giscedata.facturacio.facturador")
+        product_obj = self.openerp.pool.get("product.product")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        imd_obj = self.openerp.pool.get("ir.model.data")
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            contract_id = imd_obj.get_object_reference(
+                cursor, uid, "giscedata_polissa", "polissa_0001"
+            )[1]
+            energetica_id = imd_obj.get_object_reference(
+                cursor, uid, "som_energetica", "res_partner_energetica"
+            )[1]
+            pol_obj.write(cursor, uid, contract_id, {"soci": energetica_id})
+
+            dona_id = facturador_obj.get_donatiu_product(cursor, uid, contract_id)
+
+            prod_data = product_obj.read(cursor, uid, dona_id, ["default_code"])
+            expect(prod_data["default_code"]).to(equal("DN02"))
+
+    def test_get_donatiu_product_candela(self):
+        facturador_obj = self.openerp.pool.get("giscedata.facturacio.facturador")
+        product_obj = self.openerp.pool.get("product.product")
+        rp_obj = self.openerp.pool.get("res.partner")
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            contract_id = imd_obj.get_object_reference(
+                cursor, uid, "giscedata_polissa", "polissa_0001"
+            )[1]
+            candela_id = rp_obj.search(
+                cursor, uid, [("ref", "=", "S076331")], limit=1
+            )[0]
+            pol_obj.write(cursor, uid, contract_id, {"soci": candela_id})
+
+            dona_id = facturador_obj.get_donatiu_product(cursor, uid, contract_id)
+
+            prod_data = product_obj.read(cursor, uid, dona_id, ["default_code"])
+            expect(prod_data["default_code"]).to(equal("DN03"))

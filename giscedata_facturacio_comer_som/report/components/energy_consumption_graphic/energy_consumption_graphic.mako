@@ -4,7 +4,7 @@
 </style>
 <script>
 var factura_id = ${energy.fact_id}
-var data_consum = ${energy.historic_json}   
+var data_consum = ${energy.historic_json}
 var es30 = ${len(energy.periodes_a)>=3 and 'true' or 'false'}
 var esgran = ${energy.is_6X and 'true' or 'false'}
 </script>
@@ -19,4 +19,3 @@ var esgran = ${energy.is_6X and 'true' or 'false'}
     </div>
 </div>
 <script src="${addons_path}/giscedata_facturacio_comer_som/report/components/energy_consumption_graphic/energy_consumption_graphic.js"></script>
-

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Som consulta pobresa views -->
+        <record id="som_consulta_pobresa_view_form" model="ir.ui.view">
+            <field name="name">som.consulta.pobresa.view.form</field>
+            <field name="model">som.consulta.pobresa</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Consultes pobresa">
+                    <group col="7" colspan="4">
+                        <field colspan="4" name="section_id"/>
+                        <field colspan="2" name="name" select="1"/>
+                        <field colspan="2" name="polissa_id" select="1"/>
+                        <field colspan="2" name="resolucio" select="1"/>
+                    </group>
+                    <field name="date" select="1"/>
+                    <field name="date_deadline" select="2"/>
+                    <field name="active" select="2"/>
+                    <field name="date_closed" readonly="0"/>
+                    <newline />
+                    <notebook colspan="4">
+                        <page string="General">
+                            <group col="9" colspan="4">
+                                <field colspan="4" name="titular_id" select="1"/>
+                                <field colspan="4" name="direccio_cups" select="2"/>
+                                <newline/>
+                                <field colspan="3" name="email_partner" select="2"/>
+                                <field colspan="3" name="nif_titular" select="2"/>
+                                <field name="user_id" select="1" domain="[('id','!=', 0)]"/>
+                                <button name="autoassign_pobresa" string="Assign to me" type="object"/>
+                            </group>
+                            <group col="8">
+                            <field colspan="2" name="numero_registre" select="1"/>
+                            <field colspan="2" name="municipi" select="1"/>
+                            <field colspan="2" name="agrupacio_supramunicipal" select="1"/>
+                            </group>
+                            <separator colspan="4"/>
+                            <group expand="1">
+                                <field colspan="2" mode="tree,form" name="history_line" nolabel="1">
+                                    <form string="Communication history">
+                                        <group col="6" colspan="4">
+                                            <field name="date" select="1"/>
+                                            <field name="email" select="1"/>
+                                            <field name="canal_id" select="2"/>
+                                        </group>
+                                        <newline/>
+                                        <field colspan="4" name="description" nolabel="1" select="2"/>
+                                    </form>
+                                    <tree string="Communication history">
+                                        <field name="note"/>
+                                    </tree>
+                                </field>
+                                <group col="2" colspan="2" expand="1">
+                                    <field name="canal_id"/>
+                                    <field colspan="2" name="description" nolabel="1" select="2"/>
+                                    <button name="case_log_pobresa" states="open" string="Historize" type="object" colspan="2"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="History">
+                            <field colspan="4" name="log_ids" nolabel="1">
+                                <form string="Actions">
+                                    <separator colspan="4" string="Action Information"/>
+                                    <field colspan="4" name="name"/>
+                                    <field name="date" select="2"/>
+                                    <field name="user_id" select="2"/>
+                                    <field name="som" select="2"/>
+                                    <field name="canal_id"/>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group col="6" colspan="4">
+                        <field name="state" select="1" readonly="1"/>
+                        <button name="case_open_pobresa" states="draft,pending" string="Open" type="object"/>
+                        <button name="case_close_pobresa" states="draft,open,pending" string="Close" type="object"/>
+                        <button name="case_pending_pobresa" states="draft,open" string="Pending" type="object"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="som_consulta_pobresa_view_tree" model="ir.ui.view">
+            <field name="name">som.consulta.pobresa.view.tree</field>
+            <field name="model">som.consulta.pobresa</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Consultes pobresa">
+                    <field name="polissa_id" select="1"/>
+                    <field name="titular_id" select="1"/>
+                    <field name="municipi" select="1"/>
+                    <field name="numero_registre" select="1"/>
+                    <field name="state" select="1"/>
+                    <field name="date" select="1"/>
+                    <field name="resolucio" select="1"/>
+                    <field name="date_closed" select="1"/>
+                    <field name="agrupacio_supramunicipal" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <menuitem id="som_consulta_pobresa_folder" name="Consulta Pobresa" parent="crm.menu_crm"/>
+        <record id="som_consulta_pobresa_draft_action" model="ir.actions.act_window">
+            <field name="name">Consultes pobresa en esborrany</field>
+            <field name="res_model">som.consulta.pobresa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="som_consulta_pobresa_view_tree"/>
+            <field name="type">ir.actions.act_window</field>
+            <field name="domain">[('state','=', 'draft')]</field>
+        </record>
+        <menuitem id="menu_som_consulta_pobresa_draft_action" action="som_consulta_pobresa_draft_action" parent="som_consulta_pobresa_folder"/>
+        <record id="som_consulta_pobresa_action" model="ir.actions.act_window">
+            <field name="name">Totes les consultes pobresa</field>
+            <field name="res_model">som.consulta.pobresa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="som_consulta_pobresa_view_tree"/>
+            <field name="type">ir.actions.act_window</field>
+        </record>
+        <menuitem id="menu_som_consulta_pobresa_action" action="som_consulta_pobresa_action" parent="som_consulta_pobresa_folder"/>
+
+        <record id="giscedata_polissa_pendent_consulta_pobresa_action" model="ir.actions.act_window">
+            <field name="name">Polisses amb consultes de pobresa pendents</field>
+            <field name="res_model">giscedata.polissa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="domain">[('consulta_pobresa_pendent','=', True)]</field>
+        </record>
+        <menuitem id="menu_giscedata_polissa_pendent_consulta_pobresa_action" action="giscedata_polissa_pendent_consulta_pobresa_action" parent="som_consulta_pobresa_folder"/>
+
+        <!-- Enllaç des de la pòlissa a les consultes de pobresa -->
+        <record model="ir.actions.act_window" id="action_consultes_pobresa_de_polisses">
+            <field name="name">Consultes Pobresa</field>
+            <field name="res_model">som.consulta.pobresa</field>
+            <field name="src_model">giscedata.polissa</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('polissa_id', '=', active_id)]</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <record id="value_action_consultes_pobresa_de_polisses" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Consultes Pobresa</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_consultes_pobresa_de_polisses'))" />
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,25 @@
+name: Send README by email
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4.1.1
+      - name: send mail
+        uses: dawidd6/action-send-mail@v3.11.0
+        with:
+          connection_url: ${{secrets.MAIL_CONNECTION}}
+          subject: Resultats tests repo OpenERP Som Addons
+          to: ${{secrets.MAIL_DESTINATION}}
+          from: El sentinela del ERP <elsentinela@somenergia.coop>
+          html_body: file://README.md
+          convert_markdown: true
+          server_port: 587
+          secure: true
+          nodemailerlog: true
+          nodemailerdebug: true

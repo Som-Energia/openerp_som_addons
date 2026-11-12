@@ -6,16 +6,18 @@
     "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "base_extended_som",
+        "giscedata_facturacio",
+        "giscedata_facturacio_iese",
         "giscedata_facturacio_indexada_som",
+        "giscedata_lectures_pool",
         "giscedata_polissa",
         "giscedata_polissa_comer",
         "giscedata_polissa_category",
-        "giscedata_lectures_pool",
-        "giscedata_facturacio_iese",
         "giscedata_switching",
+        "som_polissa",
     ],
     "init_xml": [],
     "demo_xml": [
@@ -23,14 +25,16 @@
         "demo/polissa_demo_data.xml",
     ],
     "update_xml": [
-        "wizard/wizard_change_to_indexada.xml",
-        "data/product_pricelist_data.xml",
+        "data/product_pricelist_periodes_data.xml",
+        "data/product_pricelist_indexada_data.xml",
         "data/giscedata_polissa_category_data.xml",
         "data/email_template_data.xml",
         "data/res_config_data.xml",
-        "security/ir.model.access.csv",
+        "wizard/wizard_change_to_indexada.xml",
         "wizard/wizard_massive_k_change.xml",
+        "wizard/wizard_change_to_indexada_multi.xml",
+        "security/ir.model.access.csv",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

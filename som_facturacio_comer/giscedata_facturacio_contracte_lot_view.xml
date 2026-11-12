@@ -10,6 +10,7 @@
                 <field name="n_factures" position="after">
                     <field name="polissa_distribuidora"/>
                     <field name="autoconsum" />
+                    <field name="collectiu" />
                     <field name="tarifaATR" />
                     <field name="llista_preu" />
                     <field name="n_retrocedir_lot"/>
@@ -27,6 +28,7 @@
                 <field name="n_factures" position="after">
                     <field name="polissa_distribuidora" select="1"/>
                     <field name="autoconsum" select="1"/>
+                    <field name="collectiu" select="1"/>
                     <field name="tarifaATR" select="1"/>
                     <field name="llista_preu" select="1"/>
                     <field name="date_invoice" select="1"/>
@@ -43,10 +45,10 @@
                     <field name="te_generation_polissa" select="2"/>
                     <field name="data_alta_auto" select="2"/>
                 </field>
-                <field name="status" position="before">
+                <field name="status_tree" position="before">
                     <field name="import_factures" select="2" />
                 </field>
-                <field name="status" position="after">
+                <field name="status_tree" position="after">
                     <field name="info_gestions_massives" select="2" />
                 </field>
             </field>

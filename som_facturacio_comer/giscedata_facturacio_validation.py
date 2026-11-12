@@ -1,93 +1,114 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from osv import osv
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
-class GiscedataFacturacioValidationValidator(osv.osv):
-    _inherit = 'giscedata.facturacio.validation.validator'
-    _name = 'giscedata.facturacio.validation.validator'
 
+class GiscedataFacturacioValidationValidator(osv.osv):
+    _inherit = "giscedata.facturacio.validation.validator"
+    _name = "giscedata.facturacio.validation.validator"
 
     def check_origin_readings_by_contract_category(self, cursor, uid, fact, parameters):
 
-        if 'categoria' not in parameters:
+        if "categoria" not in parameters:
             return None
 
-        pcat_obj = self.pool.get('giscedata.polissa.category')
-        pcat_ids = pcat_obj.search(cursor, uid,[('name','like','%'+parameters['categoria']+'%')])
+        pcat_obj = self.pool.get("giscedata.polissa.category")
+        pcat_ids = pcat_obj.search(
+            cursor, uid, [("name", "like", "%" + parameters["categoria"] + "%")]
+        )
 
         if pcat_ids and pcat_ids[0] in [x.id for x in fact.polissa_id.category_id]:
 
-            lect_obj = self.pool.get('giscedata.lectures.lectura')
+            lect_obj = self.pool.get("giscedata.lectures.lectura")
 
-            lo_obj = self.pool.get('giscedata.lectures.origen')
-            loc_obj = self.pool.get('giscedata.lectures.origen_comer')
+            lo_obj = self.pool.get("giscedata.lectures.origen")
+            loc_obj = self.pool.get("giscedata.lectures.origen_comer")
 
-            not_alowed_origins_ids = lo_obj.search(cursor, uid,[('codi','in', eval(parameters['lectures_origen_codes']))])
-            not_alowed_origins_comer_ids = loc_obj.search(cursor, uid,[('codi','in', eval(parameters['lectures_origen_comer_codes']))])
+            not_alowed_origins_ids = lo_obj.search(
+                cursor, uid, [("codi", "in", eval(parameters["lectures_origen_codes"]))]
+            )
+            not_alowed_origins_comer_ids = loc_obj.search(
+                cursor, uid, [("codi", "in", eval(parameters["lectures_origen_comer_codes"]))]
+            )
 
-            data_inici = datetime.strptime(fact.data_inici, '%Y-%m-%d') - timedelta(days=1)
+            data_inici = datetime.strptime(fact.data_inici, "%Y-%m-%d") - timedelta(days=1)
 
             clause = [
-                ('comptador.polissa', '=', fact.polissa_id.id),
-                ('comptador.active', '=', True),
-                ('tipus', '=', 'A'),
-                ('name', '>=', data_inici.strftime('%Y-%m-%d')),
-                ('name', '<=', fact.data_final),
+                ("comptador.polissa", "=", fact.polissa_id.id),
+                ("comptador.active", "=", True),
+                ("tipus", "=", "A"),
+                ("name", ">=", data_inici.strftime("%Y-%m-%d")),
+                ("name", "<=", fact.data_final),
             ]
             if not_alowed_origins_ids:
-                clause.append(('origen_id', 'in', not_alowed_origins_ids))
+                clause.append(("origen_id", "in", not_alowed_origins_ids))
             if not_alowed_origins_comer_ids:
-                clause.append(('origen_comer_id', 'in', not_alowed_origins_comer_ids))
+                clause.append(("origen_comer_id", "in", not_alowed_origins_comer_ids))
 
-            lectures_ids = lect_obj.q(cursor, uid).read(
-                ['id', 'name', 'origen_id', 'origen_comer_id'], order_by=['name.asc']
-            ).where(clause)
+            lectures_ids = (
+                lect_obj.q(cursor, uid)
+                .read(["id", "name", "origen_id", "origen_comer_id"], order_by=["name.asc"])
+                .where(clause)
+            )
 
             if len(lectures_ids) == 0:
                 return None
 
-            origen_id = list(set([x['origen_id']for x in lectures_ids]))
-            origen_comer_id = list(set([x['origen_comer_id']for x in lectures_ids]))
+            origen_id = list(set([x["origen_id"] for x in lectures_ids]))
+            origen_comer_id = list(set([x["origen_comer_id"] for x in lectures_ids]))
 
-            origins = [x['name'] for x in lo_obj.read(cursor, uid, origen_id, ['name'])]
-            origins_comer = [x['name'] for x in loc_obj.read(cursor, uid, origen_comer_id, ['name'])]
+            origins = [x["name"] for x in lo_obj.read(cursor, uid, origen_id, ["name"])]
+            origins_comer = [
+                x["name"] for x in loc_obj.read(cursor, uid, origen_comer_id, ["name"])
+            ]
 
             return {
-                'categoria': parameters['categoria'],
-                'origen': ','.join(origins),
-                'origen_distri': ','.join(origins_comer)
+                "categoria": parameters["categoria"],
+                "origen": ",".join(origins),
+                "origen_distri": ",".join(origins_comer),
             }
 
         return None
 
     def check_min_periods_and_teoric_maximum_consum(self, cursor, uid, fact, parameters):
 
-        if 'category' not in parameters:
+        if "category" not in parameters:
             return None
 
-        pcat_obj = self.pool.get('giscedata.polissa.category')
-        pcat_ids = pcat_obj.search(cursor, uid,[('name','like','%'+parameters['category']+'%')])
+        pcat_obj = self.pool.get("giscedata.polissa.category")
+        pcat_ids = pcat_obj.search(
+            cursor, uid, [("name", "like", "%" + parameters["category"] + "%")]
+        )
 
         if pcat_ids and pcat_ids[0] in [x.id for x in fact.polissa_id.category_id]:
 
-            fact_obj = self.pool.get('giscedata.facturacio.factura')
+            fact_obj = self.pool.get("giscedata.facturacio.factura")
 
-            pol_obj = self.pool.get('giscedata.polissa')
-            teoric_maximum_consume_gc = pol_obj.read(cursor, uid, fact.polissa_id.id, ['teoric_maximum_consume_gc'])['teoric_maximum_consume_gc']
+            pol_obj = self.pool.get("giscedata.polissa")
+            teoric_maximum_consume_gc = pol_obj.read(
+                cursor, uid, fact.polissa_id.id, ["teoric_maximum_consume_gc"]
+            )["teoric_maximum_consume_gc"]
 
-            n_months = parameters['n_months']
-            min_periods = parameters.get('min_periods', False)
-            to_date = datetime.strptime(fact.data_inici, '%Y-%m-%d')
+            n_months = parameters["n_months"]
+            min_periods = parameters.get("min_periods", False)
+            to_date = datetime.strptime(fact.data_inici, "%Y-%m-%d")
             from_date = to_date - relativedelta(months=n_months)
 
             context = {}
             if parameters.get("min_invoice_len"):
-                context['min_invoice_len'] = parameters.get("min_invoice_len")
+                context["min_invoice_len"] = parameters.get("min_invoice_len")
 
             parameter_by_date = fact_obj.get_parameter_by_contract(
-                cursor, uid, fact.polissa_id.id, 'energia_kwh', from_date,
-                to_date, min_periods, context=context
+                cursor,
+                uid,
+                fact.polissa_id.id,
+                "energia_kwh",
+                from_date,
+                to_date,
+                min_periods,
+                context=context,
             )
 
             max_consume = False
@@ -95,41 +116,52 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             if number_of_invoices > 0:
                 max_consume = max(parameter_by_date.values())
 
-            if (not max_consume or number_of_invoices < n_months) and (not teoric_maximum_consume_gc or teoric_maximum_consume_gc == 0):
+            if (not max_consume or number_of_invoices < n_months) and (
+                not teoric_maximum_consume_gc or teoric_maximum_consume_gc == 0
+            ):
                 return {
-                    'invoice_consume': fact.energia_kwh,
+                    "invoice_consume": fact.energia_kwh,
                 }
 
         return None
 
     def check_consume_by_percentage_and_category(self, cursor, uid, fact, parameters):
 
-        if 'category' not in parameters:
+        if "category" not in parameters:
             return None
 
-        pcat_obj = self.pool.get('giscedata.polissa.category')
-        pcat_ids = pcat_obj.search(cursor, uid,[('name','like','%'+parameters['category']+'%')])
+        pcat_obj = self.pool.get("giscedata.polissa.category")
+        pcat_ids = pcat_obj.search(
+            cursor, uid, [("name", "like", "%" + parameters["category"] + "%")]
+        )
 
         if pcat_ids and pcat_ids[0] in [x.id for x in fact.polissa_id.category_id]:
 
-            fact_obj = self.pool.get('giscedata.facturacio.factura')
+            fact_obj = self.pool.get("giscedata.facturacio.factura")
 
-
-            if parameters.get('min_amount', False) and abs(fact.amount_total) <= parameters.get('min_amount', 0.0):
+            if parameters.get("min_amount", False) and abs(fact.amount_total) <= parameters.get(
+                "min_amount", 0.0
+            ):
                 return None
 
-            n_months = parameters['n_months']
-            min_periods = parameters.get('min_periods', False)
-            to_date = datetime.strptime(fact.data_inici, '%Y-%m-%d')
+            n_months = parameters["n_months"]
+            min_periods = parameters.get("min_periods", False)
+            to_date = datetime.strptime(fact.data_inici, "%Y-%m-%d")
             from_date = to_date - relativedelta(months=n_months)
 
             context = {}
             if parameters.get("min_invoice_len"):
-                context['min_invoice_len'] = parameters.get("min_invoice_len")
+                context["min_invoice_len"] = parameters.get("min_invoice_len")
 
             parameter_by_date = fact_obj.get_parameter_by_contract(
-                cursor, uid, fact.polissa_id.id, 'energia_kwh', from_date,
-                to_date, min_periods, context=context
+                cursor,
+                uid,
+                fact.polissa_id.id,
+                "energia_kwh",
+                from_date,
+                to_date,
+                min_periods,
+                context=context,
             )
 
             max_consume = False
@@ -137,8 +169,10 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             if number_of_invoices > 0:
                 max_consume = max(parameter_by_date.values())
 
-            pol_obj = self.pool.get('giscedata.polissa')
-            teoric_maximum_consume_gc = pol_obj.read(cursor, uid, fact.polissa_id.id, ['teoric_maximum_consume_gc'])['teoric_maximum_consume_gc']
+            pol_obj = self.pool.get("giscedata.polissa")
+            teoric_maximum_consume_gc = pol_obj.read(
+                cursor, uid, fact.polissa_id.id, ["teoric_maximum_consume_gc"]
+            )["teoric_maximum_consume_gc"]
 
             if not max_consume or number_of_invoices < n_months:
                 max_consume = False
@@ -147,72 +181,235 @@ class GiscedataFacturacioValidationValidator(osv.osv):
                 max_consume = teoric_maximum_consume_gc
 
             if max_consume:
-                percentage_margin = parameters['overuse_percentage']
+                percentage_margin = parameters["overuse_percentage"]
 
                 inv_consume = fact.energia_kwh
-                if inv_consume > (max_consume * (100.0 + percentage_margin))/100.0:
+                if inv_consume > (max_consume * (100.0 + percentage_margin)) / 100.0:
                     return {
-                        'invoice_consume': inv_consume,
-                        'percentage': percentage_margin,
-                        'maximum_consume': max_consume,
-                        'n_months': n_months,
-                        'maximum_teoric_consume_GC': teoric_maximum_consume_gc if teoric_maximum_consume_gc else 0,
+                        "invoice_consume": inv_consume,
+                        "percentage": percentage_margin,
+                        "maximum_consume": max_consume,
+                        "n_months": n_months,
+                        "maximum_teoric_consume_GC": teoric_maximum_consume_gc
+                        if teoric_maximum_consume_gc
+                        else 0,
                     }
 
         return None
 
     def check_consume_by_percentage(self, cursor, uid, fact, parameters):
 
-        pcat_obj = self.pool.get('giscedata.polissa.category')
-        pcat_ids = pcat_obj.search(cursor, uid,[('name','like','%Gran Contracte%')])
+        pcat_obj = self.pool.get("giscedata.polissa.category")
+        pcat_ids = pcat_obj.search(cursor, uid, [("name", "like", "%Gran Contracte%")])
 
         if pcat_ids and pcat_ids[0] in [x.id for x in fact.polissa_id.category_id]:
             return None
 
-        return super(GiscedataFacturacioValidationValidator,
-            self).check_consume_by_percentage(cursor, uid, fact, parameters)
+        final_active_energy_readings = [
+            reading for reading in fact.lectures_energia_ids
+            if reading.magnitud == 'AE'
+        ]
+        real_origin_codes = set([
+            '10',  # telemesura
+            '20',  # TPL
+            '30',  # visual
+            '60',  # telegestio
+        ])
+        has_only_real_final_active_energy_readings = (
+            len(final_active_energy_readings) > 0
+            and all(
+                reading.origen_id
+                and reading.origen_id.codi in real_origin_codes
+                for reading in final_active_energy_readings
+            )
+        )
+
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        limit_kWh = parameters.get("som_skip_if_20TD_00_and_less_than_kWh", None)
+        try:
+            limit_kWh = int(limit_kWh)
+        except (ValueError, TypeError):
+            limit_kWh = None
+        if (limit_kWh is not None
+            and fact.energia_kwh <= limit_kWh
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer in ['2.0TD_SOM', '2.0TD_SOM_INSULAR']
+            and has_only_real_final_active_energy_readings
+                and autoconsum == '00'):
+            return None
+
+        return super(GiscedataFacturacioValidationValidator, self).check_consume_by_percentage(
+            cursor, uid, fact, parameters
+        )
 
     def check_consume_by_amount(self, cursor, uid, fact, parameters):
 
-        pcat_obj = self.pool.get('giscedata.polissa.category')
-        pcat_ids = pcat_obj.search(cursor, uid,[('name','like','%%Gran Contracte%')])
+        pcat_obj = self.pool.get("giscedata.polissa.category")
+        pcat_ids = pcat_obj.search(cursor, uid, [("name", "like", "%%Gran Contracte%")])
 
         if pcat_ids and pcat_ids[0] in [x.id for x in fact.polissa_id.category_id]:
             return None
 
-        return super(GiscedataFacturacioValidationValidator,
-            self).check_consume_by_amount(cursor, uid, fact, parameters)
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        limit_kWh = parameters.get("som_skip_if_20TD_00_and_less_than_kWh", None)
+        try:
+            limit_kWh = int(limit_kWh)
+        except (ValueError, TypeError):
+            limit_kWh = None
+        if (limit_kWh is not None
+            and fact.energia_kwh <= limit_kWh
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer in ['2.0TD_SOM', '2.0TD_SOM_INSULAR']
+                and autoconsum == '00'):
+            return None
+
+        return super(GiscedataFacturacioValidationValidator, self).check_consume_by_amount(
+            cursor, uid, fact, parameters
+        )
 
     def validate_one_invoice(self, cursor, uid, fact_id, validation_id, context=None):
         if context is None:
             context = {}
 
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
-        tmpl_obj = self.pool.get('giscedata.facturacio.validation.warning.template')
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        tmpl_obj = self.pool.get("giscedata.facturacio.validation.warning.template")
 
-        tmpl_fields = ['code', 'method', 'parameters', 'description', 'active']
+        tmpl_fields = ["code", "method", "parameters", "description", "active"]
         template_vals = tmpl_obj.read(cursor, uid, validation_id, tmpl_fields, context)
 
         fact = fact_obj.browse(cursor, uid, fact_id)
-        vals = getattr(self, template_vals['method'])(
-            cursor, uid, fact, template_vals['parameters']
+        vals = getattr(self, template_vals["method"])(
+            cursor, uid, fact, template_vals["parameters"]
         )
 
         ret = {
-            'active': template_vals['active'],
-            'code': template_vals['code'],
+            "active": template_vals["active"],
+            "code": template_vals["code"],
         }
         if vals is not None:
-            ret.update({
-                'message': template_vals['description'].format(**vals),
-                'validation_warning': True,
-            })
+            ret.update(
+                {
+                    "message": template_vals["description"].format(**vals),
+                    "validation_warning": True,
+                }
+            )
         else:
-            ret.update({
-                'message': '',
-                'validation_warning': False,
-            })
+            ret.update(
+                {
+                    "message": "",
+                    "validation_warning": False,
+                }
+            )
         return ret
+
+    def check_exceding_days(self, cursor, uid, fact, parameters):
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        limit_days = parameters.get("som_skip_if_20TD_00_and_less_than_days", None)
+        try:
+            limit_days = int(limit_days)
+        except (ValueError, TypeError):
+            limit_days = None
+        if (limit_days is not None
+            and fact.dies <= limit_days
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer in ['2.0TD_SOM', '2.0TD_SOM_INSULAR']
+                and autoconsum == '00'):
+            return None
+
+        return super(
+            GiscedataFacturacioValidationValidator,
+            self
+        ).check_exceding_days(cursor, uid, fact, parameters)
+
+    def check_f070_ha_de_saltar(self, cursor, uid, fact, linia_saju, parameters):
+        """ Si True farà saltar error F070 si hi ha diferencia, si False, no farà saltar validació
+        Customitzat per a que en validar una corba amb consums anteriors a 1 de maig de 2026
+        Es validi contra la corba original i no la "cuinada". Si la diferència és menor o igual
+        a la tolerància establerta, fer que no salti la F070 ja que de base comprova contra la
+        corba "cuinada" utilitzada
+        """
+        res = super(GiscedataFacturacioValidationValidator, self).check_f070_ha_de_saltar(
+            cursor, uid, fact, linia_saju, parameters
+        )
+        if res and fact.data_inici < '2026-05-01' <= fact.data_final:
+            facturador_obj = self.pool.get('giscedata.facturacio.facturador')
+            context = {'get_original_ssaa_curves': True}
+            original_curves = facturador_obj.get_consum_curve_components_for_servei(
+                cursor, uid, fact.id, fact.data_inici, fact.data_final,
+                single_period_profiling=False, context=context
+            )
+
+            original_consum = 0.0
+            for curve in original_curves:
+                original_consum += curve.total_sum
+
+            tolerancia = parameters.get("tolerancia", 1)
+            diferencia_facturada_saju = original_consum - fact.energia_kwh
+            if abs(diferencia_facturada_saju) <= tolerancia:
+                res = False
+        return res
+
+    def _skip_high_consumption_policy_warnings(self, cursor, uid, fact):
+        category_id = self.pool.get("ir.model.data").get_object_reference(
+            cursor, uid, "som_polissa", "categ_high_consumption_policy"
+        )[1]
+        category_ids = [category.id for category in fact.polissa_id.category_id]
+        return (
+            fact.tarifa_acces_id.name == "2.0TD"
+            and fact.polissa_id.llista_preu.name in ("2.0TD_SOM", "2.0TD_SOM_INSULAR")
+            and fact.polissa_id.autoconsumo == "00"
+            and category_id in category_ids
+        )
+
+    def check_maximum_import_by_tariff_and_power(self, cursor, uid, fact, parameters):
+        if self._skip_high_consumption_policy_warnings(cursor, uid, fact):
+            return None
+        return super(
+            GiscedataFacturacioValidationValidator, self
+        ).check_maximum_import_by_tariff_and_power(cursor, uid, fact, parameters)
+
+    def check_max_theoric_consume_by_power(self, cursor, uid, fact, parameters):
+        if self._skip_high_consumption_policy_warnings(cursor, uid, fact):
+            return None
+        return super(
+            GiscedataFacturacioValidationValidator, self
+        ).check_max_theoric_consume_by_power(cursor, uid, fact, parameters)
+
+    def check_invoice_from_delayed_contract(self, cursor, uid, fact, parameters):
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        today = parameters.get("today") or datetime.today().strftime("%Y-%m-%d")
+        today = datetime.strptime(today, "%Y-%m-%d")
+        policy_reference_date = (
+            fact.polissa_id.data_ultima_lectura or fact.polissa_id.data_alta
+        )
+        policy_reference_date = datetime.strptime(
+            policy_reference_date, "%Y-%m-%d"
+        )
+
+        limit_days = parameters.get("som_skip_if_20TD_00_and_less_than_days", None)
+        try:
+            limit_days = int(limit_days)
+        except (ValueError, TypeError):
+            limit_days = None
+        if (limit_days is not None
+            and (today - policy_reference_date).days <= limit_days
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer in ['2.0TD_SOM', '2.0TD_SOM_INSULAR']
+                and autoconsum == '00'):
+            return None
+
+        return super(
+            GiscedataFacturacioValidationValidator,
+            self
+        ).check_invoice_from_delayed_contract(cursor, uid, fact, parameters)
 
 
 GiscedataFacturacioValidationValidator()

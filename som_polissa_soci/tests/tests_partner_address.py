@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-import hashlib
+from __future__ import absolute_import
+
 import mock
 
 from destral import testing
 from destral.transaction import Transaction
 
-from .. import res_partner_address
+from ..models import res_partner_address
 
-class FakeMailchimpLists():
+
+class FakeMailchimpLists:
     def update_list_member(self, list_id, subscriber_hash, client_data):
         pass
 
@@ -15,12 +17,12 @@ class FakeMailchimpLists():
         pass
 
 
-class FakeMailchimpClient():
+class FakeMailchimpClient:
     def __init__(self):
         self.lists = FakeMailchimpLists()
 
 
-class FakeMD5():
+class FakeMD5:
     def __init__(self, s):
         self.string = s
 
@@ -32,7 +34,6 @@ fake_mchimp_client = FakeMailchimpClient()
 
 
 class TestsPartnerAddress(testing.OOTestCase):
-
     def setUp(self):
         self.txn = Transaction().start(self.database)
         self.cursor, self.uid, self.pool = (self.txn.cursor, self.txn.user, self.openerp.pool)
@@ -40,93 +41,297 @@ class TestsPartnerAddress(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
-    def test_fill_merge_fields_clients(self):
-        partner_address_o = self.pool.get('res.partner.address')
-        partner_o = self.pool.get('res.partner')
-        imd_o = self.pool.get('ir.model.data')
-        address_id = imd_o.get_object_reference(self.cursor, self.uid, 'base', 'res_partner_address_1')[1]
-        partner_id = partner_address_o.read(self.cursor, self.uid, address_id, ['partner_id'])['partner_id'][0]
+    def test_fill_merge_fields_soci__withoutContract(self):
+        rpa_obj = self.pool.get("res.partner.address")
+        imd_obj = self.pool.get("ir.model.data")
+        address_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_address_soci"
+        )[1]
+        municipi_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended", "ine_17160"
+        )[1]
+        rpa_obj.write(self.cursor, self.uid, address_id, {"id_municipi": municipi_id})
 
-        municipi_id = imd_o.get_object_reference(self.cursor, self.uid, 'base_extended', 'ine_17160')[1]
-        partner_address_o.write(self.cursor, self.uid, address_id, {'id_municipi': municipi_id})
-
-        partner_o.write(self.cursor, self.uid, partner_id, {'lang':'en_US'})
-        merge_fields = partner_address_o.fill_merge_fields_clients(self.cursor, self.uid, address_id)
-        self.maxDiff = None
-        self.assertDictEqual(merge_fields, {'email_address': u'info@openroad.be',
-            'merge_fields': {'EMAIL': u'info@openroad.be',
-            'FNAME': u'OpenRoad',
-            'LNAME': u'OpenRoad',
-            'MMERGE10': u'1000',
-            'MMERGE3': u'en_US',
-            'MMERGE9': u'OpenRoad',
-            'MMERGE5': u'Sant Feliu de Gu\xedxols',
-            'MMERGE6': u'Baix Empord\xe0',
-            'MMERGE7': u'Girona',
-            'MMERGE8': u'Catalu\xf1a',
-            },
-            'status': 'subscribed'}
+        merge_fields = rpa_obj.fill_merge_fields_soci(
+            self.cursor, self.uid, address_id
         )
 
-    @mock.patch('som_polissa_soci.res_partner_address.md5')
+        self.maxDiff = None
+        self.assertDictEqual(
+            merge_fields,
+            {
+                'email_address': u'test@test.test',
+                'merge_fields': {
+                    'AUTO': 'sense autoproduccio',
+                    'EMAIL': u'test@test.test',
+                    'MMERGE1': u'ES97053918J',
+                    'MMERGE10': '',
+                    'MMERGE18': '',
+                    'MMERGE19': 'No CCVV',
+                    'MMERGE22': 'sense_contracte',
+                    'MMERGE4': u'S202129',
+                    'MMERGE5': u'Pi, Pere',
+                    'MMERGE7': u'08600',
+                    'MMERGE8': '',
+                    'MMERGE9': '',
+                    'N_PILA': u'Pere',
+                    'MMERGE3': u'Sant Feliu de Gu\xedxols',
+                    'MMERGE11': u'Baix Empord\xe0',
+                    'MMERGE13': u'Catalu\xf1a',
+                    'MMERGE6': u'Girona',
+                },
+                'status': 'subscribed',
+            },
+        )
+
+    def test_fill_merge_fields_soci__withContract(self):
+        rpa_obj = self.pool.get("res.partner.address")
+        imd_obj = self.pool.get("ir.model.data")
+        address_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_address_domestic"
+        )[1]
+        municipi_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended", "ine_17160"
+        )[1]
+        rpa_obj.write(self.cursor, self.uid, address_id, {"id_municipi": municipi_id})
+        merge_fields = rpa_obj.fill_merge_fields_soci(
+            self.cursor, self.uid, address_id
+        )
+
+        self.maxDiff = None
+        self.assertDictEqual(
+            merge_fields,
+            {
+                'email_address': u'test@test.test',
+                'merge_fields': {
+                    'AUTO': 'sense autoproduccio',
+                    'EMAIL': u'test@test.test',
+                    'MMERGE1': u'ES37692879L',
+                    'MMERGE10': u'600000000',
+                    'MMERGE18': 'no \xc3\xa9s empresa',
+                    'MMERGE19': 'No CCVV',
+                    'MMERGE22': 'contracte_esborrany',
+                    'MMERGE4': u'S0004',
+                    'MMERGE5': u'F\xedsica, Persona',
+                    'MMERGE7': u'17800',
+                    'MMERGE8': u'en_US',
+                    'MMERGE9': 'domestic',
+                    'N_PILA': u'Persona',
+                    'MMERGE3': u'Sant Feliu de Gu\xedxols',
+                    'MMERGE11': u'Baix Empord\xe0',
+                    'MMERGE13': u'Catalu\xf1a',
+                    'MMERGE6': u'Girona',
+
+                },
+                'status': 'subscribed',
+            },
+        )
+
+    def test_fill_merge_fields_clients(self):
+        partner_address_o = self.pool.get("res.partner.address")
+        partner_o = self.pool.get("res.partner")
+        imd_o = self.pool.get("ir.model.data")
+        address_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "base", "res_partner_address_1"
+        )[1]
+        partner_id = partner_address_o.read(self.cursor, self.uid, address_id, ["partner_id"])[
+            "partner_id"
+        ][0]
+
+        municipi_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "base_extended", "ine_17160"
+        )[1]
+        partner_address_o.write(self.cursor, self.uid, address_id, {"id_municipi": municipi_id})
+
+        partner_o.write(self.cursor, self.uid, partner_id, {"lang": "en_US"})
+        merge_fields = partner_address_o.fill_merge_fields_clients(
+            self.cursor, self.uid, address_id
+        )
+        self.maxDiff = None
+        self.assertDictEqual(
+            merge_fields,
+            {
+                "email_address": u"info@openroad.be",
+                "merge_fields": {
+                    "EMAIL": u"info@openroad.be",
+                    "FNAME": u"OpenRoad",
+                    "LNAME": u"OpenRoad",
+                    "MMERGE10": u"1000",
+                    "MMERGE3": u"en_US",
+                    "MMERGE9": u"OpenRoad",
+                    "MMERGE5": u"Sant Feliu de Gu\xedxols",
+                    "MMERGE6": u"Baix Empord\xe0",
+                    "MMERGE7": u"Girona",
+                    "MMERGE8": u"Catalu\xf1a",
+                },
+                "status": "subscribed",
+            },
+        )
+
+    @mock.patch("som_polissa_soci.models.res_partner_address.md5")
     @mock.patch("som_polissa_soci.tests.tests_partner_address.fake_mchimp_client.lists")
     def test_update_client_email_in_all_lists(self, mock_fakemailchimp, mock_md5):
         subscriber_hash = "12345"
         old_email = "test@test.test"
         new_email = "new@test.test"
-        client_data = {
-            "email_address": new_email,
-            "merge_fields": {
-                "EMAIL": new_email
-            }
-        }
+        client_data = {"email_address": new_email, "merge_fields": {"EMAIL": new_email}}
 
         mock_md5.return_value = FakeMD5(subscriber_hash)
         mock_fakemailchimp.get_all_lists.return_value = {
-            "lists": [
-                { "id": 1, "name": "som" },
-                { "id": 2, "name": "som" }
-            ]
+            "lists": [{"id": 1, "name": "som"}, {"id": 2, "name": "som"}]
         }
 
-        partner_address_o = self.pool.get('res.partner.address')
+        partner_address_o = self.pool.get("res.partner.address")
         partner_address_o.update_client_email_in_all_lists(
-            self.cursor, self.txn, [1], old_email, new_email, fake_mchimp_client)
+            self.cursor, self.txn, [1], old_email, new_email, fake_mchimp_client
+        )
 
         mock_fakemailchimp.update_list_member.assert_called()
         mock_fakemailchimp.update_list_member.assert_any_call(1, subscriber_hash, client_data)
         mock_fakemailchimp.update_list_member.assert_any_call(2, subscriber_hash, client_data)
 
-    @mock.patch.object(res_partner_address.ResPartnerAddress, 'archieve_mail_in_list_sync')
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "archieve_mail_in_list_sync")
     @mock.patch("som_polissa_soci.tests.tests_partner_address.fake_mchimp_client.lists")
-    def test_unsubscribe_client_email_in_all_lists(self, mock_fakemailchimp, archieve_mail_in_list_sync_mock_function):
+    def test_unsubscribe_client_email_in_all_lists(
+        self, mock_fakemailchimp, archieve_mail_in_list_sync_mock_function
+    ):
         old_email = "test@test.test"
 
         archieve_mail_in_list_sync_mock_function.return_value = None
         mock_fakemailchimp.get_all_lists.return_value = {
-            "lists": [
-                { "id": 1, "name": "som" },
-                { "id": 2, "name": "som" }
-            ]
+            "lists": [{"id": 1, "name": "som"}, {"id": 2, "name": "som"}]
         }
 
-        partner_address_o = self.pool.get('res.partner.address')
+        partner_address_o = self.pool.get("res.partner.address")
         partner_address_o.unsubscribe_client_email_in_all_lists(
-            self.cursor, self.txn, [1], old_email, fake_mchimp_client)
+            self.cursor, self.txn, [1], old_email, fake_mchimp_client
+        )
 
         archieve_mail_in_list_sync_mock_function.assert_called()
 
-    @mock.patch.object(res_partner_address.ResPartnerAddress, 'read')
-    @mock.patch('som_polissa_soci.res_partner_address.md5')
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "read")
+    @mock.patch("som_polissa_soci.models.res_partner_address.md5")
     @mock.patch("som_polissa_soci.tests.tests_partner_address.fake_mchimp_client.lists")
-    def test_archieve_mail_in_list_sync(self, mock_fakemailchimp, mock_md5, res_partner_address_read_mock_function):
+    def test_archieve_mail_in_list_sync(
+        self, mock_fakemailchimp, mock_md5, res_partner_address_read_mock_function
+    ):
         subscriber_hash = "12345"
         email = "test@test.test"
         mock_md5.return_value = FakeMD5(subscriber_hash)
-        res_partner_address_read_mock_function.return_value = [{'email': email}]
+        res_partner_address_read_mock_function.return_value = [{"email": email}]
 
-        partner_address_o = self.pool.get('res.partner.address')
+        partner_address_o = self.pool.get("res.partner.address")
         partner_address_o.archieve_mail_in_list_sync(
-            self.cursor, self.txn, [1], 1, fake_mchimp_client)
+            self.cursor, self.txn, [1], 1, fake_mchimp_client
+        )
 
         mock_fakemailchimp.delete_list_member.assert_called()
+
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "archieve_mail_in_list_sync")
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "get_mailchimp_list_id")
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_mailchimp_client")
+    def test_unsubscribe_partner_in_customers_no_members_lists_uses_address_id(
+        self, get_mailchimp_client_mock, get_mailchimp_list_id_mock, archive_mock
+    ):
+        partner_address_o = self.pool.get("res.partner.address")
+        imd_o = self.pool.get("ir.model.data")
+        address_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_address_soci"
+        )[1]
+        partner_id = partner_address_o.read(self.cursor, self.uid, address_id, ["partner_id"])[
+            "partner_id"
+        ][0]
+
+        get_mailchimp_client_mock.return_value = fake_mchimp_client
+        get_mailchimp_list_id_mock.return_value = 99
+
+        partner_address_o.unsubscribe_partner_in_customers_no_members_lists(
+            self.cursor, self.uid, partner_id
+        )
+
+        archive_mock.assert_called_once_with(
+            mock.ANY, self.uid, address_id, 99, fake_mchimp_client, context=None
+        )
+
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "archieve_mail_in_list_sync")
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_members_mailchimp_lists")
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "get_mailchimp_list_id")
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_mailchimp_client")
+    def test_unsubscribe_partner_in_members_lists_uses_address_id(
+        self,
+        get_mailchimp_client_mock,
+        get_mailchimp_list_id_mock,
+        get_members_mailchimp_lists_mock,
+        archive_mock,
+    ):
+        partner_address_o = self.pool.get("res.partner.address")
+        imd_o = self.pool.get("ir.model.data")
+        address_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_address_soci"
+        )[1]
+        partner_id = partner_address_o.read(self.cursor, self.uid, address_id, ["partner_id"])[
+            "partner_id"
+        ][0]
+
+        get_mailchimp_client_mock.return_value = fake_mchimp_client
+        get_members_mailchimp_lists_mock.return_value = ["socis", "crinforma"]
+        get_mailchimp_list_id_mock.side_effect = [11, 22]
+
+        partner_address_o.unsubscribe_partner_in_members_lists(
+            self.cursor, self.uid, partner_id
+        )
+
+        self.assertEqual(archive_mock.call_count, 2)
+        archive_mock.assert_any_call(
+            mock.ANY, self.uid, address_id, 11, fake_mchimp_client, context=None
+        )
+        archive_mock.assert_any_call(
+            mock.ANY, self.uid, address_id, 22, fake_mchimp_client, context=None
+        )
+
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_mailchimp_client")
+    def test_write_dry_run_does_not_create_mailchimp_client(self, get_client_mock):
+        partner_address_o = self.pool.get("res.partner.address")
+        imd_o = self.pool.get("ir.model.data")
+        address_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_address_soci"
+        )[1]
+
+        partner_address_o.write(
+            self.cursor, self.uid, address_id, {"email": "dry-run@example.org"},
+            context={"is_dry_run": True},
+        )
+
+        get_client_mock.assert_not_called()
+
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_mailchimp_client")
+    def test_async_subscription_dry_run_does_not_enqueue_or_create_client(
+        self, get_client_mock
+    ):
+        partner_address_o = self.pool.get("res.partner.address")
+
+        result = partner_address_o.subscribe_partner_in_members_lists(
+            self.cursor, self.uid, 1, context={"is_dry_run": True}
+        )
+
+        self.assertFalse(result)
+        get_client_mock.assert_not_called()
+
+    def test_mailchimp_api_boundaries_do_nothing_in_dry_run(self):
+        partner_address_o = self.pool.get("res.partner.address")
+        mailchimp_client = mock.Mock()
+        context = {"is_dry_run": True}
+
+        partner_address_o.subscribe_mail_in_list(
+            self.cursor, self.uid, [{"email_address": "dry@example.org"}],
+            1, mailchimp_client, context=context
+        )
+        partner_address_o.update_client_email_in_all_lists(
+            self.cursor, self.uid, 1, "old@example.org", "new@example.org",
+            mailchimp_client, context=context
+        )
+        partner_address_o.archieve_mail_in_list_sync(
+            self.cursor, self.uid, 1, 1, mailchimp_client, context=context
+        )
+
+        self.assertEqual(mailchimp_client.lists.mock_calls, [])

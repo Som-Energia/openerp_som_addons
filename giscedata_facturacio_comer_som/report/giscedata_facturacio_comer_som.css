@@ -2,7 +2,7 @@
     body {
         font-family: Roboto;
         font-size: 10px;
-        color: #4c4c4c;
+        color: #0B2E34;
         font-weight: 100;
         margin: 0px;
         padding: 0px;
@@ -16,7 +16,7 @@
         font-size: 1.0em;
         margin: 0;
         padding: .3em;
-        background-color: #4c4c4c;
+        background-color: #0B2E34;
         color: #ffffff;
     }
     p {
@@ -27,7 +27,7 @@
     hr {
         border: none;
         height: 1px;
-        background-color: #4c4c4c;
+        background-color: #0B2E34;
         margin: 0em 1em 0em 1em;
     }
     table {
@@ -169,4 +169,3 @@
     .c3-shape {
         opacity: 0.7;
     }
-

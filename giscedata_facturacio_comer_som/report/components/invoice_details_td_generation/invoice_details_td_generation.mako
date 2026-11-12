@@ -19,18 +19,24 @@ count = 1
                 % endif
             % endfor
             <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
             <%count += 1%>
         </tr>
         <tr>
             <td class="td_bold detall_td">${_(u"Preu energia [€/kWh]")}</td>
             % for p in id.showing_periods:
                 % if p in generation_lines_data:
-                    <td>${_(u"%s") %(locale.str(locale.atof(formatLang(generation_lines_data[p]["price_unit_multi"], digits=6))))}</td>
+                    <td>${_(u"%s") %(formatLang(generation_lines_data[p]["price_unit_multi"], digits=6).rstrip("0"))}</td>
                 % else:
                     <td></td>
                 % endif
             % endfor
             <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
             <%count += 1%>
         </tr>
         % if count < id.header_multi:
@@ -47,16 +53,22 @@ count = 1
                 % endif
             % endfor
             <td><span class="subtotal">${_(u"%s €") %(formatLang(generation_lines_data["total"]))}<sup>(1)</td>
+            % if id.iva_column:
+                <td>${_(u"%s") % (generation_lines_data.iva) }</td>
+            % endif
             <%count += 1%>
         </tr>
     % endfor
     % if id.is_ajustment_visible:
-        <tr class="last_row">
+        <tr class="tr_bold last_row">
             <td class="detall_td">${_(u"Ajust límit de compensació per autoconsum")}</td>
             % for p in id.showing_periods:
                 <td></td>
             % endfor
             <td><span class="subtotal">${_(u"%s €") %(formatLang(id.ajustment))}</span></td>
+            % if id.iva_column:
+                <td>${_(u"%s") % (id.ajustment_iva) }</td>
+            % endif
         </tr>
     % endif
 % endif

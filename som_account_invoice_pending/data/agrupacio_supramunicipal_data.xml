@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_alt_camp">
+            <field name="name">Consell Comarcal de l’Alt Camp</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_alt_emporda">
+            <field name="name">Consell Comarcal de l’Alt Empordà</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_alt_penedes">
+            <field name="name">Consell Comarcal de l'Alt Penedès</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_alt_urgell">
+            <field name="name">Consell Comarcal de l'Alt Urgell</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_alta_ribagorca">
+            <field name="name">Consell Comarcal de l'Alta Ribagorça</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_anoia">
+            <field name="name">Consell Comarcal de l'Anoia</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_bages">
+            <field name="name">Consell Comarcal del Bages</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_baix_camp">
+            <field name="name">Consell Comarcal del Baix Camp</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_baix_ebre">
+            <field name="name">Consell Comarcal del Baix Ebre</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_baix_emporda">
+            <field name="name">Consell Comarcal del Baix Empordà</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_baix_llobregat">
+            <field name="name">Consell Comarcal del Baix Llobregat</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_baix_penedes">
+            <field name="name">Consell Comarcal del Baix Penedès</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_barcelones">
+            <field name="name">Consell Comarcal del Barcelonès</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_bergueda">
+            <field name="name">Consell Comarcal del Berguedà</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_cerd">
+            <field name="name">Consell Comarcal de la Cerdanya</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_alt_camp">
+            <field name="name">Consell Comarcal de la Conca de Barberà</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_garraf">
+            <field name="name">Consell Comarcal del Garraf</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_garrigues">
+            <field name="name">Consell Comarcal de les Garrigues</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_garrotxa">
+            <field name="name">Consell Comarcal de la Garrotxa</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_girones">
+            <field name="name">Consell Comarcal del Gironès</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_maresme">
+            <field name="name">Consell Comarcal del Maresme</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_moianes">
+            <field name="name">Consell Comarcal del Moianès</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_montsia">
+            <field name="name">Consell Comarcal del Montsià</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_noguera">
+            <field name="name">Consell Comarcal de la Noguera</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_osona">
+            <field name="name">Consell Comarcal d'Osona</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_pallars_jussa">
+            <field name="name">Consell Comarcal del Pallars Jussà</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_pallars_sobira">
+            <field name="name">Consell Comarcal del Pallars Sobirà</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_pla_estany">
+            <field name="name">Consell Comarcal del Pla de l'Estany</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_pla_urgell">
+            <field name="name">Consell Comarcal del Pla d'Urgell</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_prriorat">
+            <field name="name">Consell Comarcal del Priorat</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_ribera_ebre">
+            <field name="name">Consell Comarcal de la Ribera d'Ebre</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_ripolles">
+            <field name="name">Consell Comarcal del Ripollès</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_segarra">
+            <field name="name">Consell Comarcal de la Segarra</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_segria">
+            <field name="name">Consell Comarcal del Segrià</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_la_selva">
+            <field name="name">Consell Comarcal de la Selva</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_solsones">
+            <field name="name">Consell Comarcal del Solsonès</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_alt_tarragones">
+            <field name="name">Consell Comarcal del Tarragonès</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_terra_alta">
+            <field name="name">Consell Comarcal de la Terra Alta</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_urgell">
+            <field name="name">Consell Comarcal de l'Urgell</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_valles_occidentall">
+            <field name="name">Consell Comarcal del Vallès Occidental</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cc_valles_oriental">
+            <field name="name">Consell Comarcal del Vallès Oriental</field>
+            <field name="active" eval="False" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cg_aran">
+            <field name="name">Conselh Generau d’Aran</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cap_alt_urgell">
+            <field name="name">Consorci d'Atenció a les Persones de l'Alt Urgel</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_cas_garrotxa">
+            <field name="name">Consorci d'Acció Social de la Garrotxa</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_mancomunitat_plana">
+            <field name="name">Mancomunitat de la Plana</field>
+            <field name="active" eval="True" />
+        </record>
+        <record model="agrupacio.supramunicipal" id="agrupacio_ajuntament">
+            <field name="name">Ajuntament</field>
+            <field name="active" eval="True" />
+        </record>
+    </data>
+</openerp>

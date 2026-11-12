@@ -1,5 +1,6 @@
 <%page args="id" />
 <%import locale%>
+% if 'P1' in id and id.is_visible:
 <tr>
     <td class="td_third concepte_td" rowspan=${id.header_multi}>${_(u"Càrrecs")}</td>
     <td class="td_bold detall_td">${_(u"Preu càrrecs per electricitat utilitzades [€/kWh]")}</td>
@@ -11,6 +12,9 @@
         % endif
     % endfor
     <td></td>
+    % if id.iva_column:
+        <td></td>
+    % endif
 </tr>
 <tr class="${'last_row' if id.header_multi == 2 else ''}">
     <td class="td_bold detall_td">${_(u"kWh x €/kWh")}</td>
@@ -22,4 +26,8 @@
         % endif
     % endfor
     <td></td>
+    % if id.iva_column:
+        <td></td>
+    % endif
 </tr>
+% endif

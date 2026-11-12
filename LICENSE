@@ -659,3 +659,17 @@ specific requirements.
 if any, to sign a "copyright disclaimer" for the program, if necessary.
 For more information on this, and how to apply and follow the GNU AGPL, see
 <https://www.gnu.org/licenses/>.
+
+
+========================================================================
+Modules Subcomponents:
+
+openerp_som_addons modules contains subcomponents with separate copyright
+notices and license terms. Your use of the source code for these
+subcomponents is also subject to the terms and conditions of the following
+licenses.
+
+Apache License 2.0 (echarts):
+The following files embed [echarts](https://github.com/apache/echarts) Apache License 2.0:
+    `/som_assets/js/echarts-5.5.0.min.js`,
+See https://www.apache.org/licenses/LICENSE-2.0 for details of the license.

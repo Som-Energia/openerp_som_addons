@@ -5,7 +5,7 @@ import os
 class SomFtp:
     def __init__(self, server_data):
         self.ftpcon = FTP()
-        self.ftpcon.set_pasv(True)
+        self.ftpcon.set_pasv(False)
         self.ftpcon.connect(server_data["url_portal"], int(server_data["port"]))
         self.ftpcon.login(server_data["usuari"], server_data["contrasenya"])
 

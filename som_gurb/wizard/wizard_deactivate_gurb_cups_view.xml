@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_deactivate_gurb_cups_form">
+            <field name="name">Wizard Deactivate CUPS al GURB</field>
+            <field name="model">wizard.deactivate.gurb.cups</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Desactivar el CUPS al GURB">
+                    <group colspan="4">
+                        <field name="ens_ha_avisat"  colspan="4" />
+                        <button name="deactivate_cups" type="object" string="Desactivar CUPS al GURB" icon="gtk-execute" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_deactivate_gurb_cups_form">
+            <field name="name">Desactivar el CUPS al GURB</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.deactivate.gurb.cups</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_deactivate_gurb_cups_form" />
+        </record>
+        <record id="values_wizard_deactivate_gurb_cups_form" model="ir.values">
+            <field name="object" eval="1" />
+            <field name="name">Desactivar CUPS al GURB</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="value"
+                eval="'ir.actions.act_window,'+str(ref('action_wizard_deactivate_gurb_cups_form'))" />
+        </record>
+    </data>
+</openerp>

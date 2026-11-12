@@ -2399,4 +2399,3 @@ msgstr ""
 #: rml:som_informe/report/components/header/header.mako:29
 msgid "<b>NIF Titular:</b>"
 msgstr ""
-

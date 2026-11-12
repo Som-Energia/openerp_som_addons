@@ -1,10 +1,9 @@
-
 # -*- coding: utf-8 -*-
-from tools.translate import _
+
 
 class SomWebformsException(Exception):
     def __init__(self, text):
-        self.exc_type = 'error'
+        self.exc_type = "error"
         self.text = text
 
     @property
@@ -17,20 +16,59 @@ class SomWebformsException(Exception):
             error=self.text,
         )
 
+
 class TariffNonExists(SomWebformsException):
     def __init__(self):
-        super(TariffNonExists, self).__init__(
-            text="Tariff pricelist not found"
-        )
+        super(TariffNonExists, self).__init__(text="Tariff pricelist not found")
+
 
 class ContractWithoutModcons(SomWebformsException):
     def __init__(self):
-        super(ContractWithoutModcons, self).__init__(
-            text="Contract without modcontractual"
-        )
+        super(ContractWithoutModcons, self).__init__(text="Contract without modcontractual")
+
 
 class InvalidModcons(SomWebformsException):
     def __init__(self):
-        super(InvalidModcons, self).__init__(
-            text="Contract with invalid modcons"
+        super(InvalidModcons, self).__init__(text="Contract with invalid modcons")
+
+
+class InvalidSimulationPricelist(SomWebformsException):
+    def __init__(self):
+        super(InvalidSimulationPricelist, self).__init__(
+            text="Simulation pricelist must be 'index' or 'periods'"
+        )
+
+
+class InvalidSimulationPowers(SomWebformsException):
+    def __init__(self):
+        super(InvalidSimulationPowers, self).__init__(
+            text="Simulation powers must be between 1 and 100"
+        )
+
+
+class IncompleteSimulationPolicy(SomWebformsException):
+    def __init__(self):
+        super(IncompleteSimulationPolicy, self).__init__(
+            text="Policy data required for simulation is incomplete"
+        )
+
+
+class InvalidAveragePriceTariff(SomWebformsException):
+    def __init__(self):
+        super(InvalidAveragePriceTariff, self).__init__(
+            text="Average price tariff must be '2.0TD' or '3.0TD'"
+        )
+
+
+class InvalidAveragePriceType(SomWebformsException):
+    def __init__(self):
+        super(InvalidAveragePriceType, self).__init__(
+            text="Average price type must be 'index' or 'ssaa'"
+        )
+
+
+class MissingSimulationConfig(SomWebformsException):
+    def __init__(self):
+        super(MissingSimulationConfig, self).__init__(
+            text="Simulation configuration not found"
         )

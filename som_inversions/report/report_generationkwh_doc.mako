@@ -216,7 +216,7 @@ creation_date_str = creation_date.strftime(_('%d/%m/%Y a les %T'))
 </div>
 </%def>
 <div>
-    <img class="logo" src="${addons_path}/som_inversions/report/logo.jpg" width="150" height="150"/>
+    <img class="logo" src="${addons_path}/som_assets/img/logo.svg" width="150" height="150"/>
 </div>
 <div class="contracte">
     <h1>${_(u'CONTRACTE D’ADHESIÓ AL SISTEMA D’AUTOPRODUCCIÓ COL·LECTIVA D’ENERGIA ELÈCTRICA PROVINENT DE FONTS RENOVABLES')}</h1>
@@ -225,7 +225,7 @@ creation_date_str = creation_date.strftime(_('%d/%m/%Y a les %T'))
     <h3>${_(u'Parts contractants:')}</h3>
 
     <p>${inv.partner_id.name or ''}${_(u', en endavant, el <b>Soci/Sòcia</b>.')}</p>
-    <p>${_(u'SOM ENERGIA, S.C.C.L., amb domicili a carrer Pic de Peguera, 15, Parc Científic i Tecnològic de la UdG, 17003 - Girona i amb NIF F55091367.')}</p>
+    <p>${_(u'SOM ENERGIA, S.C.C.L., amb domicili a carrer Riu Güell, 68, 17005 - Girona i amb NIF F55091367.')}</p>
 
 
     <h3>${_(u'Nombre d’Accions Energètiques del Soci en el Sistema d’Autoproducció Col·lectiva:')}</h3>

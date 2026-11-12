@@ -5,7 +5,7 @@
             <field name="code">1714</field>
             <field name="reconcile" eval="False"/>
             <field name="parent_id" ref="l10n_chart_ES.pgc_171"/>
-            <field name="type">view</field> 
+            <field name="type">view</field>
             <field name="name">Creditores para fondos capitalizados a largo plazo</field>
             <field name="user_type" ref="l10n_chart_ES.capital"/>
             <field name="template_name">PGCE 2008</field>
@@ -14,7 +14,7 @@
             <field name="code">1714</field>
             <field name="reconcile" eval="False"/>
             <field name="parent_id" ref="pgc_1714"/>
-            <field name="type">other</field> 
+            <field name="type">other</field>
             <field name="name">Creditores para fondos capitalizados a largo plazo</field>
             <field name="user_type" ref="l10n_chart_ES.capital"/>
             <field name="template_name">PGCE 2008</field>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Definim els grups -->
+        <record model="res.groups" id="group_som_plantmeter_r">
+            <field name="name">Plantmeter / ReadOnly</field>
+        </record>
+        <record model="res.groups" id="group_som_plantmeter_w">
+            <field name="name">Plantmeter / User</field>
+        </record>
+        <record model="res.groups" id="group_som_plantmeter_u">
+            <field name="name">Plantmeter / Manager</field>
+        </record>
+     </data>
+</openerp>

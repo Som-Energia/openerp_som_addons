@@ -7,4 +7,3 @@
     ${_(u"<b>Data d'acceptació:</b> %s") % (d.data_acceptacio)}<br/>
     <br><br>
 </li>
-

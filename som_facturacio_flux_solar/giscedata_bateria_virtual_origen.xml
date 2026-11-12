@@ -34,6 +34,9 @@
 			<field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_virtuals_origens_form" />
             <field name="type">form</field>
             <field name="arch" type="xml">
+                <field name="data_ultim_dia_calculat" position="after">
+                    <field name="data_inici_descomptes"/>
+                </field>
                 <field name="gestio_acumulacio" position="after">
                     <newline/>
                     <group colspan="4" attrs="{'invisible':[('gestio_acumulacio','!=','percentatge')]}">

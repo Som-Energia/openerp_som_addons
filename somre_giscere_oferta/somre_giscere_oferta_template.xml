@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding='utf-8'?>
+<openerp>
+    <data noupdate="1">
+        <!-- Template PowerEmail-->
+        <record model="poweremail.templates" id="omie_representacio_mail_template">
+            <field name="name">Plantilla Notificacion Automatismes OMIE Representació</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'res.company')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="def_to">representa@somenergia.coop</field>
+            <field name="def_subject">[${env['resultat']}] Automatismes OMIE Representació ${env['today']}</field>
+            <field name="template_language">mako</field>
+            <field name="lang">ca_ES</field>
+            <field name="def_body_text">
+<![CDATA[
+<!doctype html>
+<html>
+<head></head>
+<body>
+Benvolgut/da,
+<br/>
+<br/>
+
+Aquest és el resultat dels automatismes d'OMIE de Representació d'avui:
+<br/>
+
+<%
+info = env.get('info', [])
+errors = env.get('errors', [])
+all_ok = env.get('all_ok', True)
+energia = env.get('energia', [])
+%>
+
+<br/>
+<br/>
+* Operacions realitzades correctament per l'automatisme:
+<br/>
+
+${'<br/>'.join(info)}
+
+<br/>
+<br/>
+* Volum total d'energia enviat a mercat per Unitat d'Oferta:
+<br/>
+
+${'<br/>'.join(energia)}
+
+%if not all_ok:
+
+<br/>
+<br/>
+* Operacions NO realitzades correctament per l'automatisme:
+<br/>
+
+${'<br/>'.join(errors)}
+
+%endif
+
+<br/>
+<br/>
+Atentament,
+<br/>
+
+</body>
+</html>
+]]>
+            </field>
+       </record>
+    </data>
+</openerp>

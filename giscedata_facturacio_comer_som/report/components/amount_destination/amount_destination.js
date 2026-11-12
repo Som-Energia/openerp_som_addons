@@ -156,8 +156,3 @@ svg.append("g")
     .attr("y2", graf_h)
     .style("stroke", "#000000")
     .style("stroke-width", 1)
-
-
-
-
-

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="res.config" id="giscedata_facturacio_iva_10.charge_iva_10_percent_when_available">
+            <field name="value">1</field>
+        </record>
+    </data>
+</openerp>

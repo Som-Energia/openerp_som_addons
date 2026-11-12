@@ -7,7 +7,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="soller_conf">
@@ -15,7 +15,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="hc_conf">
@@ -31,7 +31,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="meliana_conf">
@@ -39,7 +39,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="anselmo_conf">
@@ -47,7 +47,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="cide_conf">
@@ -55,7 +55,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="fenosa_conf">
@@ -63,7 +63,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="viesgo_conf">
@@ -71,7 +71,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="endesa_conf">
@@ -79,7 +79,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="endesa_f1_conf">
@@ -87,7 +87,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="iberdrola_conf">
@@ -95,7 +95,15 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="cide_api_conf">
+            <field name="name">cide</field>
+            <field name="crawler">API</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">api</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="guadassuar_conf">
@@ -103,7 +111,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="vinalesa_conf">
@@ -111,7 +119,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="camprodon_conf">
@@ -119,7 +127,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="sucsa_conf">
@@ -127,7 +135,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="dielesur_conf">
@@ -135,7 +143,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="constancia_conf">
@@ -143,7 +151,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="conquense_conf">
@@ -151,7 +159,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="cabriel_conf">
@@ -159,7 +167,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
             <record model="som.crawlers.config" id="cipriano_conf">
@@ -167,7 +175,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="herederos_conf">
@@ -175,7 +183,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="serrano_conf">
@@ -183,7 +191,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="cardener_conf">
@@ -191,7 +199,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="aduriz_conf">
@@ -199,7 +207,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="peusa_conf">
@@ -207,7 +215,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="avellana_conf">
@@ -215,7 +223,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="centelles_conf">
@@ -223,7 +231,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="bassols_conf">
@@ -231,7 +239,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="curos_conf">
@@ -239,13 +247,37 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="scq_conf">
             <field name="name">scq</field>
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="escuer_conf">
+            <field name="name">escuer</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">15</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="coelca_conf">
+            <field name="name">coelca</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">15</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="alginet_conf">
+            <field name="name">alginet</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">15</field>
             <field name="pending_files_only" eval="False"/>
             <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
@@ -257,7 +289,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
@@ -266,7 +298,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
@@ -275,7 +307,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
@@ -284,7 +316,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
@@ -293,7 +325,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
@@ -302,7 +334,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
@@ -311,7 +343,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
@@ -320,7 +352,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
@@ -329,16 +361,16 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
-        <record model="som.crawlers.config" id="aseme_ftp_conf">
-            <field name="name">aseme_ftp</field>
+        <record model="som.crawlers.config" id="aseme_ftp_conf">  <!-- now 6eis -->
+            <field name="name">6eis_ftp</field>
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
@@ -347,7 +379,7 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
@@ -356,8 +388,44 @@
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>
-            <field name="browser">firefox</field>
+            <field name="browser">chrome</field>
             <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="udesa_ftp_conf">
+            <field name="name">udesa_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="port">2222</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="eriste_ftp_conf">
+            <field name="name">eriste_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="serosense_ftp_conf">
+            <field name="name">serosense_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="registregeneral_conf">
+            <field name="name">registregeneral</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="port">2222</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <!-- Variables de configuració-->
@@ -370,6 +438,11 @@
             <field name="name">som_crawlers_output_tmp_path</field>
             <field name="value">/tmp/outputFiles</field>
             <field name="description">Ruta dels fitxers temporals del massive importer</field>
+        </record>
+        <record model="res.config" id="cide_retailer_cdos" forcecreate="1">
+            <field name="name">cide_retailer_cdos</field>
+            <field name="value">0762</field>
+            <field name="description">Codi de la comercialitzadora per a l'API de CIDE</field>
         </record>
         <!-- Executar tasques a partir d'un cron -->
         <record id="ir_cron_run_tasks_action" model="ir.cron">

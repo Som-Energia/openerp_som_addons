@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_report_test_group_csv_form" model="ir.ui.view">
+            <field name="name">wizard.report.test.group.csv.form</field>
+            <field name="model">wizard.report.test.group.csv</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="CSV de tests de reports">
+                    <field name="state" invisible="1"/>
+                    <field name="operation" invisible="1"/>
+                    <group colspan="4" col="2" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <field name="group_id" context="{'active_test': False}"
+                               attrs="{'required': [('operation', '=', 'export')]}"/>
+                        <group colspan="2" col="2" attrs="{'invisible': [('operation', '!=', 'import')]}">
+                            <field name="group_name" attrs="{'invisible': [('group_id', '!=', False)]}"/>
+                            <field name="report"/>
+                            <field name="interpreter"/>
+                            <field name="csv_filename" invisible="1"/>
+                            <field name="csv_file" filename="csv_filename"/>
+                        </group>
+                        <button name="import_csv" type="object" string="Importar tests" icon="gtk-open"
+                                attrs="{'invisible': [('operation', '!=', 'import')]}"/>
+                        <button name="export_csv" type="object" string="Exportar tests" icon="gtk-save"
+                                attrs="{'invisible': [('operation', '!=', 'export')]}"/>
+                    </group>
+                    <group colspan="4" col="2" attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <field name="info" colspan="2" nolabel="1"/>
+                        <field name="output_filename" invisible="1"/>
+                        <field name="output_file" filename="output_filename"
+                               attrs="{'invisible': [('operation', '!=', 'export')]}"/>
+                        <button name="open_group" type="object" string="Obrir el grup" icon="gtk-open"/>
+                    </group>
+                    <button special="cancel" string="Tancar" icon="gtk-close"/>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_report_test_group_import_csv" model="ir.actions.act_window">
+            <field name="name">Importar tests des d'un CSV</field>
+            <field name="res_model">wizard.report.test.group.csv</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_report_test_group_csv_form"/>
+            <field name="target">new</field>
+            <field name="context">{'default_operation': 'import'}</field>
+        </record>
+        <record id="action_wizard_report_test_group_export_csv" model="ir.actions.act_window">
+            <field name="name">Exportar tests a CSV</field>
+            <field name="res_model">wizard.report.test.group.csv</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_report_test_group_csv_form"/>
+            <field name="target">new</field>
+            <field name="context">{'default_operation': 'export'}</field>
+        </record>
+        <record id="value_wizard_report_test_group_import_csv" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Importar tests des d'un CSV</field>
+            <field name="key">action</field>
+            <field name="key2">client_action_multi</field>
+            <field name="model">report.test.group</field>
+            <field name="value" eval="'ir.actions.act_window,' + str(ref('action_wizard_report_test_group_import_csv'))"/>
+        </record>
+        <record id="value_wizard_report_test_group_export_csv" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Exportar tests a CSV</field>
+            <field name="key">action</field>
+            <field name="key2">client_action_multi</field>
+            <field name="model">report.test.group</field>
+            <field name="value" eval="'ir.actions.act_window,' + str(ref('action_wizard_report_test_group_export_csv'))"/>
+        </record>
+    </data>
+</openerp>

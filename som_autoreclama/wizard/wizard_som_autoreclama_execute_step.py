@@ -10,10 +10,14 @@ class WizardSomAutoreclamaExecuteStep(osv.osv_memory):
         if context is None:
             context = {}
 
+        namespace = context.get("namespace", "atc")
+
         updtr_obj = self.pool.get("som.autoreclama.state.updater")
-        _, _, _, msg = updtr_obj.update_atcs_if_possible(
-            cursor, uid, context.get("active_ids", []), context
+        _, _, _, msg, s = updtr_obj.update_items_if_possible(
+            cursor, uid, context.get("active_ids", []), namespace, True, context
         )
+        msg += "\n\n" + s
+
         self.write(cursor, uid, ids, {"state": "end", "info": msg})
 
     _columns = {

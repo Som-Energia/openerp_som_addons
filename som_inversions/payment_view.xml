@@ -13,6 +13,6 @@
                     <field name="account_id"/>
                 </field>
             </field>
-        </record> 
+        </record>
     </data>
 </openerp>

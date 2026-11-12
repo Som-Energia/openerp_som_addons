@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_ir_attachment_category_tree">
+            <field name="name">ir.attachment.category.tree</field>
+            <field name="model">ir.attachment.category</field>
+            <field name="inherit_id" ref="base.view_category_tree"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="ov_available" />
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_ir_attachment_category_form">
+            <field name="name">ir.attachment.category.form</field>
+            <field name="model">ir.attachment.category</field>
+            <field name="inherit_id" ref="base.view_category_form"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="ov_available" select="1"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

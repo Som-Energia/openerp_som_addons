@@ -18,6 +18,9 @@ first_pass = True
             % endif
         % endfor
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr>
         <td class="td_bold detall_td">${_(u"Preu energia reactiva inductiva [€/kVArh]")}</td>
@@ -29,6 +32,9 @@ first_pass = True
             % endif
         % endfor
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr class="last_row tr_bold">
         <td class="detall_td">${_(u"kVArh x €/kVArh")}</td>
@@ -40,5 +46,8 @@ first_pass = True
             % endif
         % endfor
         <td><span class="subtotal">${_(u"%s €") %(formatLang(id.inductive_data.total))}</span></td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (id.inductive_data.iva) }</td>
+        % endif
     </tr>
 % endif

@@ -5,13 +5,16 @@
     This module provide :
         * Obligació que un compte comptable tingui pare
     """,
-    "version": "0.1",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [
         "account",
         "account_financial_report",
         "async_reports",
+        "l10n_ES_remesas",
+        "remeses_base",
+        "base_extended_som",
     ],
     "init_xml": [],
     "demo_xml": [],

@@ -1,5 +1,6 @@
 <%page args="id" />
 <%import locale %>
+% if 'P1' in id and id.is_visible:
 <tr>
     <td class="td_second concepte_td" rowspan="2">${_(u"Peatges")}</td>
     <td class="td_bold detall_td">${_(u"Preu peatges per potència contractada [€/kW i any]")}</td>
@@ -26,6 +27,9 @@
         % endfor
     % endif
     <td></td>
+    % if id.iva_column:
+        <td></td>
+    % endif
 </tr>
 <tr>
     <td class="td_bold detall_td">${_(u"kW x €/kW x (%s/%s) dies") % (id.dies, id.dies_any)}</td>
@@ -52,4 +56,8 @@
         % endfor
     % endif
     <td></td>
+    % if id.iva_column:
+        <td></td>
+    % endif
 </tr>
+% endif

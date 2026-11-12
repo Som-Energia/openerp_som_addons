@@ -28,5 +28,3 @@
     </table>
     <p class="table-note">${_(u"Taula 1: Preus del terme de potència per període tarifari sense impostos (€/kW i any)")}</p>
 % endif
-
-

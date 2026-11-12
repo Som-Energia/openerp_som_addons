@@ -26,6 +26,9 @@
             % endfor
         % endif
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr class="${'' if id.is_indexed else 'tr_bold'} last_row">
         <td class="detall_td">${_(u"kW x €/kW x (%s/%s) dies") % (id.dies, id.dies_any)}</td>
@@ -56,5 +59,8 @@
             <span class="subtotal">${_(u"%s €") %(formatLang(id.total))}</span>
         % endif
         </td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (id.iva) }</td>
+        % endif
     </tr>
 % endif

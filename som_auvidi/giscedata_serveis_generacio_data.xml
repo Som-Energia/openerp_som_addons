@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<openerp>
+    <data>
+        <record model="giscedata.polissa.category" id="polissa_category_auvidi_base">
+            <field name="name">Autoconsum Virtual</field>
+            <field name="code">AUVI</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="giscedata.polissa.category" id="polissa_category_auvidi_pilot">
+            <field name="name">Autoconsum Virtual PILOT</field>
+            <field name="code">AUVIPLT</field>
+            <field name="parent_id" ref="polissa_category_auvidi_base"/>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</openerp>

@@ -16,7 +16,7 @@
         </div>
     </div>
     <div>
-        <div class="centered blau">${_(u'A completar pel creditor')} / 
+        <div class="centered blau">${_(u'A completar pel creditor')} /
             <span class="english">To be completed by the creditor</span>
         </div>
         <div class="intern margin50 full-width">

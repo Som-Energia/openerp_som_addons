@@ -1,0 +1,17 @@
+# This workflow will pass tests of module passed by input
+
+name: uiqmako_helpers
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1'
+jobs:
+  erp-tests-module:
+    uses: ./.github/workflows/reusable_workflow.yml
+    with:
+      module: uiqmako_helpers
+    secrets:
+      ACCESS_TOKEN_GA: ${{ secrets.ACCESS_TOKEN_GA }}
+      ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
+      SRID: ${{ secrets.SRID }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -13,7 +13,7 @@
                     </group>
                     <group colspan="2" string="Credencials">
                         <field name="usuari" readonly='1'/>
-                        <field name="contrasenya" readonly='1'/>
+                        <field name="contrasenya" password="True" readonly='1'/>
                     </group>
                     <group colspan="2" string="Configuració FTP">
                         <field name="port"/>
@@ -45,7 +45,6 @@
                     <field name="distribuidora" select="1"/>
                     <field name="name" select="1"/>
                     <field name="usuari" select="1"/>
-                    <field name="contrasenya" />
                     <field name="url_portal" />
                     <field name="url_upload" />
                     <field name="filtres" />

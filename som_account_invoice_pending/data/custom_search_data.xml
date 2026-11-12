@@ -57,8 +57,7 @@ left join
 		inner join crm_case cc on cc.id = ccl.case_id
 		inner join crm_case_section ccs on ccs.id = cc.section_id
 		left join res_users ru on ru.id = ccl.user_id
-		where cc.state = 'open'
-		and ccs.id = (select res_id from ir_model_data imd
+		where ccs.id = (select res_id from ir_model_data imd
 				  	  where "module" = 'giscedata_facturacio_comer_bono_social' and "name" = 'crm_section_bono_social_consulta_pobresa')
 	) sql01
 	where sql01.rn_aux = 1

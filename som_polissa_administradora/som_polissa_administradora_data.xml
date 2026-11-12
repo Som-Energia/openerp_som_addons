@@ -308,7 +308,7 @@
                 % endfor
                 </ul>
                 <br>
-                Així doncs, podràs ${permission} ${this_contract_text[plural][mail_lang]} des de la teva Oficina Virtual, encara que no en siguis la persona titular. El fet que siguis administradora no implica que en siguis el/la responsable legal. 
+                Així doncs, podràs ${permission} ${this_contract_text[plural][mail_lang]} des de la teva Oficina Virtual, encara que no en siguis la persona titular. El fet que siguis administradora no implica que en siguis el/la responsable legal.
                 <br>
                 <br>
                 Si no has accedit mai a l'Oficina Virtual, <a href="https://ca.support.somenergia.coop/article/109-com-puc-accedir-a-l-oficina-virtual">aquí</a> t’expliquem com fer-ho.

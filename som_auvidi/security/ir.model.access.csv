@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_change_to_indexada_auvidi_multi_r","wizard.change.to.indexada.auvidi.multi","model_wizard_change_to_indexada_auvidi_multi","giscedata_serveis_generacio.group_serveis_generacio_r",1,0,0,0
+"access_wizard_change_to_indexada_auvidi_multi_rcw","wizard.change.to.indexada.auvidi.multi","model_wizard_change_to_indexada_auvidi_multi","giscedata_serveis_generacio.group_serveis_generacio_w",1,1,1,0
+"access_wizard_change_to_indexada_auvidi_multi_rcwd","wizard.change.to.indexada.auvidi.multi","model_wizard_change_to_indexada_auvidi_multi","giscedata_serveis_generacio.group_serveis_generacio_u",1,1,1,1

@@ -31,13 +31,21 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
     '73': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - Consum"), # Con excedentes sin compensación Colectivo con cto de SSAA  a través de red y red interior – Consumo
     '74': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - SSAA"), # Con excedentes sin compensación Colectivo con cto de SSAA a través de red y red interior - SSAA
     }
-autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_dict else _("")
+TABLA_133_dict = { # Table extracted from gestionatr.defs TABLA_133, not imported due translations issues
+    '10': _(u"Sense excedents No acollit a compensació"), # Sin excedentes No acogido a compensación
+    '11': _(u"Sense excedents acollit a compensació"), # Sin excedentes acogido a compensación
+    '20': _(u"Amb excedents no acollits a compensació"), # Con excedentes no acogidos a compensación
+    '21': _(u"Amb excedents acollits a compensació"), # Con excedentes acogidos a compensación
+    '00': _(u"Sense autoconsum"), # Sin autoconsumo
+    '0C': _(u"Baixa com a membre d'autoconsum col·lectiu"), # Baja como miembro de autoconsumo colectivo
+}
+autoconsum_text = TABLA_133_dict[cd.autoconsum] if cd.autoconsum in TABLA_133_dict else _("")
 %>
     <div class="contract_data${cd.small_text and '_small' or ''}">
         <h1>${_(u"DADES DEL CONTRACTE")}</h1>
         <div class="contract_data_container">
             <div class="contract_data_adreca">
-                ${_(u"Adreça de subministrament:")} <span style="font-weight: bold;">${cd.cups_direction}</span> 
+                ${_(u"Adreça de subministrament:")} <span style="font-weight: bold;">${cd.cups_direction}</span>
             </div>
             <div class="contract_data_column">
                 <p>
@@ -56,6 +64,9 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
                     % endif
                     ${_(u"Peatge de transport i distribució:")} <span style="font-weight: bold;">${cd.tariff}</span> <br />
                     ${_(u"Segment tarifari:")} <span style="font-weight: bold;">${cd.segment_tariff}</span> <br />
+                    % if cd.is_auvi:
+                        ${_(u"Tarifa:")} <span style="font-weight: bold;">${cd['auvi_data']['auvi_name']}</span> <br />
+                    % endif
                     % if cd.invoicing_mode == 'index':
                         ${_(u"Tarifa:")} <span style="font-weight: bold;">${cd.pricelist}</span> <br />
                     % endif
@@ -67,14 +78,19 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
                 <p>
                     ${_(u"CNAE:")} <span style="font-weight: bold;">${cd.cnae}</span> <br />
                     ${_(u'Data d\'alta del contracte: <span style="font-weight: bold;">%s</span>') % (cd.start_date)} <br />
-                    ${_(u'Forma de pagament: <span style="font-weight: bold;">Rebut domiciliat</span>')} <br />
+                    % if cd.is_recurrent_card_payment:
+                        ${_(u'Forma de pagament: <span style="font-weight: bold;">Cobrament recurrent per targeta</span>')} <br />
+                    % elif cd.is_transfer_payment:
+                        ${_(u'Forma de pagament: <span style="font-weight: bold;">Transferència bancària</span>')} <br />
+                    % else:
+                        ${_(u'Forma de pagament: <span style="font-weight: bold;">Rebut domiciliat</span>')} <br />
+                    % endif
                     ${_(u'Data final del contracte: <span style="font-weight: bold;">%s</span> %s') % (cd.renovation_date, _(u'sense condicions de permanència') if not cd.has_permanence else _(u"pròrroga automàtica per períodes d'un any"))} <br/>
                     %if cd.is_autoconsum:
                         ${_(u"Autoproducció tipus:")} <span style="font-weight: bold;">${autoconsum_text}</span> <br />
-                        ${_(u"CAU (Codi d'autoconsum unificat):")} <span style="font-weight: bold;">${cd.autoconsum_cau}</span>
-                        %if cd.is_autoconsum_colectiu:
-                            <br />${_(u"Percentatge de repartiment de l'autoproducció compartida:")} <span style="font-weight: bold;">${cd.autoconsum_colectiu_repartiment} %</span>
-                        %endif
+                        % for autoconsum_cau in cd.autoconsum_caus:
+                            ${_(u"CAU (Codi d'autoconsum unificat):")} <span style="font-weight: bold;">${autoconsum_cau}</span> <br />
+                        % endfor
                     %endif
                 </p>
             </div>

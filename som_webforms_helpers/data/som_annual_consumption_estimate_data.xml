@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_1_kwh">
+            <field name="power">1</field>
+            <field name="consumption">2500</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_2_kwh">
+            <field name="power">2</field>
+            <field name="consumption">2750</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_3_kwh">
+            <field name="power">3</field>
+            <field name="consumption">3000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_4_kwh">
+            <field name="power">4</field>
+            <field name="consumption">3250</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_5_kwh">
+            <field name="power">5</field>
+            <field name="consumption">3500</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_6_kwh">
+            <field name="power">6</field>
+            <field name="consumption">3750</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_7_kwh">
+            <field name="power">7</field>
+            <field name="consumption">4000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_8_kwh">
+            <field name="power">8</field>
+            <field name="consumption">4250</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_9_kwh">
+            <field name="power">9</field>
+            <field name="consumption">4500</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_10_kwh">
+            <field name="power">10</field>
+            <field name="consumption">4750</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_11_kwh">
+            <field name="power">11</field>
+            <field name="consumption">5000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_12_kwh">
+            <field name="power">12</field>
+            <field name="consumption">5250</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_13_kwh">
+            <field name="power">13</field>
+            <field name="consumption">5500</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_14_kwh">
+            <field name="power">14</field>
+            <field name="consumption">5750</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_15_kwh">
+            <field name="power">15</field>
+            <field name="consumption">6000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_20_kwh">
+            <field name="power">20</field>
+            <field name="consumption">8000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_25_kwh">
+            <field name="power">25</field>
+            <field name="consumption">10000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_30_kwh">
+            <field name="power">30</field>
+            <field name="consumption">12000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_35_kwh">
+            <field name="power">35</field>
+            <field name="consumption">15000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_40_kwh">
+            <field name="power">40</field>
+            <field name="consumption">19000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_45_kwh">
+            <field name="power">45</field>
+            <field name="consumption">22000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_50_kwh">
+            <field name="power">50</field>
+            <field name="consumption">26000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_60_kwh">
+            <field name="power">60</field>
+            <field name="consumption">30000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_70_kwh">
+            <field name="power">70</field>
+            <field name="consumption">35000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_80_kwh">
+            <field name="power">80</field>
+            <field name="consumption">40000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_90_kwh">
+            <field name="power">90</field>
+            <field name="consumption">45000</field>
+        </record>
+        <record model="som.annual.consumption.estimate" id="consumption_estimate_100_kwh">
+            <field name="power">100</field>
+            <field name="consumption">50000</field>
+        </record>
+    </data>
+</openerp>

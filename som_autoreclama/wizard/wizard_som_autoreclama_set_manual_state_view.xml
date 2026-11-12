@@ -10,7 +10,16 @@
                     <field name="state" invisible="1"/>
                     <group colspan="4" col="2" attrs="{'invisible':[('state', '!=', 'init')]}">
                         <group>
+                            <field name="workflow_id" invisible="1"/>
+                            <field name="as_polissa_id" invisible="1"/>
+                            <field name="as_subtipus_name" invisible="1"/>
                             <field name="next_state_id" />
+                            <field name="attached_atc" />
+                            <field name="change_date" />
+                        </group>
+                    </group>
+                    <group colspan="4" col="2" attrs="{'invisible':[('state', '!=', 'init')]}">
+                        <group>
                             <button name="assign_state" string="Assignar estat" icon="gtk-ok" type="object" />
                         </group>
                     </group>

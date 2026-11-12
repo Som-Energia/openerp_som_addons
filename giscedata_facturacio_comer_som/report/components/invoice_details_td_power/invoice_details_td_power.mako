@@ -34,6 +34,9 @@ first_pass = True
             % endfor
         % endif
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr>
         <td class="detall_td">${_(u"Preu potència contractada [€/kW i any]")}</td>
@@ -60,6 +63,9 @@ first_pass = True
             % endfor
         % endif
         <td></td>
+        % if id.iva_column:
+            <td></td>
+        % endif
     </tr>
     <tr class="tr_bold">
         <td class="detall_td">${_(u"kW x €/kW x (%.f/%d) dies (del %s al %s)") %(int(power_lines_data.multi), power_lines_data.days_per_year, power_lines_data.date_from, power_lines_data.date_to)}</td>
@@ -86,5 +92,8 @@ first_pass = True
             % endfor
         % endif
         <td><span class="subtotal">${_(u"%s €") %(formatLang(power_lines_data.total))}</span></td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (power_lines_data.iva) }</td>
+        % endif
     </tr>
 % endfor

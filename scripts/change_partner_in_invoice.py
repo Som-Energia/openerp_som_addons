@@ -2,7 +2,7 @@ import configdb
 from erppeek import Client as Client
 
 
-print "Connectant"
+print "Connectant"  # noqa: E999
 c = Client(**configdb.erppeek)
 print "Connectat"
 

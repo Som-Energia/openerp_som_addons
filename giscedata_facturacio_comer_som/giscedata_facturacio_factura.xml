@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_factura_form_sent_email">
+            <field name="name">giscedata.facturacio.factura.view.form.sent.email</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_facturacio_comer.view_factura_form_energia_comer_email"/>
+            <field name="arch" type="xml">
+                <field name="enviat_data" position="after">
+                    <field name="enviat_mail_id" select="2"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,8 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_contract_power_optimization_rcwd","wizard.contract.power.optimization","model_wizard_contract_power_optimization","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
+"access_wizard_contract_power_optimization_rcwd","wizard.contract.power.optimization","model_wizard_contract_power_optimization","giscedata_polissa.group_giscedata_polissa_r",1,1,1,1
+"access_wizard_contract_power_optimization_rcwd","wizard.contract.power.optimization","model_wizard_contract_power_optimization","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
+
+"access_report_backend_som_estalvi_rcwd","report.backend.som.estalvi","model_report_backend_som_estalvi","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
+"access_report_backend_som_estalvi_rcwd","report.backend.som.estalvi","model_report_backend_som_estalvi","giscedata_polissa.group_giscedata_polissa_r",1,1,1,1
+"access_report_backend_som_estalvi_rcwd","report.backend.som.estalvi","model_report_backend_som_estalvi","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1

@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="view_facturacio_contracte_lot_tree_som">
-            <field name="name">giscedata.facturacio.contracte_lot.tree.som</field>
-            <field name="model">giscedata.facturacio.contracte_lot</field>
-			<field name="inherit_id" ref="giscedata_facturacio.view_facturacio_contracte_lot_tree" />
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='lectures_status']" position="replace"/>
-            </field>
+        <record model="ir.actions.act_window" id="giscedata_facturacio.action_factura_tree">
+            <field name="domain">[('type', 'in', ['out_invoice', 'out_refund'])]</field>
         </record>
     </data>
 </openerp>

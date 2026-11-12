@@ -29,7 +29,7 @@ def generate_report(year, month, agent, sequence):
     date_time_end = datetime.strptime(
         str(year) + "-" + str(month) + "-" + last_day_month, "%Y-%m-%d"
     )
-    print {
+    print {  # noqa: E999
         "file_type": "SI",
         "start_date": date_time_start.strftime("%Y-%m-%d"),
         "end_date": date_time_end.strftime("%Y-%m-%d"),

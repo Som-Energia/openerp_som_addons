@@ -24,10 +24,12 @@
 #energy_consumption_detail_td .detall_td{
     text-align: left;
     font-weight: bold;
+    width: 350px;
 }
 
 #energy_consumption_detail_td .periods_td{
     text-align: center;
+    width: 70px;
 }
 
 .last_row {

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from osv import osv, fields
 import netsvc
 from tools.translate import _
@@ -11,7 +12,7 @@ class SomAutofacturaTask(osv.osv):
 
     _name = "som.autofactura.task"
 
-    @MultiprocessBackground.background(queue="background_somenergia")
+    @MultiprocessBackground.background(queue="background_autofactura")
     def action_execute_task(self, cursor, uid, ids, context):
         if isinstance(ids, list):
             ids = ids[0]
@@ -123,20 +124,24 @@ class SomAutofacturaTaskStep(osv.osv):
             gff_obj = self.pool.get("giscedata.facturacio.factura")
             gff_draft = len(gff_obj.search(cursor, uid, [("state", "=", "draft")]))
             gff_draft_old = gff_draft + 1
+            cursor.commit()
             while gff_draft != gff_draft_old:
                 gff_draft_old = gff_draft
                 sleep(seconds_sleep)
                 gff_draft = len(gff_obj.search(cursor, uid, [("state", "=", "draft")]))
+                cursor.rollback()
         else:
             oorq_obj = self.pool.get("oorq.jobs.group")
             prev_work_not_finish = True
+            cursor.commit()
             while prev_work_not_finish:
                 sleep(seconds_sleep)
                 prev_work_not_finish = oorq_obj.search(
                     cursor,
                     uid,
-                    [("active", "=", True), ("name", "ilike", task.autoworker_task_name)],
+                    [("name", "ilike", task.autoworker_task_name)],
                 )
+                cursor.rollback()
 
         logger.notifyChannel(
             "som_autofactura",
