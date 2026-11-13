@@ -10,8 +10,13 @@ usage() {
 [ "${1:-}" = "--help" ] && usage
 [ "$#" -eq 1 ] || usage
 
-if [ "${HERDR_ENV:-}" != "1" ] || [ -z "${HERDR_PANE_ID:-}" ]; then
-    printf 'Run this from a Herdr-managed pane.\n' >&2
+if [ "${HERDR_ENV:-}" = "1" ]; then
+    if [ -z "${HERDR_PANE_ID:-}" ]; then
+        printf 'Herdr caller pane metadata is unavailable; stopping.\n' >&2
+        exit 1
+    fi
+elif [ -z "${HC_TERMINAL_ID:-}" ]; then
+    printf 'Run this from a Herdr TUI pane or a Herdr App terminal.\n' >&2
     exit 1
 fi
 
@@ -25,6 +30,11 @@ registered_worktrees="$(git -C "$worktree" worktree list --porcelain | awk '/^wo
 if ! printf '%s\n' "$registered_worktrees" | grep -Fx "$worktree" >/dev/null; then
     printf 'Not a registered Git worktree: %s\n' "$worktree" >&2
     exit 1
+fi
+
+if [ "${HERDR_ENV:-}" != "1" ]; then
+    script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+    exec python3 "$script_dir/herdr-app-worktree-companion.py" "$worktree"
 fi
 
 pane_json="$($herdr pane current --pane "$HERDR_PANE_ID")"
@@ -76,10 +86,11 @@ import json, os, sys
 worktree = sys.argv[1]
 tab_id = sys.argv[2]
 for pane in json.load(sys.stdin)["result"]["panes"]:
-    if pane["tab_id"] == tab_id and os.path.realpath(pane["cwd"]) == worktree:
+    if (pane["pane_id"] != sys.argv[3] and pane["tab_id"] == tab_id
+            and os.path.realpath(pane["cwd"]) == worktree):
         print(pane["pane_id"])
         break
-' "$worktree" "$tab_id")"
+' "$worktree" "$tab_id" "$HERDR_PANE_ID")"
 
 if [ -n "$existing" ]; then
     report_companion "$existing"
@@ -93,9 +104,10 @@ import sys
 
 tab_id = sys.argv[1]
 for pane in json.load(sys.stdin)["result"]["panes"]:
-    if pane["tab_id"] == tab_id and pane.get("label", "").startswith("worktree · "):
+    if (pane["pane_id"] != sys.argv[2] and pane["tab_id"] == tab_id
+            and pane.get("label", "").startswith("worktree · ")):
         print(pane["pane_id"])
-' "$tab_id")
+' "$tab_id" "$HERDR_PANE_ID")
 
 if [ "${#reusable[@]}" -gt 1 ]; then
     printf 'Cannot select a worktree companion: %s labeled companions exist in this tab.\n' "${#reusable[@]}" >&2
