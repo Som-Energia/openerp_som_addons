@@ -807,39 +807,40 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
 
     @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
     @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
-    def test_social_static_catalan_fallback_renders_existing_asset(self, gkwh, auto):
+    def test_social_static_locale_fallback_renders_existing_asset(self, gkwh, auto):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         fact = self.bf(f_id)
         self.setup_langs()
-        self.partner_obj.write(self.cursor, self.uid, fact.partner_id.id, {"lang": "ca_ES"})
         social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
-        self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
-            "llista_preu": social_id,
-        }, context={"skip_cnt_llista_preu_compatible": True})
         component_path = os.path.abspath(os.path.join(
             os.path.dirname(__file__), "..", "report", "components", "flags"))
         addons_path = os.path.abspath(os.path.join(component_path, "..", "..", "..", ".."))
         template = TemplateLookup(directories=[component_path]).get_template("flags.mako")
         prefix = "/giscedata_facturacio_comer_som/report/components/flags/"
-        expected = [prefix + "flag_auto_little_ca.png",
-                    prefix + "flag_gkwh_little.png",
-                    prefix + "flag-dte-social_ca.png"]
-        result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
-        self.assertEqual([item["src"] for item in result["flag_images"]], expected)
-        self.assertFalse(result["social_banner"])
-        html = template.render(flags=ns(result), addons_path=addons_path)
-        self.assertEqual(html.count("<img "), 3)
-        positions = [html.index('src="' + addons_path + src + '"') for src in expected]
-        self.assertEqual(positions, sorted(positions))
-        self.assertTrue(os.path.isfile(addons_path + expected[2]))
         ordinary_id = self.get_fixture("som_indexada", "pricelist_periodes_20td_peninsula")
-        self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
-            "llista_preu": ordinary_id, "category_id": [(6, 0, [])],
-        }, context={"skip_cnt_llista_preu_compatible": True})
-        ordinary = self.r_obj.get_component_flags_data(**self.bfp(f_id))
-        html = template.render(flags=ns(ordinary), addons_path=addons_path)
-        self.assertEqual(html.count("<img "), 2)
-        self.assertNotIn("flag-dte-social", html)
+        for lang, suffix in [("ca_ES", "ca"), ("es_ES", "es")]:
+            self.partner_obj.write(self.cursor, self.uid, fact.partner_id.id, {"lang": lang})
+            self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+                "llista_preu": social_id,
+            }, context={"skip_cnt_llista_preu_compatible": True})
+            expected = [prefix + "flag_auto_little_{}.png".format(suffix),
+                        prefix + "flag_gkwh_little.png",
+                        prefix + "flag-dte-social_{}.png".format(suffix)]
+            result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            self.assertEqual([item["src"] for item in result["flag_images"]], expected)
+            self.assertFalse(result["social_banner"])
+            html = template.render(flags=ns(result), addons_path=addons_path)
+            self.assertEqual(html.count("<img "), 3)
+            positions = [html.index('src="' + addons_path + src + '"') for src in expected]
+            self.assertEqual(positions, sorted(positions))
+            self.assertTrue(os.path.isfile(addons_path + expected[2]))
+            self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+                "llista_preu": ordinary_id, "category_id": [(6, 0, [])],
+            }, context={"skip_cnt_llista_preu_compatible": True})
+            ordinary = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            html = template.render(flags=ns(ordinary), addons_path=addons_path)
+            self.assertEqual(html.count("<img "), 2)
+            self.assertNotIn("flag-dte-social", html)
 
     @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
     @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
@@ -856,7 +857,17 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
         self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
             "llista_preu": social_id,
         }, context={"skip_cnt_llista_preu_compatible": True})
-        missing = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+        missing_path = os.path.join(
+            os.path.dirname(giscedata_facturacio_report.__file__),
+            "report", "components", "flags", "flag-dte-social_es.png")
+        real_isfile = os.path.isfile
+
+        def isfile_except_social(path):
+            return False if path == missing_path else real_isfile(path)
+
+        with mock.patch.object(os.path, "isfile", side_effect=isfile_except_social) as isfile:
+            missing = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            isfile.assert_any_call(missing_path)
         self.assertTrue(missing["is_social_tariff"])
         self.assertEqual(len(missing["flag_images"]), 2)
         self.assertFalse(missing["social_banner"])
@@ -866,7 +877,6 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
         component_path = os.path.join(
             os.path.dirname(__file__), "..", "report", "components", "flags")
         template = TemplateLookup(directories=[component_path]).get_template("flags.mako")
-        self.assertFalse(os.path.isfile(os.path.join(component_path, "flag-dte-social_es.png")))
         missing_html = template.render(flags=ns(missing), addons_path="/addons")
         self.assertEqual(missing_html.count("<img "), 2)
         self.assertNotIn("flag-dte-social", missing_html)
@@ -905,10 +915,21 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
         component_path = os.path.join(
             os.path.dirname(__file__), "..", "report", "components", "flags")
         template = TemplateLookup(directories=[component_path]).get_template("flags.mako")
+        real_isfile = os.path.isfile
         for lang in ["es_ES", "zz_ZZ"]:
+            missing_path = os.path.join(
+                os.path.dirname(giscedata_facturacio_report.__file__),
+                "report", "components", "flags", "flag-dte-social_{}.png".format(lang[:2]))
+
+            def isfile_except_social(path):
+                return False if path == missing_path else real_isfile(path)
+
             with mock.patch.object(giscedata_facturacio_report, "get_lang_partner",
                                    return_value=lang):
-                result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+                with mock.patch.object(os.path, "isfile",
+                                       side_effect=isfile_except_social) as isfile:
+                    result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+                    isfile.assert_any_call(missing_path)
             self.assertTrue(result["is_social_tariff"])
             self.assertFalse(result["social_banner"])
             self.assertEqual(result["flag_images"], [])
