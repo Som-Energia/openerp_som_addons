@@ -103,7 +103,9 @@ first_energy_line = True
         % endif
     </tr>
     <tr>
-        % if id.indexed:
+        % if id.get('is_social_tariff', False):
+            <td class="detall_td">${_(u"Electricitat utilitzada amb descompte social aplicat")} [€/kWh]</td>
+        % elif id.indexed:
             <td class="detall_td">${_(u"Preu mitjà de l'energia [€/kWh]")}</td>
         % else:
             <td class="detall_td">${_(u"Preu energia [€/kWh]")}</td>

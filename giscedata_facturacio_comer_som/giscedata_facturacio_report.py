@@ -12,6 +12,7 @@ from osv import osv
 from yamlns import namespace as ns
 from datetime import datetime, timedelta
 import inspect
+import os
 from tools.translate import _
 import json
 from collections import Counter
@@ -55,6 +56,23 @@ def get_lang_partner(fact):
     if isinstance(lang, STRING_TYPES):
         return lang
     return 'es_ES'
+
+
+def get_invoice_flag_images(data):
+    """Build ordered image descriptors, including legacy component payloads."""
+    images = []
+    for name, eligibility in [("autoconsum", "is_autoconsum"),
+                              ("gkwh", "is_gkwh"),
+                              ("social", "is_social_tariff")]:
+        if not data.get(eligibility, False):
+            continue
+        src = data.get(name + "_banner", False)
+        filename = data.get(name + "_flag", False)
+        if not src and filename:
+            src = "/giscedata_facturacio_comer_som/report/components/flags/" + filename
+        if src:
+            images.append({"src": src})
+    return images
 
 
 # -----------------------------------
@@ -1313,7 +1331,17 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "gkwh_banner": self.get_flag_banner(
                 fact, "invoice_flag_gkwh"
             ) if is_gkwh else False,
+            "is_social_tariff": self.get_is_social_tariff(fact, pol),
         }
+        data["social_banner"] = self.get_flag_banner(
+            fact, "invoice_flag_social"
+        ) if data["is_social_tariff"] else False
+        if data["is_social_tariff"]:
+            social_flag = "flag-dte-social_{}.png".format(lang)
+            if os.path.isfile(os.path.join(
+                    os.path.dirname(__file__), "report", "components", "flags", social_flag)):
+                data["social_flag"] = social_flag
+        data["flag_images"] = get_invoice_flag_images(data)
         return data
 
     def get_masked_card_number(self, card_number):
@@ -2610,6 +2638,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_component_invoice_summary_td_data(self, fact, pol):
         data = self.get_component_invoice_summary_data(fact, pol)
+        data["is_social_tariff"] = self.get_is_social_tariff(fact, pol)
         inductive = self.sub_component_invoice_details_td_inductive_data_visibility(fact, pol)
         capacitive = self.sub_component_invoice_details_td_capacitive_data_visibility(fact, pol)
         data["inductive_is_visible"] = inductive[0]
@@ -3374,6 +3403,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "iva_column": has_iva_column(fact),
             "auvi_energy_lines_data": auvi_energy_lines_data,
             "adjustment_services": adjustment_services,
+            "is_social_tariff": self.get_is_social_tariff(fact, pol),
         }
         return data
 
@@ -4719,6 +4749,28 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             image = image.decode("ascii")
         mime = "image/jpeg" if image.startswith("/9j/") else "image/png"
         return "data:{};base64,{}".format(mime, image)
+
+    def get_is_social_tariff(self, fact, pol):
+        """Use the invoice-end policy price and current business categories.
+
+        ``pol`` must already be browsed at ``fact.data_final``.
+        """
+        polissa_obj = self.pool.get("giscedata.polissa")
+        social_prices = polissa_obj.mapping_tarifa_social(self.cursor, self.uid).values()
+        if pol.llista_preu and pol.llista_preu.id in social_prices:
+            return True
+
+        categories = polissa_obj.read(
+            self.cursor, self.uid, pol.id, ["category_id"], context={}
+        )["category_id"]
+        imd_obj = self.pool.get("ir.model.data")
+        company_category = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa", "categ_tarifa_empresa"
+        )[1]
+        social_category = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_tarifa_social", "categ_tarifa_social"
+        )[1]
+        return company_category in categories and social_category in categories
 
 
 GiscedataFacturacioFacturaReport()
