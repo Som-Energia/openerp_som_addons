@@ -2610,6 +2610,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_component_invoice_summary_td_data(self, fact, pol):
         data = self.get_component_invoice_summary_data(fact, pol)
+        data["is_social_tariff"] = self.get_is_social_tariff(fact, pol)
         inductive = self.sub_component_invoice_details_td_inductive_data_visibility(fact, pol)
         capacitive = self.sub_component_invoice_details_td_capacitive_data_visibility(fact, pol)
         data["inductive_is_visible"] = inductive[0]
@@ -3374,6 +3375,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "iva_column": has_iva_column(fact),
             "auvi_energy_lines_data": auvi_energy_lines_data,
             "adjustment_services": adjustment_services,
+            "is_social_tariff": self.get_is_social_tariff(fact, pol),
         }
         return data
 
