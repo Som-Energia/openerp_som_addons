@@ -12,6 +12,7 @@ from osv import osv
 from yamlns import namespace as ns
 from datetime import datetime, timedelta
 import inspect
+import os
 from tools.translate import _
 import json
 from collections import Counter
@@ -55,6 +56,23 @@ def get_lang_partner(fact):
     if isinstance(lang, STRING_TYPES):
         return lang
     return 'es_ES'
+
+
+def get_invoice_flag_images(data):
+    """Build ordered image descriptors, including legacy component payloads."""
+    images = []
+    for name, eligibility in [("autoconsum", "is_autoconsum"),
+                              ("gkwh", "is_gkwh"),
+                              ("social", "is_social_tariff")]:
+        if not data.get(eligibility, False):
+            continue
+        src = data.get(name + "_banner", False)
+        filename = data.get(name + "_flag", False)
+        if not src and filename:
+            src = "/giscedata_facturacio_comer_som/report/components/flags/" + filename
+        if src:
+            images.append({"src": src})
+    return images
 
 
 # -----------------------------------
@@ -1313,7 +1331,17 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "gkwh_banner": self.get_flag_banner(
                 fact, "invoice_flag_gkwh"
             ) if is_gkwh else False,
+            "is_social_tariff": self.get_is_social_tariff(fact, pol),
         }
+        data["social_banner"] = self.get_flag_banner(
+            fact, "invoice_flag_social"
+        ) if data["is_social_tariff"] else False
+        if data["is_social_tariff"]:
+            social_flag = "flag-dte-social_{}.png".format(lang)
+            if os.path.isfile(os.path.join(
+                    os.path.dirname(__file__), "report", "components", "flags", social_flag)):
+                data["social_flag"] = social_flag
+        data["flag_images"] = get_invoice_flag_images(data)
         return data
 
     def get_masked_card_number(self, card_number):
