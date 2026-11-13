@@ -56,6 +56,8 @@ class Tests_FacturacioFacturaReport_base(testing.OOTestCase):
 
 
 class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_base):
+    phrase = u"Electricitat utilitzada amb descompte social aplicat"
+
     def setUp(self):
         super(Tests_FacturacioFacturaReport_social_tariff, self).setUp()
         self.fact = self.bf(self.get_fixture("giscedata_facturacio", "factura_0001"))
@@ -68,6 +70,116 @@ class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_
         self.company_category = self.get_fixture("som_polissa", "categ_tarifa_empresa")
         self.social_category = self.get_fixture("som_tarifa_social", "categ_tarifa_social")
         self.date_context = {"date": self.fact.data_final}
+
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+                       "get_atr_price", return_value=0.1)
+    def test_social_component_data_uses_historical_detector(self, atr_price):
+        # This legacy invoice has no period-formatted meter readings.
+        self.r_obj.readings_cache[self.fact.id] = [{} for unused in range(19)]
+        self.addCleanup(self.r_obj.del_readings_data, self.fact)
+        self.linia_f_obj.write(
+            self.cursor, self.uid, [line.id for line in self.fact.linies_energia], {
+                "name": "P1", "data_desde": self.fact.data_inici,
+                "data_fins": self.fact.data_final,
+            })
+        historical = self.historical_policy(self.social_id, self.ordinary_id)
+        mod_ids = self.polissa_obj._get_modcon_date(
+            self.cursor, self.uid, historical.id, self.fact.data_final)
+        results = []
+        for price, expected in [(self.social_id, True), (self.ordinary_id, False)]:
+            self.model("giscedata.polissa.modcontractual").write(
+                self.cursor, self.uid, mod_ids, {"llista_preu": price})
+            pol = self.polissa_obj.browse(
+                self.cursor, self.uid, historical.id, context=self.date_context)
+            summary = self.r_obj.get_component_invoice_summary_td_data(self.fact, pol)
+            energy = self.r_obj.get_sub_component_invoice_details_td_energy_data(
+                self.fact, pol, {})
+            flags = self.r_obj.get_component_flags_data(self.fact, pol)
+            self.assertEqual(summary["is_social_tariff"], expected)
+            self.assertEqual(energy["is_social_tariff"], expected)
+            self.assertEqual(flags["is_social_tariff"], expected)
+            self.assertEqual(summary["total_energy"], 28.0)
+            self.assertTrue(energy["energy_lines_data"])
+            del summary["is_social_tariff"]
+            del energy["is_social_tariff"]
+            results.append((summary, energy))
+        self.assertEqual(results[0], results[1])
+
+    def render_component(self, name, **kwargs):
+        path = os.path.join(os.path.dirname(__file__), "..", "report", "components", name)
+        translate = kwargs.pop("translate", lambda text: text)
+        return TemplateLookup(directories=[path]).get_template(name + ".mako").render(
+            _=translate, formatLang=lambda value, **kw: str(value),
+            addons_path="/addons", **kwargs)
+
+    def test_social_catalogs_and_spanish_energy_render(self):
+        from babel.messages.pofile import read_po
+        path = os.path.join(os.path.dirname(__file__), "..", "i18n")
+        with open(os.path.join(path, "giscedata_facturacio_comer_som.pot"), "rb") as source:
+            pot = read_po(source)
+        with open(os.path.join(path, "es_ES.po"), "rb") as source:
+            spanish = read_po(source)
+        self.assertIn(self.phrase, pot)
+        translation = u"Electricidad utilizada con descuento social aplicado"
+        self.assertEqual(spanish[self.phrase].string, translation)
+        line = ns(origin="real", date_from="01/01/2026", date_to="31/01/2026",
+                  total=28, P1=dict(quantity=140, price_unit_multi=0.2, price_subtotal=28))
+        data = ns(auvi_energy_lines_data=[], energy_lines_data=[line],
+                  showing_periods=["P1"], header_multi=3, iva_column=False,
+                  indexed=False, mag_line_data=False, adjustment_services=False,
+                  is_social_tariff=True)
+        result = self.render_component(
+            "invoice_details_td_energy", id=data,
+            translate=lambda text: translation if text == self.phrase else text)
+        self.assertIn(translation + u" [€/kWh]", result)
+        self.assertNotIn(self.phrase, result)
+
+    def test_summary_social_and_ordinary_and_cached_payload(self):
+        data = ns(total_power=12, total_energy=28, has_exces_potencia=False,
+                  has_autoconsum=False, inductive_is_visible=False,
+                  capacitive_is_visible=False, total_bosocial2023=0, iese=1,
+                  total_rent=2, total_boe17_2021=0, total_altres=0,
+                  total_bosocial=0, impostos={}, has_flux_solar_discount=False,
+                  donatiu=0, total_amount=43)
+        for social in [None, False, True]:
+            if social is not None:
+                data.is_social_tariff = social
+            result = self.render_component("invoice_summary_td", invs=data)
+            self.assertEqual(self.phrase in result, social is True)
+            self.assertIn("28 &euro;", result)
+            self.assertIn("43 &euro;", result)
+
+    def test_energy_social_period_indexed_and_cached_payload(self):
+        line = ns(origin="real", date_from="01/01/2026", date_to="31/01/2026",
+                  total=28, P1=dict(quantity=140, price_unit_multi=0.2, price_subtotal=28))
+        for indexed in [False, True]:
+            for social in [None, False, True]:
+                data = ns(auvi_energy_lines_data=[line], energy_lines_data=[line],
+                          showing_periods=["P1"], header_multi=6, iva_column=False,
+                          indexed=indexed, mag_line_data=False, adjustment_services=False)
+                if social is not None:
+                    data.is_social_tariff = social
+                result = self.render_component("invoice_details_td_energy", id=data)
+                self.assertEqual(self.phrase + u" [€/kWh]" in result, social is True)
+                if not social:
+                    label = (u"Preu mitjà de l'energia" if indexed else u"Preu energia")
+                    self.assertIn(label + u" [€/kWh]", result)
+                self.assertIn(u"Electricitat utilitzada [kWh]", result)
+                self.assertIn(u"Preu energia AV [€/kWh]", result)
+                self.assertIn("140", result)
+                self.assertIn("28", result)
+                self.assertNotIn("*", result)
+
+    def test_generic_flags_zero_to_four_order(self):
+        sources = ["data:image/png;base64," + value for value in ["AA==", "AQ==", "Ag==", "Aw=="]]
+        for count in range(5):
+            data = ns(flag_images=[dict(src=src) for src in sources[:count]])
+            result = self.render_component("flags", flags=data)
+            self.assertEqual(result.count("<img "), count)
+            positions = [result.index('src="' + src + '"') for src in sources[:count]]
+            self.assertEqual(positions, sorted(positions))
+            self.assertNotIn('src=""', result)
+            self.assertNotIn('src="False"', result)
 
     def historical_policy(self, historical_price, current_price, categories=None):
         pol = self.fact.polissa_id
@@ -514,6 +626,9 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
                 "is_gkwh": False,
                 "gkwh_flag": "flag_gkwh_little.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [],
             },
         )
 
@@ -542,6 +657,9 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
                 "is_gkwh": False,
                 "gkwh_flag": "flag_gkwh_little.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_auto_little_ca.png"}],  # noqa: E501
             },
         )
 
@@ -570,6 +688,9 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
                 "is_gkwh": False,
                 "gkwh_flag": "flag_gkwh_little.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_auto_little_es.png"}],  # noqa: E501
             },
         )
 
@@ -598,6 +719,9 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
                 "is_gkwh": True,
                 "gkwh_flag": "flag_gkwh_little.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_gkwh_little.png"}],  # noqa: E501
             },
         )
 
@@ -626,6 +750,12 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
                 "is_gkwh": True,
                 "gkwh_flag": "flag_gkwh_little.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_auto_little_ca.png"},  # noqa: E501
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_gkwh_little.png"},  # noqa: E501
+                ],
             },
         )
 
@@ -654,6 +784,12 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
                 "is_gkwh": True,
                 "gkwh_flag": "flag_gkwh_little.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_auto_little_es.png"},  # noqa: E501
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_gkwh_little.png"},  # noqa: E501
+                ],
             },
         )
 
@@ -668,6 +804,117 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
         }
         fields.update(values)
         return banner_obj.create(self.cursor, self.uid, fields)
+
+    @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
+    @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
+    def test_social_static_catalan_fallback_renders_existing_asset(self, gkwh, auto):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.bf(f_id)
+        self.setup_langs()
+        self.partner_obj.write(self.cursor, self.uid, fact.partner_id.id, {"lang": "ca_ES"})
+        social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
+        self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+            "llista_preu": social_id,
+        }, context={"skip_cnt_llista_preu_compatible": True})
+        component_path = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), "..", "report", "components", "flags"))
+        addons_path = os.path.abspath(os.path.join(component_path, "..", "..", "..", ".."))
+        template = TemplateLookup(directories=[component_path]).get_template("flags.mako")
+        prefix = "/giscedata_facturacio_comer_som/report/components/flags/"
+        expected = [prefix + "flag_auto_little_ca.png",
+                    prefix + "flag_gkwh_little.png",
+                    prefix + "flag-dte-social_ca.png"]
+        result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+        self.assertEqual([item["src"] for item in result["flag_images"]], expected)
+        self.assertFalse(result["social_banner"])
+        html = template.render(flags=ns(result), addons_path=addons_path)
+        self.assertEqual(html.count("<img "), 3)
+        positions = [html.index('src="' + addons_path + src + '"') for src in expected]
+        self.assertEqual(positions, sorted(positions))
+        self.assertTrue(os.path.isfile(addons_path + expected[2]))
+        ordinary_id = self.get_fixture("som_indexada", "pricelist_periodes_20td_peninsula")
+        self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+            "llista_preu": ordinary_id, "category_id": [(6, 0, [])],
+        }, context={"skip_cnt_llista_preu_compatible": True})
+        ordinary = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+        html = template.render(flags=ns(ordinary), addons_path=addons_path)
+        self.assertEqual(html.count("<img "), 2)
+        self.assertNotIn("flag-dte-social", html)
+
+    @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
+    @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
+    def test_social_banner_coexists_and_missing_image_has_no_slot(self, gkwh, auto):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.bf(f_id)
+        social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
+        ordinary_id = self.get_fixture("som_indexada", "pricelist_periodes_20td_peninsula")
+        self.setup_langs()
+        self.partner_obj.write(self.cursor, self.uid, fact.partner_id.id, {"lang": "es_ES"})
+        self.create_flag_banner("invoice_flag_autoconsum_ca", "Y2E=")
+        self.create_flag_banner("invoice_flag_autoconsum_es", "ZXM=")
+        self.create_flag_banner("invoice_flag_gkwh", "/9j/4AAQ")
+        self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+            "llista_preu": social_id,
+        }, context={"skip_cnt_llista_preu_compatible": True})
+        missing = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+        self.assertTrue(missing["is_social_tariff"])
+        self.assertEqual(len(missing["flag_images"]), 2)
+        self.assertFalse(missing["social_banner"])
+        for lang, image in [("ca_ES", "c29jaWFsY2E="), ("es_ES", "c29jaWFsZXM=")]:
+            self.create_flag_banner("invoice_flag_social", image,
+                                    domain="[('lang_partner', '=', '{}')]".format(lang))
+        component_path = os.path.join(
+            os.path.dirname(__file__), "..", "report", "components", "flags")
+        template = TemplateLookup(directories=[component_path]).get_template("flags.mako")
+        self.assertFalse(os.path.isfile(os.path.join(component_path, "flag-dte-social_es.png")))
+        missing_html = template.render(flags=ns(missing), addons_path="/addons")
+        self.assertEqual(missing_html.count("<img "), 2)
+        self.assertNotIn("flag-dte-social", missing_html)
+        for src in ["data:image/png;base64,ZXM=", "data:image/jpeg;base64,/9j/4AAQ"]:
+            self.assertIn('src="' + src + '"', missing_html)
+        for lang, image, social_image in [("ca_ES", "Y2E=", "c29jaWFsY2E="),
+                                          ("es_ES", "ZXM=", "c29jaWFsZXM=")]:
+            self.partner_obj.write(self.cursor, self.uid, fact.partner_id.id, {"lang": lang})
+            result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            expected = ["data:image/png;base64," + image,
+                        "data:image/jpeg;base64,/9j/4AAQ",
+                        "data:image/png;base64," + social_image]
+            self.assertEqual([item["src"] for item in result["flag_images"]], expected)
+            html = template.render(flags=ns(result), addons_path="/addons")
+            self.assertEqual(html.count("<img "), 3)
+            self.assertIn('src="' + expected[2] + '"', html)
+            positions = [html.index('src="' + src + '"') for src in expected]
+            self.assertEqual(positions, sorted(positions))
+            self.assertNotIn("flag-dte-social", html)
+        self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+            "llista_preu": ordinary_id, "category_id": [(6, 0, [])],
+        }, context={"skip_cnt_llista_preu_compatible": True})
+        ordinary = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+        self.assertFalse(ordinary["social_banner"])
+        self.assertEqual(len(ordinary["flag_images"]), 2)
+
+    @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=False)
+    @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=False)
+    def test_social_missing_locale_asset_has_no_image_or_slot(self, gkwh, auto):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.bf(f_id)
+        social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
+        self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+            "llista_preu": social_id,
+        }, context={"skip_cnt_llista_preu_compatible": True})
+        component_path = os.path.join(
+            os.path.dirname(__file__), "..", "report", "components", "flags")
+        template = TemplateLookup(directories=[component_path]).get_template("flags.mako")
+        for lang in ["es_ES", "zz_ZZ"]:
+            with mock.patch.object(giscedata_facturacio_report, "get_lang_partner",
+                                   return_value=lang):
+                result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            self.assertTrue(result["is_social_tariff"])
+            self.assertFalse(result["social_banner"])
+            self.assertEqual(result["flag_images"], [])
+            html = template.render(flags=ns(result), addons_path="/addons")
+            self.assertEqual(html.count("<img "), 0)
+            self.assertNotIn("<div", html)
 
     @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
     @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
@@ -732,8 +979,7 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
         result = template.render(flags=flags, addons_path="/addons")
         self.assertIn('src="data:image/png;base64,aW1hZ2U="', result)
         self.assertIn('/flags/flag_gkwh_little.png', result)
-        self.assertIn('logo_little_left', result)
-        self.assertIn('logo_little_right', result)
+        self.assertEqual(result.count('<img '), 2)
 
         legacy_flags = ns({
             "is_autoconsum": True,
@@ -743,7 +989,7 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
         })
         legacy_result = template.render(flags=legacy_flags, addons_path="/addons")
         self.assertIn('/flags/flag_auto_little_ca.png', legacy_result)
-        self.assertIn('logo_little_center', legacy_result)
+        self.assertEqual(legacy_result.count('<img '), 1)
 
 
 class Tests_FacturacioFacturaReport_renovation_date(Tests_FacturacioFacturaReport_base):
