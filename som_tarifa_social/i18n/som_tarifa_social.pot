@@ -1,0 +1,216 @@
+#. module: som_tarifa_social
+#: constraint:product.pricelist:0
+msgid "Error: La data inici ofertable ha de ser més petita que la data fi ofertable"
+msgstr ""
+
+#. module: som_tarifa_social
+#: selection:wizard.change.tariff.social,state:0
+msgid "End"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:poweremail.templates,def_subject:som_tarifa_social.anti_social_email
+#: model:poweremail.templates,def_subject:som_tarifa_social.social_email
+msgid "Entrada a la tarifa social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:product.pricelist,nom_comercial:som_tarifa_social.tarifa_20TD_SOM_SOCIAL
+msgid "2.0TD Períodes Península Social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:product.pricelist,name:som_tarifa_social.tarifa_indexada_20TD_balears_social
+msgid "Indexada 2.0TD Balears SOCIAL"
+msgstr ""
+
+#. module: som_tarifa_social
+#: selection:wizard.change.tariff.social,state:0
+msgid "Init"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:poweremail.templates,def_body_text:som_tarifa_social.anti_social_email
+#: model:poweremail.templates,def_body_text:som_tarifa_social.social_email
+msgid "\n"
+"                <!doctype html>\n"
+"                <html>\n"
+"                <head></head>\n"
+"                <body>\n"
+"                Email text\n"
+"                </body>\n"
+"                </html>\n"
+"                \n"
+"            "
+msgstr ""
+
+#. module: som_tarifa_social
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr ""
+
+#. module: som_tarifa_social
+#: constraint:ir.model:0
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr ""
+
+#. module: som_tarifa_social
+#: selection:wizard.change.tariff.social,state:0
+msgid "Email"
+msgstr ""
+
+#. module: som_tarifa_social
+#: selection:wizard.change.tariff.social,change_type:0
+msgid "To regular tariff"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:ir.actions.act_window,name:som_tarifa_social.action_change_to_regular
+msgid "Wizard canviar pòlissa a tarifa no social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:product.pricelist,nom_comercial:som_tarifa_social.tarifa_20TD_SOM_INSULAR_SOCIAL
+msgid "2.0TD Períodes Insular Social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: selection:wizard.change.tariff.social,change_type:0
+msgid "To social tariff"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:product.pricelist,name:som_tarifa_social.tarifa_indexada_20TD_canaries_social
+msgid "Indexada 2.0TD Canàries SOCIAL"
+msgstr ""
+
+#. module: som_tarifa_social
+#: view:wizard.change.tariff.social:0
+msgid "Finalitzar"
+msgstr ""
+
+#. module: som_tarifa_social
+#: view:wizard.change.tariff.social:0
+msgid "Cancel·lar"
+msgstr ""
+
+#. module: som_tarifa_social
+#: view:wizard.change.tariff.social:0
+msgid "Canviar a no social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture! Check server logs for details (view name, model, line number and RNG error)."
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:ir.module.module,shortdesc:som_tarifa_social.module_meta_information
+msgid "SomEnergia Tarifa social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: field:wizard.change.tariff.social,change_type:0
+msgid "Change type"
+msgstr ""
+
+#. module: som_tarifa_social
+#: field:wizard.change.tariff.social,polissa_id:0
+msgid "Contracte"
+msgstr ""
+
+#. module: som_tarifa_social
+#: view:wizard.change.tariff.social:0
+msgid "S'ha passat la pòlissa a social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: view:wizard.change.tariff.social:0
+msgid "Canviar mode facturació de la pòlissa"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:ir.model,name:som_tarifa_social.model_wizard_change_tariff_social
+msgid "wizard.change.tariff.social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: view:wizard.change.tariff.social:0
+msgid "Enviar correu (info+condicions)"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:ir.module.module,description:som_tarifa_social.module_meta_information
+msgid "Mòdul que conté la lògica per posar i treure la tarifa social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:product.pricelist,name:som_tarifa_social.tarifa_indexada_20TD_peninsula_social
+msgid "Indexada 2.0TD Península SOCIAL"
+msgstr ""
+
+#. module: som_tarifa_social
+#: view:wizard.change.tariff.social:0
+msgid "S'ha passat la pòlissa a no social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: field:wizard.change.tariff.social,pricelist_id:0
+msgid "Tarifa"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:product.pricelist,name:som_tarifa_social.tarifa_20TD_SOM_INSULAR_SOCIAL
+msgid "2.0TD_SOM_INSULAR_SOCIAL"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:product.pricelist,nom_comercial:som_tarifa_social.tarifa_indexada_20TD_peninsula_social
+msgid "2.0TD Indexada Península SOCIAL"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:giscedata.polissa.category,name:som_tarifa_social.categ_tarifa_social
+msgid "Tarifa Social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:product.pricelist,name:som_tarifa_social.tarifa_20TD_SOM_SOCIAL
+msgid "2.0TD_SOM_SOCIAL"
+msgstr ""
+
+#. module: som_tarifa_social
+#: field:wizard.change.tariff.social,state:0
+msgid "State"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:ir.actions.act_window,name:som_tarifa_social.action_change_to_social
+msgid "Wizard canviar pòlissa a tarifa social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: constraint:giscedata.polissa.category:0
+msgid "Error ! No pots crear categories recursives."
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:product.pricelist,nom_comercial:som_tarifa_social.tarifa_indexada_20TD_balears_social
+msgid "2.0TD Indexada Balears SOCIAL"
+msgstr ""
+
+#. module: som_tarifa_social
+#: view:wizard.change.tariff.social:0
+msgid "E-mail enviat"
+msgstr ""
+
+#. module: som_tarifa_social
+#: view:wizard.change.tariff.social:0
+msgid "Canviar a social"
+msgstr ""
+
+#. module: som_tarifa_social
+#: model:product.pricelist,nom_comercial:som_tarifa_social.tarifa_indexada_20TD_canaries_social
+msgid "2.0TD Indexada Canarias SOCIAL"
+msgstr ""
+
