@@ -213,4 +213,3 @@ msgstr ""
 #: model:product.pricelist,nom_comercial:som_tarifa_social.tarifa_indexada_20TD_canaries_social
 msgid "2.0TD Indexada Canarias SOCIAL"
 msgstr ""
-
