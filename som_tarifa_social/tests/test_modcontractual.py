@@ -12,6 +12,152 @@ from som_polissa.exceptions import exceptions
 
 class TestModcontractual(testing.OOTestCaseWithCursor):
 
+    def _assert_applied_categories(self, company=True, change_price=False,
+                                   social_price=False, enter_social=False,
+                                   override_policy=False, has_social=True):
+        polissa_obj = self.openerp.pool.get("giscedata.polissa")
+        modcon_obj = self.openerp.pool.get("giscedata.polissa.modcontractual")
+        imd_obj = self.openerp.pool.get("ir.model.data")
+
+        def reference(module, name):
+            return imd_obj.get_object_reference(
+                self.cursor, self.uid, module, name,
+            )[1]
+
+        polissa_id = reference("giscedata_polissa", "polissa_tarifa_018")
+        regular_id = reference(
+            "som_indexada", "pricelist_indexada_20td_peninsula_2024",
+        )
+        social_id = reference(
+            "som_tarifa_social", "tarifa_indexada_20TD_peninsula_social",
+        )
+        company_id = reference("som_polissa", "categ_tarifa_empresa")
+        category_id = reference("som_tarifa_social", "categ_tarifa_social")
+        other_id = self.openerp.pool.get("giscedata.polissa.category").create(
+            self.cursor, self.uid, {"name": "Unrelated", "code": "OTHER"},
+        )
+        previous_id = social_id if social_price else regular_id
+        polissa_obj.write(self.cursor, self.uid, polissa_id, {
+            "llista_preu": previous_id,
+            "tarifa": reference("giscedata_polissa", "tarifa_20TD"),
+            "mode_facturacio": "index",
+            "mode_facturacio_generacio": "index",
+        })
+        polissa_obj.send_signal(
+            self.cursor, self.uid, [polissa_id], ["validar", "contracte"],
+        )
+        categories_before = [other_id]
+        if has_social and not enter_social:
+            categories_before.append(category_id)
+        if company:
+            categories_before.append(company_id)
+        polissa_obj.write(self.cursor, self.uid, [polissa_id], {
+            "category_id": [(6, 0, categories_before)],
+        })
+        vals = modcon_obj.get_vals_from_polissa(
+            self.cursor, self.uid, polissa_id,
+        )
+        target_id = previous_id
+        if change_price:
+            target_id = self.openerp.pool.get("product.pricelist").copy(
+                self.cursor, self.uid, regular_id,
+                {"name": "Another ordinary indexed price"},
+            )
+        if social_price:
+            target_id = regular_id
+        if enter_social:
+            target_id = social_id
+        vals.update({
+            "llista_preu": target_id,
+            "data_firma_contracte": "2000-01-01 00:00:00",
+        })
+        source_id = None
+        if override_policy:
+            source_id = reference("giscedata_polissa", "polissa_tarifa_019")
+            polissa_obj.write(self.cursor, self.uid, source_id, {
+                "llista_preu": regular_id if social_price else social_id,
+                "tarifa": reference("giscedata_polissa", "tarifa_20TD"),
+                "mode_facturacio": "index",
+                "mode_facturacio_generacio": "index",
+                "category_id": [
+                    (6, 0, [] if company else [company_id, category_id]),
+                ],
+            })
+            vals["polissa_id"] = source_id
+            source_before = polissa_obj.read(
+                self.cursor, self.uid, source_id,
+                ["llista_preu", "category_id", "modcontractual_activa"],
+            )
+        modcon_id = modcon_obj.create(self.cursor, self.uid, vals)
+        before = polissa_obj.read(
+            self.cursor, self.uid, polissa_id,
+            ["llista_preu", "category_id", "data_firma_contracte"],
+        )
+        self.assertEqual(before["llista_preu"][0], previous_id)
+        self.assertEqual(set(before["category_id"]), set(categories_before))
+        self.assertNotEqual(
+            before["data_firma_contracte"], "2000-01-01 00:00:00",
+        )
+
+        modcon_obj.aplicar_modificacio(
+            self.cursor, self.uid, modcon_id,
+            polissa_id=polissa_id if override_policy else None,
+        )
+
+        after = polissa_obj.read(
+            self.cursor, self.uid, polissa_id,
+            ["llista_preu", "category_id", "data_firma_contracte",
+             "modcontractual_activa"],
+        )
+        self.assertEqual(after["llista_preu"][0], target_id)
+        self.assertEqual(after["modcontractual_activa"][0], modcon_id)
+        self.assertEqual(
+            after["data_firma_contracte"], "2000-01-01 00:00:00",
+        )
+        expected = set(categories_before)
+        if enter_social:
+            expected.add(category_id)
+        elif social_price and not (company and has_social):
+            expected.discard(category_id)
+        self.assertEqual(
+            category_id in after["category_id"], category_id in expected,
+        )
+        self.assertTrue(expected.issubset(set(after["category_id"])))
+        if source_id:
+            self.assertEqual(polissa_obj.read(
+                self.cursor, self.uid, source_id,
+                ["llista_preu", "category_id", "modcontractual_activa"],
+            ), source_before)
+
+    def test_apply_business_social_keeps_category_on_unrelated_change(self):
+        self._assert_applied_categories()
+
+    def test_apply_business_social_keeps_category_across_ordinary_prices(self):
+        self._assert_applied_categories(change_price=True)
+
+    def test_apply_business_social_keeps_category_on_mapped_social_exit(self):
+        self._assert_applied_categories(social_price=True)
+
+    def test_apply_noncompany_category_only_kept_without_social_price_exit(self):
+        self._assert_applied_categories(company=False)
+
+    def test_apply_noncompany_social_price_exit_removes_only_social_category(self):
+        self._assert_applied_categories(company=False, social_price=True)
+
+    def test_apply_mapped_social_price_adds_category(self):
+        self._assert_applied_categories(company=False, enter_social=True)
+
+    def test_apply_business_without_social_category_does_not_gain_it(self):
+        self._assert_applied_categories(has_social=False)
+
+    def test_apply_policy_override_preserves_target_business_social(self):
+        self._assert_applied_categories(override_policy=True)
+
+    def test_apply_policy_override_removes_target_noncompany_social(self):
+        self._assert_applied_categories(
+            company=False, social_price=True, override_policy=True,
+        )
+
     def test_renovar_social_contract_creates_regular_pending_modcon(self):
         self._assert_social_expiry(
             "atr", "tarifa_20TD_SOM_SOCIAL",
@@ -56,8 +202,11 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
         category_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_tarifa_social", "categ_tarifa_social",
         )[1]
+        company_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa", "categ_tarifa_empresa",
+        )[1]
         polissa_obj.write(self.cursor, self.uid, [polissa_id], {
-            "category_id": [(4, category_id)],
+            "category_id": [(4, category_id), (3, company_id)],
         })
         categories_before = polissa_obj.read(
             self.cursor, self.uid, polissa_id, ["category_id"],
