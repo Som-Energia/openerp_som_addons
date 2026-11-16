@@ -9,23 +9,41 @@ class GiscedataPolissaModcontractual(osv.osv):
     _inherit = "giscedata.polissa.modcontractual"
 
     def aplicar_modificacio(self, cursor, uid, mod_id, polissa_id=None):
+        modcon = self.browse(cursor, uid, mod_id)
+        target_polissa_id = polissa_id or modcon.polissa_id.id
+        target_pricelist_id = modcon.llista_preu.id
+        polissa_obj = self.pool.get("giscedata.polissa")
+        imd_obj = self.pool.get("ir.model.data")
+        category_id = imd_obj.get_object_reference(
+            cursor, uid, "som_tarifa_social", "categ_tarifa_social"
+        )[1]
+        company_category_id = imd_obj.get_object_reference(
+            cursor, uid, "som_polissa", "categ_tarifa_empresa"
+        )[1]
+        social_ids = polissa_obj.mapping_tarifa_social(cursor, uid).values()
+        # Snapshot the effective policy before super replaces its price.
+        previous = polissa_obj.read(
+            cursor, uid, target_polissa_id, ["llista_preu", "category_id"],
+        )
+        previous_pricelist_id = (
+            previous["llista_preu"][0] if previous["llista_preu"] else False
+        )
+        preserve_company_social = (
+            company_category_id in previous["category_id"]
+            and category_id in previous["category_id"]
+        )
         result = super(GiscedataPolissaModcontractual, self).aplicar_modificacio(
             cursor, uid, mod_id, polissa_id=polissa_id
         )
-        modcon = self.browse(cursor, uid, mod_id)
-        polissa_id = polissa_id or modcon.polissa_id.id
-        polissa_obj = self.pool.get("giscedata.polissa")
-        category_id = self.pool.get("ir.model.data").get_object_reference(
-            cursor, uid, "som_tarifa_social", "categ_tarifa_social"
-        )[1]
-        social_ids = polissa_obj.mapping_tarifa_social(cursor, uid).values()
         add_category = 4
         remove_category = 3
-        if modcon.llista_preu.id in social_ids:
+        if target_pricelist_id in social_ids:
             category_command = (add_category, category_id)
-        else:
+        elif not preserve_company_social and previous_pricelist_id in social_ids:
             category_command = (remove_category, category_id)
-        polissa_obj.write(cursor, uid, [polissa_id], {
+        else:
+            return result
+        polissa_obj.write(cursor, uid, [target_polissa_id], {
             "category_id": [category_command],
         })
         return result
