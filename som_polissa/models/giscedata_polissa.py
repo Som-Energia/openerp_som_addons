@@ -93,7 +93,7 @@ class GiscedataPolissa(osv.osv):
 
     @readonly()
     def _cron_sincronitzar_data_ultima_lectura_f1(self, cursor, uid, context=None):
-        """ Cron per sincronitzar la data de última lectura F1 si es anterior a la data de ultima lectura facturada """
+        """ Cron per sincronitzar la data de última lectura F1 si es anterior a la data de ultima lectura facturada """  # noqa: E501
 
         logger = logging.getLogger('openerp._cron_sincronitzar_data_ultima_lectura_f1')
         logger.info("Buscant contractes a sincronitzar data ultima lectura f1")
@@ -109,9 +109,9 @@ class GiscedataPolissa(osv.osv):
                 data_ultima_lectura = row['data_ultima_lectura']
                 try:
                     with self.api.db.cursor() as write_cursor:
-                        self.write(write_cursor, uid, polissa_id, {'data_ultima_lectura_f1': data_ultima_lectura})
+                        self.write(write_cursor, uid, polissa_id, {'data_ultima_lectura_f1': data_ultima_lectura})  # noqa: E501
                 except Exception as e:
-                    logger.error("Error actualitzant sincronitzant la data del contracte amb ID {}.".format(polissa_id))
+                    logger.error("Error actualitzant sincronitzant la data del contracte amb ID {}.".format(polissa_id))  # noqa: E501
                     continue
 
             logger.info("S'han sincronitzat correctament tots els contractes.".format(len(res)))
