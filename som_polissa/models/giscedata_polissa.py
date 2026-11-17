@@ -109,9 +109,12 @@ class GiscedataPolissa(osv.osv):
                 data_ultima_lectura = row['data_ultima_lectura']
                 try:
                     with self.api.db.cursor() as write_cursor:
-                        self.write(write_cursor, uid, polissa_id, {'data_ultima_lectura_f1': data_ultima_lectura})  # noqa: E501
+                        self.write(write_cursor, uid, polissa_id, {
+                            'data_ultima_lectura_f1': data_ultima_lectura
+                        })
                 except Exception as e:
-                    logger.error("Error actualitzant sincronitzant la data del contracte amb ID {}.".format(polissa_id))  # noqa: E501
+                    logger.error("Error actualitzant sincronitzant la data del contracte "
+                                 "amb ID {}. Error: {}".format(polissa_id, e.message))
                     continue
 
             logger.info("S'han sincronitzat correctament tots els contractes.".format(len(res)))

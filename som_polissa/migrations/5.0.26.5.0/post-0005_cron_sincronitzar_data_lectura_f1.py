@@ -9,10 +9,10 @@ def up(cursor, installed_version):
         return
 
     helper = MigrationHelper(cursor, module_name='som_polissa')
-    helper.update_xml_records(xml_path='/data/som_polissa_data.xml',
-        init_record_ids=[
-            'ir_cron_sincronitzar_data_lectura_f1',
-        ])
+    helper.update_xml_records(
+        xml_path='/data/som_polissa_data.xml',
+        init_record_ids=['ir_cron_sincronitzar_data_lectura_f1']
+    )
 
 
 def down(cursor, installed_version):
