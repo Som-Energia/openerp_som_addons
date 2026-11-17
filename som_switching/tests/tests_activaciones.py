@@ -560,7 +560,10 @@ class TestsAutoActiva(testing.OOTestCase):
 
         # Cridem l'assistent de crear R1 amb el context obringut.
         wiz_o = self.openerp.pool.get("wizard.subtype.r1")
-        wiz_id = wiz_o.create(cursor, uid, {"comentaris": "TEST"}, context)
+        wiz_id = wiz_o.create(cursor, uid, {
+            "comentaris": "TEST",
+            "reclamacio_tipus_atencio_incorrecte": "05",
+        }, context)
         res = wiz_o.action_create_r1_case(cursor, uid, [wiz_id], context)
         r1_id = dict(res).get("domain")[0][2]
         r1 = self.openerp.pool.get("giscedata.switching").browse(cursor, uid, r1_id)
