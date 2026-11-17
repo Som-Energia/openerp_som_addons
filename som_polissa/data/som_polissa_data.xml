@@ -86,5 +86,17 @@
             <field name="function" eval="'_cron_cancel_draft_polisses'"/>
             <field name="args" eval="'({},)'"/>
         </record>
+        <record model="ir.cron" id="ir_cron_sincronitzar_data_lectura_f1" forcecreate="1">
+            <field name="name">Sincronitzar data última lectura f1</field>
+            <field name="active" eval="0"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="0"/>
+            <field name="model" eval="'giscedata.polissa'"/>
+            <field name="function" eval="'_cron_sincronitzar_data_ultima_lectura_f1'"/>
+            <field name="args" eval="()"/>
+        </record>
     </data>
 </openerp>
