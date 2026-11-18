@@ -5,3 +5,4 @@ from . import holder_change_payload
 from . import holder_change_request
 from . import report_backend
 from . import giscedata_switching_helpers
+from . import giscedata_signatura_process

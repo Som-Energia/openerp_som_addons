@@ -183,6 +183,9 @@ class SomHolderChangeRequest(osv.osv):
         )
         request = self.browse(cursor, uid, request_id, context=context)
         if request.state == "completed":
+            self._copy_signed_documents(
+                cursor, uid, request_id, request.result_polissa_id.id, context=context
+            )
             self._notify_completed_request(cursor, uid, request_id, context=context)
             return {
                 "switching_id": request.switching_id.id,
@@ -204,6 +207,7 @@ class SomHolderChangeRequest(osv.osv):
         switching_id, polissa_id, _mandate_id, new_member_partner_id = self._run_holder_change(
             cursor, uid, request, context=context
         )
+        self._copy_signed_documents(cursor, uid, request_id, polissa_id, context=context)
         super(SomHolderChangeRequest, self).write(
             cursor,
             uid,
@@ -218,6 +222,68 @@ class SomHolderChangeRequest(osv.osv):
         )
         self._notify_completed_request(cursor, uid, request_id, context=context)
         return {"switching_id": switching_id, "result_polissa_id": polissa_id}
+
+    def _archive_signed_documents(self, cursor, uid, request_id, context=None):
+        cursor.execute(
+            "SELECT id FROM som_holder_change_request WHERE id = %s FOR UPDATE",
+            (request_id,),
+        )
+        request = self.browse(cursor, uid, request_id, context=context)
+        process = request.signature_process_id
+        if not process or process.status != "completed":
+            return []
+
+        attachment_obj = self.pool.get("ir.attachment")
+        process_obj = self.pool.get("giscedata.signatura.process")
+        provider_context = dict(context or {}, provider=process.provider)
+        attachment_ids = []
+        for document in process.files:
+            if document.status != "completed" or not document.signature_id:
+                raise ValueError("Signed document is not ready: {}".format(document.id))
+            description = "Signatura digital: {}/{}".format(process.id, document.id)
+            existing = attachment_obj.search(
+                cursor, uid,
+                [("res_model", "=", self._name), ("res_id", "=", request_id),
+                 ("description", "=", description)],
+                context=context,
+            )
+            if existing:
+                attachment_ids.extend(existing)
+                continue
+            signed_pdf = process_obj.signed_document(
+                cursor, uid, process.signature_id, document.signature_id,
+                context=provider_context,
+            )
+            if not signed_pdf:
+                raise ValueError("Signed document is empty: {}".format(document.id))
+            attachment_ids.append(attachment_obj.create(
+                cursor, uid,
+                {"name": document.filename, "datas_fname": document.filename,
+                 "datas": base64.b64encode(signed_pdf),
+                 "res_model": self._name, "res_id": request_id,
+                 "description": description, "category_id": document.category_id.id},
+                context=context,
+            ))
+        return attachment_ids
+
+    def _copy_signed_documents(self, cursor, uid, request_id, polissa_id, context=None):
+        attachment_ids = self._archive_signed_documents(
+            cursor, uid, request_id, context=context
+        )
+        attachment_obj = self.pool.get("ir.attachment")
+        for attachment in attachment_obj.browse(cursor, uid, attachment_ids, context=context):
+            existing = attachment_obj.search(
+                cursor, uid,
+                [("res_model", "=", "giscedata.polissa"), ("res_id", "=", polissa_id),
+                 ("description", "=", attachment.description)],
+                context=context,
+            )
+            if not existing:
+                attachment_obj.copy(
+                    cursor, uid, attachment.id,
+                    {"res_model": "giscedata.polissa", "res_id": polissa_id},
+                    context=context,
+                )
 
     def write(self, cursor, uid, ids, values, context=None):
         immutable = IMMUTABLE_FIELDS.intersection(values)
