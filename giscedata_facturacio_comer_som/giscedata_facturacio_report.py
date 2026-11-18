@@ -1322,12 +1322,18 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         is_gkwh = te_gkwh(fact)
         data = {
             "is_autoconsum": is_autoconsum,
-            "autoconsum_flag": "flag_auto_little_{}.png".format(lang),
+            "autoconsum_flag": {
+                "ca": "flag-auto_ca.png",
+                "es": "flag-auto-es.png",
+            }.get(lang, "flag_auto_little_{}.png".format(lang)),
             "autoconsum_banner": self.get_flag_banner(
                 fact, "invoice_flag_autoconsum_{}".format(lang)
             ) if is_autoconsum else False,
             "is_gkwh": is_gkwh,
-            "gkwh_flag": "flag_gkwh_little.png",
+            "gkwh_flag": (
+                "flag-GkWh_{}.png".format(lang)
+                if lang in ("ca", "es") else "flag_gkwh_little.png"
+            ),
             "gkwh_banner": self.get_flag_banner(
                 fact, "invoice_flag_gkwh"
             ) if is_gkwh else False,

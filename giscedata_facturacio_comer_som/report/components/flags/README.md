@@ -7,8 +7,8 @@ Els registres no es creen automàticament.
 
 | Tipus | Codi de `report.banner` | Fitxers de reserva en aquest directori |
 | --- | --- | --- |
-| Autoconsum | `invoice_flag_autoconsum_ca` / `invoice_flag_autoconsum_es` | `flag_auto_little_ca.png` / `flag_auto_little_es.png` |
-| Generation kWh | `invoice_flag_gkwh` | `flag_gkwh_little.png` (comú als idiomes) |
+| Autoconsum | `invoice_flag_autoconsum_ca` / `invoice_flag_autoconsum_es` | `flag-auto_ca.png` / `flag-auto-es.png` |
+| Generation kWh | `invoice_flag_gkwh` | `flag-GkWh_ca.png` / `flag-GkWh_es.png` |
 | Tarifa social | `invoice_flag_social` | `flag-dte-social_ca.png` / `flag-dte-social_es.png` |
 
 ## Configuració i idioma
@@ -25,8 +25,12 @@ registres amb el mateix codi i dominis com `[('lang_partner', '=', 'ca_ES')]` o
 `[('lang_partner', '=', 'es_ES')]`. El selector no afegeix cap filtre d'idioma
 automàtic.
 
-Els fitxers de reserva d'autoconsum i tarifa social es trien amb les dues
-primeres lletres de l'idioma del destinatari, en minúscules. Els dos PNG socials
+Els fitxers de reserva es trien amb les dues primeres lletres de l'idioma del
+destinatari, en minúscules. Per a català i castellà s'usen els noms exactes de
+la taula, inclòs el guió de `flag-auto-es.png`. Per als altres idiomes es manté
+la reserva anterior: `flag_auto_little_<idioma>.png` per a autoconsum i
+`flag_gkwh_little.png` per a Generation kWh, sense seleccionar un altre idioma.
+Els dos PNG socials
 de la taula existeixen; el sufix selecciona el fitxer, però no en tradueix el
 contingut. Feu servir una imatge amb el text adequat a cada idioma.
 

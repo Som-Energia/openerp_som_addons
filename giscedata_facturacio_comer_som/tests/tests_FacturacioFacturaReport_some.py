@@ -621,10 +621,10 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": False,
-                "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_flag": "flag-auto-es.png",
                 "autoconsum_banner": False,
                 "is_gkwh": False,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_es.png",
                 "gkwh_banner": False,
                 "is_social_tariff": False,
                 "social_banner": False,
@@ -652,14 +652,14 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": True,
-                "autoconsum_flag": "flag_auto_little_ca.png",
+                "autoconsum_flag": "flag-auto_ca.png",
                 "autoconsum_banner": False,
                 "is_gkwh": False,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_ca.png",
                 "gkwh_banner": False,
                 "is_social_tariff": False,
                 "social_banner": False,
-                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_auto_little_ca.png"}],  # noqa: E501
+                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-auto_ca.png"}],  # noqa: E501
             },
         )
 
@@ -683,14 +683,14 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": True,
-                "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_flag": "flag-auto-es.png",
                 "autoconsum_banner": False,
                 "is_gkwh": False,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_es.png",
                 "gkwh_banner": False,
                 "is_social_tariff": False,
                 "social_banner": False,
-                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_auto_little_es.png"}],  # noqa: E501
+                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-auto-es.png"}],  # noqa: E501
             },
         )
 
@@ -714,14 +714,14 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": False,
-                "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_flag": "flag-auto-es.png",
                 "autoconsum_banner": False,
                 "is_gkwh": True,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_es.png",
                 "gkwh_banner": False,
                 "is_social_tariff": False,
                 "social_banner": False,
-                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_gkwh_little.png"}],  # noqa: E501
+                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-GkWh_es.png"}],  # noqa: E501
             },
         )
 
@@ -745,16 +745,16 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": True,
-                "autoconsum_flag": "flag_auto_little_ca.png",
+                "autoconsum_flag": "flag-auto_ca.png",
                 "autoconsum_banner": False,
                 "is_gkwh": True,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_ca.png",
                 "gkwh_banner": False,
                 "is_social_tariff": False,
                 "social_banner": False,
                 "flag_images": [
-                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_auto_little_ca.png"},  # noqa: E501
-                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_gkwh_little.png"},  # noqa: E501
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-auto_ca.png"},  # noqa: E501
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-GkWh_ca.png"},  # noqa: E501
                 ],
             },
         )
@@ -779,19 +779,36 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": True,
-                "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_flag": "flag-auto-es.png",
                 "autoconsum_banner": False,
                 "is_gkwh": True,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_es.png",
                 "gkwh_banner": False,
                 "is_social_tariff": False,
                 "social_banner": False,
                 "flag_images": [
-                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_auto_little_es.png"},  # noqa: E501
-                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag_gkwh_little.png"},  # noqa: E501
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-auto-es.png"},  # noqa: E501
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-GkWh_es.png"},  # noqa: E501
                 ],
             },
         )
+
+    @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
+    @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
+    def test_unsupported_flag_locale_preserves_legacy_fallbacks(self, gkwh, auto):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        prefix = "/giscedata_facturacio_comer_som/report/components/flags/"
+        for lang in ["en_US", "zz_ZZ"]:
+            with mock.patch.object(giscedata_facturacio_report, "get_lang_partner",
+                                   return_value=lang):
+                result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            auto_flag = "flag_auto_little_{}.png".format(lang[:2])
+            self.assertEqual(result["autoconsum_flag"], auto_flag)
+            self.assertEqual(result["gkwh_flag"], "flag_gkwh_little.png")
+            self.assertEqual(result["flag_images"], [
+                {"src": prefix + auto_flag},
+                {"src": prefix + "flag_gkwh_little.png"},
+            ])
 
     def create_flag_banner(self, code, image, **values):
         banner_obj = self.model("report.banner")
@@ -818,13 +835,15 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
         template = TemplateLookup(directories=[component_path]).get_template("flags.mako")
         prefix = "/giscedata_facturacio_comer_som/report/components/flags/"
         ordinary_id = self.get_fixture("som_indexada", "pricelist_periodes_20td_peninsula")
-        for lang, suffix in [("ca_ES", "ca"), ("es_ES", "es")]:
+        for lang, suffix, auto_flag in [
+                ("ca_ES", "ca", "flag-auto_ca.png"),
+                ("es_ES", "es", "flag-auto-es.png")]:
             self.partner_obj.write(self.cursor, self.uid, fact.partner_id.id, {"lang": lang})
             self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
                 "llista_preu": social_id,
             }, context={"skip_cnt_llista_preu_compatible": True})
-            expected = [prefix + "flag_auto_little_{}.png".format(suffix),
-                        prefix + "flag_gkwh_little.png",
+            expected = [prefix + auto_flag,
+                        prefix + "flag-GkWh_{}.png".format(suffix),
                         prefix + "flag-dte-social_{}.png".format(suffix)]
             result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
             self.assertEqual([item["src"] for item in result["flag_images"]], expected)
@@ -833,7 +852,8 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             self.assertEqual(html.count("<img "), 3)
             positions = [html.index('src="' + addons_path + src + '"') for src in expected]
             self.assertEqual(positions, sorted(positions))
-            self.assertTrue(os.path.isfile(addons_path + expected[2]))
+            for src in expected:
+                self.assertTrue(os.path.isfile(addons_path + src), src)
             self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
                 "llista_preu": ordinary_id, "category_id": [(6, 0, [])],
             }, context={"skip_cnt_llista_preu_compatible": True})
