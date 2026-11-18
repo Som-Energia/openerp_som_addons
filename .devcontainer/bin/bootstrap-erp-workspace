@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../helpers/common.sh"
+
+wait_for_dependencies
+export_runtime_environment
+
+if workspace_needs_private_repo_access; then
+	require_real_github_token
+else
+	echo "Mounted workspace already contains the private repositories; bootstrap will continue without cloning"
+fi
+
+echo "Bootstrapping ERP workspace into ${ROOT_DIR_SRC} using PYENV_VERSION=${PYENV_VERSION}"
+bootstrap_workspace_sources
+
+if workspace_python_is_ready; then
+	echo "Python environment already satisfies the devcontainer runtime checks (six + destral.utils)"
+	echo "Refreshing editable installs and addon links to keep the mounted workspace aligned"
+else
+	echo "Python environment is incomplete for the mounted workspace; installing missing dependencies"
+fi
+
+install_workspace_python_packages
+export_runtime_environment
+
+if ! workspace_python_is_ready; then
+	echo "Bootstrap completed but Python environment is still missing required imports" >&2
+	echo "Expected imports: six, destral.utils" >&2
+	exit 1
+fi
+
+echo "ERP workspace bootstrap completed"
