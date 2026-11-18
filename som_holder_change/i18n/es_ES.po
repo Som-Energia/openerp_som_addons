@@ -525,3 +525,27 @@ msgstr "Se ha agotado el tiempo de espera de la URL de firma."
 #: code:addons/som_holder_change/www/holder_change_www.py:0
 msgid "The new holder must differ from the current holder."
 msgstr "La nueva persona titular debe ser distinta de la actual."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The signature process is not awaiting a signature."
+msgstr "El proceso de firma no está pendiente de firmar."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The signature URL is not available yet."
+msgstr "La URL de firma todavía no está disponible."
+
+#: view:som.holder.change.request:0
+msgid "Enviar correu per signar"
+msgstr "Enviar correo para firmar"
+
+#: view:som.holder.change.request:0
+msgid "Vols enviar ara el correu per signar els documents?"
+msgstr "¿Quieres enviar ahora el correo para firmar los documentos?"
+
+#: model:poweremail.templates,def_body_text:som_holder_change.email_signature_process_holder_change
+msgid ""
+"<p>Signa el contracte i, si escau, el mandat SEPA:</p>\n"
+"<p><a href=\"${env.get('signature', {}).get('signature_url', '')}\">Signar documents</a></p>"
+msgstr ""
+"<p>Firma el contrato y, si corresponde, el mandato SEPA:</p>\n"
+"<p><a href=\"${env.get('signature', {}).get('signature_url', '')}\">Firmar documentos</a></p>"

@@ -460,7 +460,7 @@ msgstr ""
 
 #: model:poweremail.templates,def_subject:som_holder_change.email_signature_process_holder_change
 msgid "Sol·licitud de signatura del canvi de titular"
-msgstr "Holder change signature request"
+msgstr "Sol·licitud de signatura del canvi de titular"
 
 #: field:som.holder.change.request,report_snapshot:0
 msgid "Prepared card reports"
@@ -517,3 +517,27 @@ msgstr "Timed out waiting for the signature URL."
 #: code:addons/som_holder_change/www/holder_change_www.py:0
 msgid "The new holder must differ from the current holder."
 msgstr "The new holder must differ from the current holder."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The signature process is not awaiting a signature."
+msgstr "The signature process is not awaiting a signature."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The signature URL is not available yet."
+msgstr "The signature URL is not available yet."
+
+#: view:som.holder.change.request:0
+msgid "Enviar correu per signar"
+msgstr "Enviar correu per signar"
+
+#: view:som.holder.change.request:0
+msgid "Vols enviar ara el correu per signar els documents?"
+msgstr "Vols enviar ara el correu per signar els documents?"
+
+#: model:poweremail.templates,def_body_text:som_holder_change.email_signature_process_holder_change
+msgid ""
+"<p>Signa el contracte i, si escau, el mandat SEPA:</p>\n"
+"<p><a href=\"${env.get('signature', {}).get('signature_url', '')}\">Signar documents</a></p>"
+msgstr ""
+"<p>Signa el contracte i, si escau, el mandat SEPA:</p>\n"
+"<p><a href=\"${env.get('signature', {}).get('signature_url', '')}\">Signar documents</a></p>"

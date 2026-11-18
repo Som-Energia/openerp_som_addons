@@ -57,6 +57,11 @@
                         <page string="Signatura i notificacions">
                             <group colspan="4" col="4">
                                 <field name="signature_process_id"/>
+                                <button name="send_sign_email" type="object"
+                                        string="Enviar correu per signar"
+                                        icon="mail-fast" colspan="2"
+                                        attrs="{'invisible': [('signature_process_id', '=', False)]}"
+                                        confirm="Vols enviar ara el correu per signar els documents?"/>
                                 <field name="owner_notification_sent"/>
                                 <field name="old_owner_notification_sent"/>
                                 <field name="member_notification_sent"/>

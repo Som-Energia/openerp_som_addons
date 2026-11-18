@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import os
+
 from osv import osv
+
+import mock
+from poweremail.poweremail_template import get_value
+from tools.translate import trans_load
 
 from destral import testing
 from destral.transaction import Transaction
@@ -73,6 +79,92 @@ class TestHolderChangeRequest(testing.OOTestCase):
         )
         self.assertEqual(request["state"], "validation_error")
         self.assertEqual(request["error_message"], "Invalid IBAN")
+
+    def test_send_sign_email_reuses_pending_signature(self):
+        signature_obj = self.openerp.pool.get("giscedata.signatura.process")
+        mailbox_obj = self.openerp.pool.get("poweremail.mailbox")
+        context = {"lang": "ca_ES"}
+        for status in ("wait", "doing"):
+            signature = mock.Mock(id=42, status=status, signature_url="https://sign.example/42")
+            signature.template_id.id = 7
+            request = mock.Mock(signature_process_id=signature)
+            with mock.patch.object(self.request_obj, "browse", return_value=request):
+                with mock.patch.object(signature_obj, "send_poweremail") as generate:
+                    with mock.patch.object(signature_obj, "create") as create:
+                        with mock.patch.object(mailbox_obj, "search", return_value=[9]) as search:
+                            with mock.patch.object(mailbox_obj, "send_this_mail") as send:
+                                self.assertTrue(self.request_obj.send_sign_email(
+                                    self.cursor, self.uid, [1], context=context
+                                ))
+            generate.assert_called_once_with(self.cursor, self.uid, [42], context=context)
+            create.assert_not_called()
+            search.assert_called_once_with(
+                self.cursor, self.uid,
+                [("reference", "=", "giscedata.signatura.process,42"),
+                 ("template_id", "=", 7), ("folder", "=", "outbox")],
+                context=context,
+            )
+            send.assert_called_once_with(self.cursor, self.uid, [9], context=context)
+        self.assertEqual(context, {"lang": "ca_ES"})
+
+    def test_send_sign_email_rejects_missing_or_unavailable_signature(self):
+        signature_obj = self.openerp.pool.get("giscedata.signatura.process")
+        mailbox_obj = self.openerp.pool.get("poweremail.mailbox")
+        signatures = [False, mock.Mock(status="wait", signature_url=False)]
+        signatures.extend(mock.Mock(status=status) for status in (
+            "unsend", "completed", "canceled", "expired", "declined", "error",
+        ))
+        with mock.patch.object(signature_obj, "send_poweremail") as generate:
+            with mock.patch.object(mailbox_obj, "send_this_mail") as send:
+                for signature in signatures:
+                    request = mock.Mock(signature_process_id=signature)
+                    with mock.patch.object(self.request_obj, "browse", return_value=request):
+                        with self.assertRaises(osv.except_osv):
+                            self.request_obj.send_sign_email(self.cursor, self.uid, [1])
+        generate.assert_not_called()
+        send.assert_not_called()
+
+    def test_signature_email_template_renders_link_and_language(self):
+        template_obj = self.openerp.pool.get("poweremail.templates")
+        template_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_holder_change", "email_signature_process_holder_change"
+        )[1]
+        request_id = self.request_obj.create(
+            self.cursor, self.uid, self.request_values()
+        )
+        for signature_lang, email_lang in (
+            ("ca_ES", "ca_ES"),
+            ("es_ES", "es_ES"),
+            ("en_US", "ca_ES"),
+        ):
+            lang_obj = self.openerp.pool.get("res.lang")
+            if not lang_obj.search(self.cursor, self.uid, [("code", "=", email_lang)]):
+                lang_obj.create(
+                    self.cursor, self.uid, {"name": email_lang, "code": email_lang}
+                )
+            trans_load(
+                self.cursor,
+                os.path.join(os.path.dirname(__file__), "..", "i18n", email_lang + ".po"),
+                email_lang, verbose=False,
+            )
+            context = {
+                "lang": email_lang,
+                "signature": {
+                    "signature_url": "https://sign.example/42", "lang": signature_lang,
+                },
+            }
+            template = template_obj.browse(
+                self.cursor, self.uid, template_id, context=context
+            )
+            body = get_value(
+                self.cursor, self.uid, request_id,
+                message=template.def_body_text, template=template, context=context,
+            )
+            self.assertIn("https://sign.example/42", body)
+            self.assertEqual(get_value(
+                self.cursor, self.uid, request_id,
+                message=template.lang, template=template, context=context,
+            ), email_lang)
 
     def request_values(self, **values):
         result = {

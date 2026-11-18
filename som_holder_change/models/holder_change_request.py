@@ -12,6 +12,7 @@ from uuid import uuid4
 import netsvc
 
 from osv import fields, osv
+from oorq.oorq import AsyncMode
 from tools.translate import _
 
 from . import holder_change_payload
@@ -51,6 +52,35 @@ class SomHolderChangeRequest(osv.osv):
     _name = "som.holder.change.request"
     _description = "Holder change request"
     _rec_name = "cups"
+
+    def send_sign_email(self, cursor, uid, ids, context=None):
+        request = self.browse(cursor, uid, self._one_id(ids), context=context)
+        signature = request.signature_process_id
+        if not signature:
+            raise osv.except_osv(_("Signature required"), _(
+                "The request has not been sent for signing."))
+        if signature.status not in ("wait", "doing"):
+            raise osv.except_osv(_("Signature error"), _(
+                "The signature process is not awaiting a signature."))
+        if not signature.signature_url:
+            raise osv.except_osv(_("Signature error"), _(
+                "The signature URL is not available yet."))
+
+        signature_obj = self.pool.get("giscedata.signatura.process")
+        mailbox_obj = self.pool.get("poweremail.mailbox")
+        # Generate the outbox entry before searching it; do not race an
+        # asynchronous renderer with a fixed sleep as the lead button does.
+        with AsyncMode("sync"):
+            signature_obj.send_poweremail(cursor, uid, [signature.id], context=context)
+        mail_ids = mailbox_obj.search(
+            cursor, uid,
+            [("reference", "=", "giscedata.signatura.process,{}".format(signature.id)),
+             ("template_id", "=", signature.template_id.id),
+             ("folder", "=", "outbox")],
+            context=context,
+        )
+        mailbox_obj.send_this_mail(cursor, uid, mail_ids, context=context)
+        return True
 
     def prepare(self, cursor, uid, request_id, context=None):
         request_id = self._one_id(request_id)
