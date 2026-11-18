@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv
 from tools import cache
 from tools.translate import _
@@ -98,15 +100,19 @@ class GiscedataFacturacioFactura(osv.osv):
             ('rectificative_type', '!=', 'BRA'),
             ('origin_date_invoice', '!=', False),
         ]
-        fact_prov_ids = fact_obj.search(cursor, uid, search_vals, order="origin_date_invoice desc", context=context)  # noqa: E501
+        fact_prov_ids = fact_obj.search(
+            cursor, uid, search_vals, order="origin_date_invoice desc", context=context
+        )
         if fact_prov_ids:
-            date_invoice_orig = fact_obj.read(cursor, uid, fact_prov_ids[0], ['origin_date_invoice'], context=context)['origin_date_invoice']  # noqa: E501
-            date_invoice_orig = datetime.strptime(date_invoice_orig, '%Y-%m-%d') + timedelta(days=31)  # noqa: E501
-            res = date_invoice_orig.strftime('%Y-%m-%d')
+            date_inv_orig = fact_obj.read(
+                cursor, uid, fact_prov_ids[0], ['origin_date_invoice'], context=context
+            )['origin_date_invoice']
+            date_inv_orig = datetime.strptime(date_inv_orig, '%Y-%m-%d') + timedelta(days=31)
+            res = date_inv_orig.strftime('%Y-%m-%d')
         else:
             raise osv.except_osv(_("No s'ha trobat factura de proveïdor"),
-                                 _("No s'ha trobat factura de proveïdor entre les dates {} i {}").format(
-                                     factura.data_inici, factura.data_final))
+                                 _("No s'ha trobat factura de proveïdor entre les dates "
+                                   "{} i {}").format(factura.data_inici, factura.data_final))
         return res
 
 
