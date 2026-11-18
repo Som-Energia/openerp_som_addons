@@ -9,7 +9,11 @@
     % if invs.has_exces_potencia:
         <tr><td>${_(u"Excés de potència")}</td><td class="e">${"%s &euro;" % formatLang(invs.total_exces_consumida)}</td></tr>
     % endif
+    % if invs.get('is_social_tariff', False):
+        <tr><td>${_(u"Electricitat utilitzada amb descompte social aplicat")}</td><td class="e">${"%s &euro;" % formatLang(invs.total_energy)}</td></tr>
+    % else:
         <tr><td>${_(u"Electricitat utilitzada")}</td><td class="e">${"%s &euro;" % formatLang(invs.total_energy)}</td></tr>
+    % endif
     % if invs.has_autoconsum:
         <tr><td>${_(u"Electricitat excedentaria")}</td><td class="e">${"%s &euro;" % formatLang(invs.autoconsum_total_compensada)}</td></tr>
     % endif
