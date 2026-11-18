@@ -482,7 +482,7 @@ class SomHolderChangeRequest(osv.osv):
             ) else "exists",
             "change_retail_tariff": False,
             "retail_tariff": False,
-            "activacio_cicle": "L",
+            "activacio_cicle": "A",
             "owner": partner_id,
             "pagador": partner_id,
             "contact": partner_id,

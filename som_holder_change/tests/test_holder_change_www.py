@@ -1135,7 +1135,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             invoice.mandate_id.reference,
             "res.partner,{}".format(result_polissa.titular.id),
         )
-        self.assertEqual(switching.get_pas().activacio_cicle, "L")
+        self.assertEqual(switching.get_pas().activacio_cicle, "A")
         self.assertEqual(switching.get_pas().cont_nom, "Maria Nova Titular")
         self.assertEqual(switching.get_pas().cont_telefons[0].numero, "600000000")
         result_polissa = self.polissa_obj.browse(
@@ -1306,6 +1306,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(switching.state, "draft")
         self.assertEqual(switching.get_pas().sollicitudadm, "S")
         self.assertEqual(switching.get_pas().canvi_titular, "S")
+        self.assertEqual(switching.get_pas().activacio_cicle, "A")
         result_polissa = self.polissa_obj.browse(
             self.cursor, self.uid, execution["result_polissa_id"]
         )
