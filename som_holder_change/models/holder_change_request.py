@@ -13,6 +13,7 @@ import netsvc
 
 from osv import fields, osv
 from oorq.oorq import AsyncMode
+from tools.sql_utils import auto_close_cursor
 from tools.translate import _
 
 from . import holder_change_payload
@@ -52,6 +53,32 @@ class SomHolderChangeRequest(osv.osv):
     _name = "som.holder.change.request"
     _description = "Holder change request"
     _rec_name = "cups"
+
+    @auto_close_cursor()
+    def process_signed_requests_cron(self, cursor, uid, ids, context=None):
+        db = pooler.get_db(cursor.dbname)
+        with db.cursor() as selection_cursor:
+            request_ids = self.search(
+                selection_cursor, uid,
+                [("state", "=", "awaiting_signature"),
+                 ("signature_process_id.status", "=", "completed")],
+                limit=100, order="id", context=context,
+            )
+        for request_id in request_ids:
+            # The same endpoint as the manual button locks and rechecks each
+            # request before queuing, including if another caller got here first.
+            with db.cursor() as request_cursor:
+                try:
+                    self.check_signature_and_execute(
+                        request_cursor, uid, [request_id], context=context
+                    )
+                    request_cursor.commit()
+                except Exception:
+                    request_cursor.rollback()
+                    logger.exception(
+                        "Unable to enqueue signed holder change request %s", request_id
+                    )
+        return True
 
     def check_signature_and_execute(self, cursor, uid, ids, context=None):
         request = self.browse(cursor, uid, self._one_id(ids), context=context)

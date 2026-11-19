@@ -9,3 +9,4 @@ from .test_holder_change_www import *
 from .test_holder_change_reports import *
 from .test_holder_change_signature_concurrency import *
 from .test_signed_documents import *
+from .test_auto_processing import *

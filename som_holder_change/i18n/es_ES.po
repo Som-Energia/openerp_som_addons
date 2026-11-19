@@ -538,6 +538,14 @@ msgstr "La URL de firma todavía no está disponible."
 msgid "Comprovar signatura i tramitar"
 msgstr "Comprobar firma y tramitar"
 
+#: model:ir.cron,name:som_holder_change.ir_cron_process_signed_holder_changes
+msgid "Tramitar canvis de titular signats"
+msgstr "Tramitar cambios de titular firmados"
+
+#: constraint:ir.cron:0
+msgid "Invalid arguments"
+msgstr "Argumentos no válidos"
+
 #: view:som.holder.change.request:0
 msgid "Vols comprovar la signatura i tramitar la petició?"
 msgstr "¿Quieres comprobar la firma y tramitar la petición?"

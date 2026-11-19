@@ -517,6 +517,14 @@ msgstr ""
 msgid "Comprovar signatura i tramitar"
 msgstr ""
 
+#: model:ir.cron,name:som_holder_change.ir_cron_process_signed_holder_changes
+msgid "Tramitar canvis de titular signats"
+msgstr ""
+
+#: constraint:ir.cron:0
+msgid "Invalid arguments"
+msgstr ""
+
 #: view:som.holder.change.request:0
 msgid "Vols comprovar la signatura i tramitar la petició?"
 msgstr ""
