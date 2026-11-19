@@ -107,6 +107,32 @@ class TestHolderChangeRequest(testing.OOTestCase):
             send.assert_called_once_with(self.cursor, self.uid, [9], context=context)
         self.assertEqual(context, {"lang": "ca_ES"})
 
+    def test_check_signature_and_execute_uses_existing_queue_endpoint(self):
+        request_id = self.request_obj.create(
+            self.cursor, self.uid, self.request_values()
+        )
+        context = {"lang": "ca_ES"}
+        www_obj = self.openerp.pool.get("som.holder.change.www")
+        with mock.patch.object(www_obj, "execute_request") as enqueue:
+            self.assertTrue(self.request_obj.check_signature_and_execute(
+                self.cursor, self.uid, [request_id], context=context
+            ))
+        enqueue.assert_called_once_with(
+            self.cursor, self.uid, request_id, self.request_values()["cups"], context=context
+        )
+
+    def test_check_signature_and_execute_rejects_missing_signature(self):
+        request_id = self.request_obj.create(
+            self.cursor, self.uid, self.request_values()
+        )
+        www_obj = self.openerp.pool.get("som.holder.change.www")
+        with mock.patch.object(www_obj, "execute_request_async") as enqueue:
+            with self.assertRaises(osv.except_osv):
+                self.request_obj.check_signature_and_execute(
+                    self.cursor, self.uid, [request_id]
+                )
+        enqueue.assert_not_called()
+
     def test_send_sign_email_rejects_missing_or_unavailable_signature(self):
         signature_obj = self.openerp.pool.get("giscedata.signatura.process")
         mailbox_obj = self.openerp.pool.get("poweremail.mailbox")

@@ -53,6 +53,13 @@ class SomHolderChangeRequest(osv.osv):
     _description = "Holder change request"
     _rec_name = "cups"
 
+    def check_signature_and_execute(self, cursor, uid, ids, context=None):
+        request = self.browse(cursor, uid, self._one_id(ids), context=context)
+        self.pool.get("som.holder.change.www").execute_request(
+            cursor, uid, request.id, request.cups, context=context
+        )
+        return True
+
     def send_sign_email(self, cursor, uid, ids, context=None):
         request = self.browse(cursor, uid, self._one_id(ids), context=context)
         signature = request.signature_process_id

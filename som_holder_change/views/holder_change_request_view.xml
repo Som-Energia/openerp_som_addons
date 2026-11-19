@@ -69,6 +69,11 @@
                         </page>
                         <page string="Execució">
                             <group colspan="4" col="4">
+                                <button name="check_signature_and_execute" type="object"
+                                        string="Comprovar signatura i tramitar"
+                                        icon="gtk-execute" colspan="4"
+                                        attrs="{'invisible': [('state', '=', 'completed')]}"
+                                        confirm="Vols comprovar la signatura i tramitar la petició?"/>
                                 <field name="attempt_count"/>
                                 <field name="last_attempt_at"/>
                                 <field name="error_code"/>

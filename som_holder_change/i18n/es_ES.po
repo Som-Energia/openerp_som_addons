@@ -535,6 +535,14 @@ msgid "The signature URL is not available yet."
 msgstr "La URL de firma todavía no está disponible."
 
 #: view:som.holder.change.request:0
+msgid "Comprovar signatura i tramitar"
+msgstr "Comprobar firma y tramitar"
+
+#: view:som.holder.change.request:0
+msgid "Vols comprovar la signatura i tramitar la petició?"
+msgstr "¿Quieres comprobar la firma y tramitar la petición?"
+
+#: view:som.holder.change.request:0
 msgid "Enviar correu per signar"
 msgstr "Enviar correo para firmar"
 

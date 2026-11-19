@@ -865,6 +865,12 @@ class TestHolderChangeWww(testing.OOTestCase):
                     self.cursor, self.uid, result["request_id"],
                     payload["contract_info"]["cups"],
                 )
+                # The form button must reuse the same queued request, not
+                # dispatch another job when pressed repeatedly.
+                for _attempt in range(2):
+                    self.assertTrue(self.request_obj.check_signature_and_execute(
+                        self.cursor, self.uid, [result["request_id"]]
+                    ))
 
         self.assertEqual(response["state"], "queued")
         update.assert_not_called()
