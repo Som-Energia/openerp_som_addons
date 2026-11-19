@@ -8,6 +8,7 @@
     "category": "GISCEMaster",
     "depends": [
         "account_invoice_base",
+        "account_analytic_default",
         "account_payment_extension",
         "poweremail",
         "giscedata_remeses",
@@ -22,6 +23,7 @@
     "update_xml": [
         "account_invoice_som_report.xml",
         "account_invoice_view.xml",
+        "account_move_view.xml",
         "account_invoice_data.xml",
         "wizard/wizard_payment_order_add_invoices_view.xml",
         "wizard/wizard_export_remesas_view.xml",

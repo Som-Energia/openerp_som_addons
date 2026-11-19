@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+
+import xml.etree.ElementTree as ET
+
 from destral import testing
 from tools.misc import cache
 
@@ -104,3 +108,80 @@ class TestAccountInvoiceSom(testing.OOTestCaseWithCursor):
         ai_ids = self.ai_obj.search(self.cursor, self.uid, [("origin", "ilike", "sample_origin")])
 
         self.assertGreater(len(ai_ids), 1)
+
+
+class TestAnalyticAccountDefault(testing.OOTestCaseWithCursor):
+    def test_move_line_popup_shows_analytic_account_and_onchange(self):
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        view_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "account", "view_move_form"
+        )[1]
+        move_obj = self.openerp.pool.get("account.move")
+        view = move_obj.fields_view_get(
+            self.cursor, self.uid, view_id=view_id, view_type="form"
+        )
+
+        root = ET.fromstring(view["arch"])
+        line_form = root.find(".//field[@name='line_id']/form")
+        fields = dict((field.get("name"), field) for field in line_form.findall("field"))
+
+        self.assertIn("analytic_account_id", fields)
+        self.assertEqual(
+            fields["account_id"].get("on_change"),
+            "onchange_account_id(account_id, partner_id)",
+        )
+
+    def test_account_onchange_returns_analytic_account_field(self):
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        analytic_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "account", "analytic_internal"
+        )[1]
+        default_obj = self.openerp.pool.get("account.analytic.default")
+        default_obj.create(
+            self.cursor,
+            self.uid,
+            {"analytic_id": analytic_id, "user_id": self.uid},
+        )
+
+        move_line_obj = self.openerp.pool.get("account.move.line")
+        result = move_line_obj.onchange_account_id(
+            self.cursor, self.uid, [], False, False
+        )
+
+        values = result.get("value", {})
+        self.assertEqual(values.get("analytic_account_id"), analytic_id)
+        self.assertNotIn("account_analytic_id", values)
+
+    def test_partner_onchange_reapplies_analytic_default(self):
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        analytic_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "account", "analytic_internal"
+        )[1]
+        account_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "account", "a_expense"
+        )[1]
+        partner_obj = self.openerp.pool.get("res.partner")
+        partner_id = partner_obj.search(self.cursor, self.uid, [], limit=1)[0]
+        default_obj = self.openerp.pool.get("account.analytic.default")
+        default_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "analytic_id": analytic_id,
+                "user_id": self.uid,
+                "account_id": account_id,
+                "partner_id": partner_id,
+            },
+        )
+
+        move_line_obj = self.openerp.pool.get("account.move.line")
+        result = move_line_obj.onchange_partner_id(
+            self.cursor,
+            self.uid,
+            [],
+            False,
+            partner_id,
+            account_id,
+        )
+
+        self.assertEqual(result["value"].get("analytic_account_id"), analytic_id)
