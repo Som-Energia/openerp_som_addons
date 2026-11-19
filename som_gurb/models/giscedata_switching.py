@@ -385,8 +385,11 @@ class GiscedataSwitchingM1_05(osv.osv):
                 sw_step_header_obj.write(
                     cursor, uid, step.header_id.id, {'notificacio_pendent': False}
                 )
+                cancellation_context = context.copy()
+                cancellation_context["gurb_cancellation_confirmed"] = True
                 sgc_obj.cancel_gurb_cups(
-                    cursor, uid, gurb_cups_id, step.data_activacio, context=context
+                    cursor, uid, gurb_cups_id, step.data_activacio,
+                    context=cancellation_context
                 )
                 return step_id
 
