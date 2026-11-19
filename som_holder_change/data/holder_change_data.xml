@@ -15,7 +15,7 @@
                 >${'es_ES' if env.get('signature', {}).get('lang') == 'es_ES' else 'ca_ES'}</field>
             <field name="template_language">mako</field>
             <field name="def_body_text"><![CDATA[<p>Signa el contracte i, si escau, el mandat SEPA:</p>
-<p><a href="${env.get('signature', {}).get('signature_url', '')}">Signar documents</a></p>]]></field>
+<p><a href="${env.get('signature', {}).get('signature_url', '')}" target="_blank" rel="noopener noreferrer">Signar documents</a></p>]]></field>
         </record>
         <record id="attachment_category_death" model="ir.attachment.category">
             <field name="code">holder_change_death</field>

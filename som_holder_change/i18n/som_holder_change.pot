@@ -524,5 +524,5 @@ msgstr ""
 #: model:poweremail.templates,def_body_text:som_holder_change.email_signature_process_holder_change
 msgid ""
 "<p>Signa el contracte i, si escau, el mandat SEPA:</p>\n"
-"<p><a href=\"${env.get('signature', {}).get('signature_url', '')}\">Signar documents</a></p>"
+"<p><a href=\"${env.get('signature', {}).get('signature_url', '')}\" target=\"_blank\" rel=\"noopener noreferrer\">Signar documents</a></p>"
 msgstr ""
