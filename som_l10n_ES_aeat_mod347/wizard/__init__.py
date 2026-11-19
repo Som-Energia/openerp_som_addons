@@ -2,3 +2,4 @@
 from __future__ import absolute_import
 from . import wizard_send_email_over_limit
 from . import wizard_send_email_over_limit_to_partner
+from . import som_calculate_mod347_records
