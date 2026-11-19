@@ -90,6 +90,9 @@ flag_management:
     - name: som_gurb
       paths:
         - som_gurb/
+    - name: som_holder_change
+      paths:
+        - som_holder_change/
     - name: som_indexada
       paths:
         - som_indexada/
