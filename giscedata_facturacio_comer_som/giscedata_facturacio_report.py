@@ -2907,6 +2907,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "iva_column": has_iva_column(fact),
             "amount_total": fact.amount_total,
         }
+        energy = data["energy"]
+        other_concepts = data["other_concepts"]
+        complementary_blocks = (other_concepts.get("compl_info") or {}).get("energy_lines_data", [])
+        if energy["adjustment_services"] and complementary_blocks:
+            energy["defer_adjustment_services"] = True
+            energy["header_multi"] -= 1
+            other_concepts["deferred_adjustment_services"] = energy["adjustment_services"]
         return data
 
     def get_sub_component_invoice_details_td(self, fact, pol, linies, lectures=None):

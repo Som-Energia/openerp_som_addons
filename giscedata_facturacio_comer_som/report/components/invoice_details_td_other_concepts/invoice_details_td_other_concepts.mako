@@ -149,6 +149,9 @@ TABLA_101 = {
         % endif
     % endfor
 % endif
+% if id.get('deferred_adjustment_services'):
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_adjustment_services.mako" args="adjustment_services=id.deferred_adjustment_services, showing_periods=id.showing_periods, iva_column=id.iva_column, description_colspan=2" />
+% endif
 % for l in id.donatiu_lines:
     <tr class= "${'last_row' if id.last_row == 'donatiu' else ''}">
         % if first_pass:

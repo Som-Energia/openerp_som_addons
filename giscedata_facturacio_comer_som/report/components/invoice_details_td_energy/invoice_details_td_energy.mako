@@ -153,21 +153,6 @@ first_energy_line = True
         % endif
     </tr>
 % endif
-% if id.adjustment_services:
-    <tr class="tr_bold">
-        <td class="detall_td" colspan="${2 if first_pass else 1}">
-            % if id.adjustment_services.get('is_generation_adjustment'):
-                ${_(u"Serveis d'Ajust segons preu REE pel periode facturat, aplicat a assignació GenerationkWh")}
-            % else:
-                ${_(u"Serveis d'Ajust segons preu REE pel periode facturat")}
-            % endif
-        </td>
-        % for p in id.showing_periods:
-                <td></td>
-        % endfor
-        <td><span class="subtotal">${_(u"%s €") % (formatLang(id.adjustment_services.total))}<sup class="sup_bold">(2)</sup></span></td>
-        % if id.iva_column:
-            <td>${_(u"%s") % (id.adjustment_services.iva) }</td>
-        % endif
-    </tr>
+% if id.adjustment_services and not id.get('defer_adjustment_services', False):
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_adjustment_services.mako" args="adjustment_services=id.adjustment_services, showing_periods=id.showing_periods, iva_column=id.iva_column, description_colspan=2 if first_pass else 1" />
 % endif
