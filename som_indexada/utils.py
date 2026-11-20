@@ -42,12 +42,14 @@ def get_preus(cursor, uid, pol, with_taxes=False, context=None):
         "tp": sorted(pol.tarifa.get_periodes("tp", context=context).keys()),
         "te": sorted(pol.tarifa.get_periodes("te", context=context).keys()),
     }
-    if (pol.modcontractuals_ids[0].state == "pendent"
+    if (pol.modcontractuals_ids
+        and pol.modcontractuals_ids[0].state == "pendent"
         and pol.mode_facturacio
         != pol.modcontractuals_ids[0].mode_facturacio
             and pol.modcontractuals_ids[0].mode_facturacio == 'index'):
         context["force_pricelist"] = pol.modcontractuals_ids[1].llista_preu.id
-    elif(pol.modcontractuals_ids[0].state == "pendent"
+    elif (pol.modcontractuals_ids
+            and pol.modcontractuals_ids[0].state == "pendent"
             and pol.mode_facturacio
             != pol.modcontractuals_ids[0].mode_facturacio
             and pol.modcontractuals_ids[0].mode_facturacio == 'atr'):
