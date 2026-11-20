@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv
 from tools.translate import _
 
@@ -56,6 +58,20 @@ def _cups_contract_has_gurb_cups(cursor, uid, pool, pol_id, context=None):
     )
 
     return bool(gurb_cups_id)
+
+
+def _is_m105_gurb_cancellation(step, gurb_cups):
+    if not gurb_cups:
+        return False
+
+    gurb_cau = gurb_cups.gurb_cau_id.self_consumption_id.cau
+    if not gurb_cau:
+        return False
+
+    for dades_cau in step.dades_cau:
+        if dades_cau.cau == gurb_cau and dades_cau.tipus_subseccio == "0C":
+            return True
+    return False
 
 
 def _is_m1_closable(cursor, uid, pool, sw, context=None):
@@ -359,6 +375,26 @@ class GiscedataSwitchingM1_05(osv.osv):
         if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
         ):
+            step = self.browse(cursor, uid, step_id, context=context)
+            gurb_cups_id = sgc_obj.get_gurb_cups_from_sw_id(
+                cursor, uid, sw_id, context=context
+            )
+            gurb_cups = (
+                sgc_obj.browse(cursor, uid, gurb_cups_id, context=context)
+                if gurb_cups_id else False
+            )
+            if _is_m105_gurb_cancellation(step, gurb_cups):
+                sw_step_header_obj.write(
+                    cursor, uid, step.header_id.id, {'notificacio_pendent': False}
+                )
+                cancellation_context = context.copy()
+                cancellation_context["gurb_cancellation_confirmed"] = True
+                sgc_obj.cancel_gurb_cups(
+                    cursor, uid, gurb_cups_id, step.data_activacio,
+                    context=cancellation_context
+                )
+                return step_id
+
             canvi_titular_traspas = step_m101_obj.search(cursor, uid, [
                 ('sw_id', '=', sw.id),
                 ('sollicitudadm', '=', 'S'),
@@ -541,6 +577,22 @@ class GiscedataSwitchingHelpers(osv.osv):
         ):
             step_obj = self.pool.get("giscedata.switching.m1.05")
             step_id = int(sw.step_ids[-1].pas_id.split(",")[1])
+
+            step = step_obj.browse(cursor, uid, step_id, context=context)
+            sgc_obj = self.pool.get("som.gurb.cups")
+            gurb_cups_id = sgc_obj.get_gurb_cups_from_sw_id(
+                cursor, uid, sw_id, context=context
+            )
+            gurb_cups = (
+                sgc_obj.browse(cursor, uid, gurb_cups_id, context=context)
+                if gurb_cups_id else False
+            )
+            if _is_m105_gurb_cancellation(step, gurb_cups):
+                sw_step_header_obj.write(
+                    cursor, uid, step.header_id.id, {'notificacio_pendent': False}
+                )
+                # Import already routed this step to cancellation.
+                return res
 
             data_activacio = step_obj.read(
                 cursor, uid, step_id, ["data_activacio"])["data_activacio"]

@@ -576,8 +576,31 @@ class SomGurbCups(osv.osv):
     def cancel_gurb_cups(self, cursor, uid, gurb_cups_id, end_date, context=None):
         if context is None:
             context = {}
+        context = context.copy()
+        confirmed = context.pop("gurb_cancellation_confirmed", False)
 
         state = self.read(cursor, uid, gurb_cups_id, ["state"])["state"]
+
+        if confirmed:
+            if state == "cancel":
+                return
+            if state not in (
+                "active", "atr_pending", "comming_cancellation", "comming_modification"
+            ):
+                raise osv.except_osv(
+                    _("Error"),
+                    _("Cannot confirm GURB cancellation from state '%s'.") % state
+                )
+            if state == "comming_modification":
+                # Normalize workflow state only; do not promote the pending beta.
+                self.send_signal(cursor, uid, [gurb_cups_id], [
+                    "button_activate_modification", "button_coming_cancellation",
+                ])
+            elif state == "active":
+                self.send_signal(cursor, uid, [gurb_cups_id], "button_coming_cancellation")
+            elif state == "atr_pending":
+                self.send_signal(cursor, uid, [gurb_cups_id], "button_confirm_atr")
+            state = self.read(cursor, uid, gurb_cups_id, ["state"])["state"]
 
         if state == "active":
             self.send_signal(cursor, uid, [gurb_cups_id], "button_atr_pending")
@@ -601,6 +624,7 @@ class SomGurbCups(osv.osv):
     def terminate_service_gurb_cups(self, cursor, uid, gurb_cups_id, end_date, context=None):
         if context is None:
             context = {}
+        context = context.copy()
 
         service_o = self.pool.get("giscedata.facturacio.services")
         wiz_terminate_o = self.pool.get("wizard.terminate.service")
@@ -616,7 +640,12 @@ class SomGurbCups(osv.osv):
 
         service_ids = service_o.search(cursor, uid, search_params, context=context)
 
-        wiz_id = wiz_terminate_o.create(cursor, uid, {'data_final': end_date}, context=context)
+        # The search already scopes GURB services; ignore wizard selection defaults.
+        wiz_id = wiz_terminate_o.create(cursor, uid, {
+            'data_final': end_date,
+            'product_id': False,
+            'pricelist_id': False,
+        }, context=context)
         context["active_ids"] = service_ids
         wiz_terminate_o.terminate_services(cursor, uid, [wiz_id], context=context)
 
