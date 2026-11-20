@@ -6,12 +6,15 @@ from datetime import datetime, timedelta
 
 
 def block_signature(block):
+    additive_fields = ('price_subtotal', 'tolls', 'charges')
+    if block.get('type') != 'potencia':
+        additive_fields += ('quantity',)
     metadata = []
     for key, value in sorted(block.items()):
         if isinstance(value, dict):
             metadata.append((key, tuple(sorted(
                 (name, amount) for name, amount in value.items()
-                if name not in ('quantity', 'price_subtotal', 'tolls', 'charges')))))
+                if name not in additive_fields))))
         elif key not in ('data_inici', 'data_fi', 'total'):
             metadata.append((key, value))
     return metadata
@@ -39,9 +42,12 @@ def merge_complementary_blocks(blocks, source_signatures):
             target = result[-1]
             target['data_fi'] = current['data_fi']
             target['total'] += current['total']
+            additive_fields = ('price_subtotal', 'tolls', 'charges')
+            if current['type'] != 'potencia':
+                additive_fields += ('quantity',)
             for period, values in current.items():
                 if isinstance(values, dict):
-                    for field in ('quantity', 'price_subtotal', 'tolls', 'charges'):
+                    for field in additive_fields:
                         target[period][field] += values[field]
         else:
             result.append(current)

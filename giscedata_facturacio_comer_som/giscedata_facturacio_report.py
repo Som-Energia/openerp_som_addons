@@ -3800,6 +3800,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 date_lines = [x for x in compl_lines_x if x.data_desde == start_date]
                 lines = {}
                 period_sources = {}
+                power_basis_known = True
                 total = 0.0
                 for l in date_lines:  # noqa: E741
                     sign = -1.0 if l.price_subtotal < 0.0 else 1.0
@@ -3814,6 +3815,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         tuple(sorted(tax.id for tax in l.invoice_line_tax_id)),
                         l.price_unit_multi, atr_tolls * sign, atr_charges * sign,
                     )
+                    if type == 'potencia':
+                        # Power is a level, not consumption. Compare its raw
+                        # multiplier and unit before legacy grouping hides them.
+                        multiplier_unit = l.uom_multi_id.id if l.uom_multi_id else False
+                        source += (l.quantity, l.multi, multiplier_unit)
+                        power_basis_known = (
+                            power_basis_known and l.multi > 0 and bool(multiplier_unit)
+                        )
                     period_sources.setdefault(l.product_id.name, []).append(source)
                     if l.product_id.name in lines:
                         lines[l.product_id.name]["quantity"] += l["quantity"]
@@ -3841,8 +3850,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 homogeneous = all(
                     all(source == sources[0] for source in sources)
                     for sources in period_sources.values())
+                if type == 'potencia':
+                    homogeneous = homogeneous and all(
+                        len(sources) == 1 for sources in period_sources.values())
                 same_end = len(set(x.data_fins for x in date_lines)) == 1
-                if known_origin and homogeneous and same_end:
+                if known_origin and homogeneous and same_end and power_basis_known:
                     source_signatures.append(tuple(
                         (period, sources[0])
                         for period, sources in sorted(period_sources.items())))
