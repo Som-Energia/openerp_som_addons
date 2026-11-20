@@ -121,8 +121,9 @@ class TestAnalyticAccountDefault(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, view_id=view_id, view_type="form"
         )
 
-        root = ET.fromstring(view["arch"])
-        line_form = root.find(".//field[@name='line_id']/form")
+        line_form = ET.fromstring(
+            view["fields"]["line_id"]["views"]["form"]["arch"]
+        )
         fields = dict((field.get("name"), field) for field in line_form.findall("field"))
 
         self.assertIn("analytic_account_id", fields)
