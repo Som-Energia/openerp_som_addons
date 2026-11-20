@@ -5,6 +5,7 @@ from osv import osv
 
 
 class AccountMoveLine(osv.osv):
+    _name = "account.move.line"
     _inherit = "account.move.line"
 
     def onchange_account_id(

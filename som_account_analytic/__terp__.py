@@ -8,7 +8,7 @@
     "depends": ["account_analytic_default", "account_analytic_distribution"],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml": ["account_view.xml"],
+    "update_xml": ["views/account_view.xml"],
     "active": False,
     "installable": True,
 }
