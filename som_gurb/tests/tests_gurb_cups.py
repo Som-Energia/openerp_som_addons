@@ -322,6 +322,50 @@ class TestsGurbCups(TestsGurbBase):
             "gurb_cancellation_confirmed": True,
         })
 
+    def test_confirmed_cancellation_from_pending_modification_keeps_beta_unpromoted(self):
+        refs = self._prepare_confirmed_cancellation()
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+        self.create_new_gurb_cups_beta(
+            refs["gurb_cups_id"], "2016-04-01", 1.5, 0.5, 0,
+            context={"activate": False}
+        )
+        pending_ids = beta_o.search(self.cursor, self.uid, [
+            ("gurb_cups_id", "=", refs["gurb_cups_id"]),
+            ("future_beta", "=", True),
+            ("active", "=", True),
+        ])
+        self.assertEqual(len(pending_ids), 1)
+        self.assertEqual(cups_o.read(
+            self.cursor, self.uid, refs["gurb_cups_id"], ["state"]
+        )["state"], "comming_modification")
+        beta_fields = ["start_date", "beta_kw", "extra_beta_kw", "gift_beta_kw", "future_beta"]
+        pending_before = beta_o.read(self.cursor, self.uid, pending_ids[0], beta_fields)
+        current_before = beta_o.read(
+            self.cursor, self.uid, refs["active_beta_id"], beta_fields
+        )
+        self.assertTrue(pending_before["future_beta"])
+        self.assertFalse(current_before["future_beta"])
+        self.assertLessEqual(pending_before["start_date"], "2016-06-06")
+        context = {"gurb_cancellation_confirmed": True, "active_test": False}
+        original_context = context.copy()
+
+        cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06", context=context
+        )
+
+        self._assert_confirmed_cancellation(refs)
+        pending = beta_o.browse(self.cursor, self.uid, pending_ids[0])
+        self.assertFalse(pending.active)
+        self.assertEqual(pending.end_date, "2016-06-06")
+        self.assertEqual(
+            beta_o.read(self.cursor, self.uid, pending_ids[0], beta_fields), pending_before
+        )
+        self.assertEqual(beta_o.read(
+            self.cursor, self.uid, refs["active_beta_id"], beta_fields
+        ), current_before)
+        self.assertEqual(context, original_context)
+
     def test_cancel_gurb_cups_preserves_original_signature(self):
         import inspect
         from som_gurb.models.som_gurb_cups import SomGurbCups

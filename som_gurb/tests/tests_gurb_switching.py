@@ -1768,6 +1768,71 @@ class TestsGurbSwitching(TestsGurbBase):
         )["data_fi"], step.data_activacio)
         activation_email.assert_not_called()
 
+    @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.send_gurb_activation_email")
+    def test_m105_pending_modification_cancellation_does_not_activate_beta(self, activation_email):
+        refs, xml, service_id = self._prepare_m105_cancellation_import()
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+        service_o = self.openerp.pool.get("giscedata.facturacio.services")
+        beta_o.activate_future_beta(
+            self.cursor, self.uid, refs["gurb_cups_beta_2_id"], "2016-02-01"
+        )
+        self.create_new_gurb_cups_beta(
+            refs["gurb_cups_id"], "2016-04-01", 1.5, 0.5, 0,
+            context={"activate": False}
+        )
+        pending_ids = beta_o.search(self.cursor, self.uid, [
+            ("gurb_cups_id", "=", refs["gurb_cups_id"]),
+            ("future_beta", "=", True),
+            ("active", "=", True),
+        ])
+        self.assertEqual(len(pending_ids), 1)
+        self.assertEqual(cups_o.read(
+            self.cursor, self.uid, refs["gurb_cups_id"], ["state"]
+        )["state"], "comming_modification")
+        beta_ids = [refs["gurb_cups_beta_2_id"], pending_ids[0]]
+        self.assertNotEqual(beta_ids[0], beta_ids[1])
+        beta_fields = ["start_date", "beta_kw", "extra_beta_kw", "gift_beta_kw", "future_beta"]
+        before_betas = [
+            beta_o.read(self.cursor, self.uid, beta_id, beta_fields) for beta_id in beta_ids
+        ]
+        self.assertFalse(before_betas[0]["future_beta"])
+        self.assertTrue(before_betas[1]["future_beta"])
+        context = {"gurb_cancellation_confirmed": False}
+
+        sw_id, info = self.openerp.pool.get("giscedata.switching").importar_xml(
+            self.cursor, self.uid, xml, "m105_pending_modification_cancellation.xml",
+            context=context
+        )
+
+        step = self._get_imported_m105(sw_id)
+        self.assertLessEqual(before_betas[1]["start_date"], step.data_activacio)
+        helper_o = self.openerp.pool.get("giscedata.switching.helpers")
+        result = helper_o.m105_acord_repartiment_autoconsum(self.cursor, self.uid, sw_id)
+        self.assertEqual(result[0], "OK")
+        cups = cups_o.browse(
+            self.cursor, self.uid, refs["gurb_cups_id"], context={"active_test": False}
+        )
+        self.assertEqual(cups.state, "cancel")
+        self.assertFalse(cups.active)
+        self.assertEqual(cups.end_date, step.data_activacio)
+        self.assertEqual(
+            [beta_o.read(self.cursor, self.uid, beta_id, beta_fields) for beta_id in beta_ids],
+            before_betas
+        )
+        for beta in beta_o.browse(self.cursor, self.uid, beta_ids):
+            self.assertFalse(beta.active)
+            self.assertEqual(beta.end_date, step.data_activacio)
+        self.assertEqual(service_o.read(
+            self.cursor, self.uid, service_id, ["data_fi"]
+        )["data_fi"], step.data_activacio)
+        self.assertEqual(service_o.search(
+            self.cursor, self.uid, [("polissa_id", "=", refs["pol_id"])]
+        ), [service_id])
+        self.assertFalse(self._get_imported_m105(sw_id).header_id.notificacio_pendent)
+        self.assertFalse(context["gurb_cancellation_confirmed"])
+        activation_email.assert_not_called()
+
     def _get_imported_m105(self, sw_id):
         step_o = self.openerp.pool.get("giscedata.switching.m1.05")
         step_ids = step_o.search(self.cursor, self.uid, [("sw_id", "=", sw_id)])
