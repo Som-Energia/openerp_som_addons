@@ -194,7 +194,8 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
 
             "impostos_str": impostos_str,
             "modcon": (
-                pol_id.modcontractuals_ids[0].state == "pendent"
+                bool(pol_id.modcontractuals_ids)
+                and pol_id.modcontractuals_ids[0].state == "pendent"
                 and pol_id.mode_facturacio
                 != pol_id.modcontractuals_ids[0].mode_facturacio
                 and pol_id.modcontractuals_ids[0].mode_facturacio
@@ -341,12 +342,14 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
             "tp": sorted(pol.tarifa.get_periodes("tp", context=context).keys()),
             "te": sorted(pol.tarifa.get_periodes("te", context=context).keys()),
         }
-        if (pol.modcontractuals_ids[0].state == "pendent"
+        if (pol.modcontractuals_ids
+            and pol.modcontractuals_ids[0].state == "pendent"
             and pol.mode_facturacio
             != pol.modcontractuals_ids[0].mode_facturacio
                 and pol.modcontractuals_ids[0].mode_facturacio == 'index'):
             context["force_pricelist"] = pol.modcontractuals_ids[1].llista_preu.id
-        elif (pol.modcontractuals_ids[0].state == "pendent"
+        elif (pol.modcontractuals_ids
+              and pol.modcontractuals_ids[0].state == "pendent"
               and pol.mode_facturacio
               != pol.modcontractuals_ids[0].mode_facturacio
                 and pol.modcontractuals_ids[0].mode_facturacio == 'atr'):
@@ -389,12 +392,14 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
             types = {'gkwh': consums or {}}
         else:
             types = {"tp": potencies or {}, "te": consums or {}}
-            if (polissa_id.modcontractuals_ids[0].state == "pendent"
+            if (polissa_id.modcontractuals_ids
+                    and polissa_id.modcontractuals_ids[0].state == "pendent"
                     and polissa_id.mode_facturacio
                     != polissa_id.modcontractuals_ids[0].mode_facturacio
                     and polissa_id.modcontractuals_ids[0].mode_facturacio == 'index'):
                 ctx["force_pricelist"] = polissa_id.modcontractuals_ids[1].llista_preu.id
-            elif (polissa_id.modcontractuals_ids[0].state == "pendent"
+            elif (polissa_id.modcontractuals_ids
+                    and polissa_id.modcontractuals_ids[0].state == "pendent"
                     and polissa_id.mode_facturacio
                     != polissa_id.modcontractuals_ids[0].mode_facturacio
                     and polissa_id.modcontractuals_ids[0].mode_facturacio == 'atr'):
