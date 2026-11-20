@@ -584,12 +584,19 @@ class SomGurbCups(osv.osv):
         if confirmed:
             if state == "cancel":
                 return
-            if state not in ("active", "atr_pending", "comming_cancellation"):
+            if state not in (
+                "active", "atr_pending", "comming_cancellation", "comming_modification"
+            ):
                 raise osv.except_osv(
                     _("Error"),
                     _("Cannot confirm GURB cancellation from state '%s'.") % state
                 )
-            if state == "active":
+            if state == "comming_modification":
+                # Normalize workflow state only; do not promote the pending beta.
+                self.send_signal(cursor, uid, [gurb_cups_id], [
+                    "button_activate_modification", "button_coming_cancellation",
+                ])
+            elif state == "active":
                 self.send_signal(cursor, uid, [gurb_cups_id], "button_coming_cancellation")
             elif state == "atr_pending":
                 self.send_signal(cursor, uid, [gurb_cups_id], "button_confirm_atr")
