@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 import imp
 import os
 import unittest
+from lxml import html
+from mako.lookup import TemplateLookup
 from yamlns import namespace as ns
 
 MODULE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,23 +20,94 @@ def load_helper():
                            os.path.join(MODULE, 'complementary_blocks.py'))
 
 
-def synthetic_blocks(periods=3):
+def synthetic_blocks(periods=3, concept='energia'):
     blocks = []
     for index in range(4):
         start = datetime(2025, 7, 3) + timedelta(days=index * 4)
         block = dict(data_inici=start.strftime('%Y-%m-%d'),
                      data_fi=(start + timedelta(days=3)).strftime('%Y-%m-%d'),
-                     type='energia', units='kWh', iva='21', total=1.37)
+                     type=concept, units={'energia': 'kWh', 'potencia': 'kW',
+                                          'reactiva': 'kVArh'}[concept], iva='21', total=1.37)
         for period in range(1, periods + 1):
             block['P%s' % period] = dict(
-                quantity=2.0, price_unit_multi=0.217654321,
-                price_subtotal=1.37 / periods, price_tolls=0.002,
-                price_charges=0.003, tolls=0.004, charges=0.006)
+                quantity=3.0 if concept == 'potencia' else 2.0,
+                price_unit_multi=0.217654321, price_subtotal=1.37 / periods,
+                price_tolls=0.001 if concept == 'potencia' else 0.002,
+                price_charges=0.002 if concept == 'potencia' else 0.003,
+                tolls=0.003 if concept == 'potencia' else 0.004, charges=0.006)
         blocks.append(block)
     return blocks
 
 
 class TestsComplementaryBlocks(unittest.TestCase):
+    def test_equal_power_merges_without_adding_kw(self):
+        blocks = synthetic_blocks(concept='potencia')[:2]
+        original = deepcopy(blocks)
+        result = load_helper().merge_complementary_blocks(blocks, ['safe'] * 2)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['P1']['quantity'], 3)
+        self.assertAlmostEqual(result[0]['total'], 2.74)
+        self.assertAlmostEqual(result[0]['P1']['price_subtotal'], 2.74 / 3)
+        self.assertEqual(result[0]['data_fi'], '2025-07-10')
+        self.assertEqual(blocks, original)
+        result[0]['P1']['quantity'] = 999
+        self.assertEqual(blocks, original)
+
+    def test_power_compatibility_uses_every_exact_kw_and_price(self):
+        helper = load_helper()
+        for periods in (3, 6):
+            for period in range(1, periods + 1):
+                for field in ('quantity', 'price_unit_multi', 'price_tolls', 'price_charges'):
+                    blocks = synthetic_blocks(periods, 'potencia')[:2]
+                    blocks[1]['P%s' % period][field] += 0.000000001
+                    self.assertEqual(
+                        helper.merge_complementary_blocks(blocks, ['safe'] * 2), blocks,
+                        (periods, period, field))
+        for field, value in (
+                ('data_inici', '2025-07-08'), ('data_inici', '2025-07-06'),
+                ('units', 'W'), ('iva', '10'), ('type', 'energia')):
+            blocks = synthetic_blocks(concept='potencia')[:2]
+            blocks[1][field] = value
+            self.assertEqual(helper.merge_complementary_blocks(blocks, ['safe'] * 2), blocks)
+        blocks = synthetic_blocks(6, 'potencia')[:2]
+        del blocks[1]['P6']
+        self.assertEqual(helper.merge_complementary_blocks(blocks, ['safe'] * 2), blocks)
+        blocks = synthetic_blocks(concept='potencia')[:2]
+        self.assertEqual(helper.merge_complementary_blocks(blocks, ['safe', None]), blocks)
+
+    def test_power_negative_amounts_and_three_six_periods_keep_kw(self):
+        helper = load_helper()
+        for periods in (3, 6):
+            for quantity in (3, -3):
+                blocks = synthetic_blocks(periods, 'potencia')
+                for block in blocks:
+                    block['total'] *= -1
+                    for period in range(1, periods + 1):
+                        values = block['P%s' % period]
+                        values['quantity'] = quantity
+                        for field in ('price_subtotal', 'tolls', 'charges',
+                                      'price_tolls', 'price_charges'):
+                            values[field] *= -1
+                original = deepcopy(blocks)
+                result = helper.merge_complementary_blocks(blocks, ['safe'] * 4)
+                self.assertEqual(len(result), 1)
+                for period in range(1, periods + 1):
+                    self.assertEqual(result[0]['P%s' % period]['quantity'], quantity)
+                    self.assertAlmostEqual(result[0]['P%s' % period]['price_subtotal'],
+                                           -5.48 / periods)
+                self.assertAlmostEqual(result[0]['total'], -5.48)
+                self.assertEqual(blocks, original)
+
+    def test_energy_and_reactive_quantities_remain_additive(self):
+        for concept in ('energia', 'reactiva'):
+            blocks = synthetic_blocks(6, concept)
+            blocks[1]['P6']['quantity'] = 5
+            result = load_helper().merge_complementary_blocks(blocks, ['safe'] * 4)
+            self.assertEqual(len(result), 1)
+            self.assertEqual(result[0]['P1']['quantity'], 8)
+            self.assertEqual(result[0]['P6']['quantity'], 11)
+            self.assertAlmostEqual(result[0]['total'], 5.48)
+
     def test_four_blocks_sum_original_amounts_without_mutation(self):
         helper = load_helper()
         blocks = synthetic_blocks()
@@ -145,15 +218,16 @@ def production_report():
     return namespace['Report']()
 
 
-def source_fixture(periods=3):
+def source_fixture(periods=3, concept='energia'):
     report = production_report()
     lines = []
-    for block in synthetic_blocks(periods):
+    for block in synthetic_blocks(periods, concept):
         for period in range(1, periods + 1):
-            lines.append(Record(id=len(lines) + 1, tipus='energia', name='Synthetic energy',
+            lines.append(Record(id=len(lines) + 1, tipus=concept, name='Synthetic ' + concept,
                                 product_id=Record(id=period, name='P%s' % period),
                                 data_desde=block['data_inici'], data_fins=block['data_fi'],
-                                uos_id=Record(id=1),
+                                uos_id=Record(id=1, name=block['units']),
+                                multi=4, uom_multi_id=Record(id=2, name='Days'),
                                 invoice_line_tax_id=[Record(id=21, name='IVA 21')],
                                 **block['P%s' % period]))
     models = {
@@ -180,6 +254,126 @@ def source_fixture(periods=3):
 
 
 class TestsComplementaryProductionMethods(unittest.TestCase):
+    def test_power_roundtrip_chart_and_actual_mako_keep_three_kw(self):
+        template = TemplateLookup(
+            directories=[os.path.dirname(MODULE)], input_encoding='utf-8').get_template(
+                '/giscedata_facturacio_comer_som/report/components/'
+                'invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako')
+        for periods in (3, 6):
+            for sign in (1, -1):
+                report, fact, pol, lines = source_fixture(periods, 'potencia')
+                for line in lines:
+                    line['price_subtotal'] *= sign
+                original = deepcopy(lines)
+                data = report.get_sub_component_expedient_data(fact, pol, lines)
+                self.assertEqual(len(data['energy_lines_data']), 1)
+                reference = deepcopy(data)
+                reference['energy_lines_data'] = reference.pop('original_energy_lines_data')
+                report.get_sub_component_invoice_details_td_other_concepts_data = (
+                    lambda fact, pol: dict(compl_info=reference))
+                chart = report.get_component_amount_destination_td_data(fact, pol)
+                self.assertEqual(chart['pie_tolls'], 0)
+                self.assertEqual(chart['pie_charges'], sign * 0.04 * periods)
+                report.get_sub_component_invoice_details_td_other_concepts_data = (
+                    lambda fact, pol: dict(compl_info=data))
+                self.assertEqual(report.get_component_amount_destination_td_data(fact, pol), chart)
+                report.cleanup_data = lambda fact: None
+                result = report.fill_all_components_data(
+                    {'other': report.get_sub_component_invoice_details_td_other_concepts_data},
+                    fact, pol, {})
+                restored = result['other']['compl_info']
+                report.get_sub_component_invoice_details_td_other_concepts_data = (
+                    lambda fact, pol: dict(compl_info=restored))
+                self.assertEqual(report.get_component_amount_destination_td_data(fact, pol), chart)
+                block = restored['energy_lines_data'][0]
+                self.assertEqual(len(restored['original_energy_lines_data']), 4)
+                self.assertAlmostEqual(float(block['total']), sign * 5.48)
+                for period in range(1, periods + 1):
+                    self.assertEqual(block['P%s' % period]['quantity'], 3)
+                    self.assertEqual(float(block['P%s' % period]['price_unit_multi']), 0.217654321)
+                view = ns(
+                    compl_info=restored, showing_periods=report.get_matrix_show_periods(pol),
+                    iva_column=True, header_multi=0, number_of_columns=periods + 1,
+                    last_row='compl', bosocial_lines=[], altres_lines=[], donatiu_lines=[],
+                    iese_lines=[], lloguer_lines=[], iva_lines=[], igic_lines=[])
+                output = template.render_unicode(
+                    id=view, _=lambda value: value,
+                    formatLang=lambda value, digits=2: u'%.*f' % (digits, value))
+                rows = html.fromstring(u'<table>%s</table>' % output).xpath('./tr')
+                self.assertEqual(len(rows), 7)
+                self.assertIn(u'Potència [kW]', rows[0].text_content())
+                self.assertEqual([cell.text_content().strip()
+                                  for cell in rows[0].xpath('./td')[2:periods + 2]],
+                                 ['3.00'] * periods)
+                self.assertEqual(rows[2].xpath('./td')[periods + 1].text_content().strip(),
+                                 u'5.48 €' if sign > 0 else u'-5.48 €')
+                self.assertEqual(lines, original)
+
+    def test_power_source_quantity_units_tax_and_prices_still_control_compatibility(self):
+        for field, value in (
+                ('quantity', 3.000000001), ('uos_id', Record(id=5, name='W')),
+                ('invoice_line_tax_id', [Record(id=10, name='IVA 10')]),
+                ('product_id', Record(id=42, name='P2')),
+                ('price_unit_multi', 0.217654322), ('price_tolls', 0.001000001),
+                ('price_charges', 0.002000001)):
+            report, fact, pol, lines = source_fixture(6, 'potencia')
+            lines[7][field] = value
+            data = report.get_sub_component_expedient_data(fact, pol, lines)
+            self.assertEqual(len(data['energy_lines_data']), 3, field)
+        report, fact, pol, lines = source_fixture(concept='potencia')
+        fact.pool['giscedata.facturacio.importacio.linia'].rows.append(
+            Record(id=2, num_expedient='ABC/1234567891/ZZZ', type_factura='C'))
+        data = report.get_sub_component_expedient_data(fact, pol, lines)
+        self.assertEqual(len(data['energy_lines_data']), 4)
+        self.assertNotIn('original_energy_lines_data', data)
+
+    def test_power_temporal_basis_changes_or_unknowns_refuse_fusion(self):
+        for field, value in (
+                ('multi', 8), ('multi', 4.000000001), ('multi', 0),
+                ('uom_multi_id', Record(id=3, name='Months')), ('uom_multi_id', False)):
+            report, fact, pol, lines = source_fixture(concept='potencia')
+            lines[4][field] = value
+            data = report.get_sub_component_expedient_data(fact, pol, lines)
+            self.assertEqual(len(data['energy_lines_data']), 3, (field, value))
+
+    def test_hidden_power_quantities_and_duplicate_sources_refuse_fusion(self):
+        report, fact, pol, lines = source_fixture(concept='potencia')
+        duplicate = deepcopy(lines[0])
+        lines[0]['quantity'] = 1
+        duplicate['quantity'] = 2
+        duplicate['id'] = 100
+        lines.append(duplicate)
+        data = report.get_sub_component_expedient_data(fact, pol, lines)
+        self.assertEqual(len(data['energy_lines_data']), 2)
+        self.assertEqual(data['energy_lines_data'][0]['P1']['quantity'], 3)
+        # Even identical duplicate powers in every date group are uncertain:
+        # do not invent a single source power from legacy aggregated quantities.
+        report, fact, pol, lines = source_fixture(concept='potencia')
+        for line in list(lines):
+            if line.product_id.name == 'P1':
+                line['quantity'] = 1.5
+                duplicate = deepcopy(line)
+                duplicate['id'] += 100
+                lines.append(duplicate)
+        data = report.get_sub_component_expedient_data(fact, pol, lines)
+        self.assertEqual(len(data['energy_lines_data']), 4)
+
+    def test_real_power_source_keeps_kw_when_four_blocks_merge(self):
+        report, fact, pol, lines = source_fixture(concept='potencia')
+        original = deepcopy(lines)
+        data = report.get_sub_component_expedient_data(fact, pol, lines)
+        blocks = data['energy_lines_data']
+        self.assertEqual(len(blocks), 1)
+        self.assertEqual(blocks[0]['P1']['quantity'], 3)
+        self.assertEqual(blocks[0]['data_inici'], '2025-07-03')
+        self.assertEqual(blocks[0]['data_fi'], '2025-07-18')
+        self.assertAlmostEqual(blocks[0]['total'], 5.48)
+        self.assertAlmostEqual(blocks[0]['P1']['tolls'], 0.012)
+        self.assertAlmostEqual(blocks[0]['P1']['charges'], 0.024)
+        self.assertEqual(data['original_energy_lines_data'],
+                         synthetic_blocks(concept='potencia'))
+        self.assertEqual(lines, original)
+
     def test_merged_payload_survives_real_report_serialization(self):
         report, fact, pol, lines = source_fixture()
         original = deepcopy(lines)
