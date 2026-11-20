@@ -31,6 +31,7 @@ accounting account.
 From the repository checkout with the ERP environment and services available:
 
 ```sh
-WORKSPACE=/path/to/workspace PYENV_VERSION=erp scripts/run-tests-worktree.sh \
-    --addon som_account_analytic -- --no-requirements -m som_account_analytic
+OPENERP_WORKTREE_TEST_WORKSPACE=/path/to/workspace PYENV_VERSION=erp \
+    scripts/run-tests-worktree.sh --addon som_account_analytic -- \
+    --no-requirements -m som_account_analytic
 ```
