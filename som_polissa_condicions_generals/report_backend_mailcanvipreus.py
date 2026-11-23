@@ -479,8 +479,8 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
     def calc_tax_for_anual_estimation(self, preu, context=None):
         iva = self.simplified_taxes.get('IGIC', self.simplified_taxes.get('IVA', 0.21))
         impost_electric = self.simplified_taxes.get('IE', 0)
-        preu_imp = round(preu * (1 + impost_electric), 2)
-        return round(preu_imp * (1 + iva))
+        preu_imp = round(preu * (1 + impost_electric), 2)  # pylint: disable=round-builtin
+        return round(preu_imp * (1 + iva))  # pylint: disable=round-builtin
 
     def get_iva_text(self, context=None):
         iva_str = 'IVA' if 'IVA' in self.simplified_taxes else 'IGIC'
@@ -595,7 +595,7 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
                 pol_id,
                 consums,
                 {},
-                afegir_servei_ajust=True,
+                afegir_servei_ajust=False,
                 bo_social_separat=False,
                 date=self.get_price_change_date(cursor, uid, pol_id, context),
                 is_gkwh=True,
