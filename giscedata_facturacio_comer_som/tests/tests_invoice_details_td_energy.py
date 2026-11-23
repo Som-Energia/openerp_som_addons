@@ -6,7 +6,9 @@ from copy import deepcopy
 import os
 import unittest
 
+import cssutils
 from lxml import html
+from lxml.cssselect import CSSSelector
 from mako.lookup import TemplateLookup
 from mako.template import Template
 from yamlns import namespace as ns
@@ -29,17 +31,20 @@ class TestsInvoiceDetailsTdEnergy(unittest.TestCase):
         cls.template = Template(filename=template_path, input_encoding='utf-8',
                                 lookup=cls.lookup)
         cls.composed_template = Template(
-            text=u'<table>'
+            text=u'<table id="invoice_detail_td">'
             '<%include file="/giscedata_facturacio_comer_som/report/components/'
             'invoice_details_td_energy/invoice_details_td_energy.mako" args="id=id.energy"/>'
             '<%include file="/giscedata_facturacio_comer_som/report/components/'
             'invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako" '
             'args="id=id.other_concepts"/></table>',
             lookup=cls.lookup, input_encoding='utf-8')
+        cls.stylesheet = cssutils.parseFile(os.path.join(
+            addon_path, 'report', 'components', 'invoice_details_td', 'invoice_details_td.css'))
 
     def composed_data(self, periods=3, tax=False, ordinary=False,
                       complementary=True, adjustment=True, generation=False,
-                      amount=7.43, reactive_last=False):
+                      amount=7.43, reactive_last=False, donation=True,
+                      final_concept='energia', block_count=2):
         """Run the actual aggregator with synthetic prepared component boundaries."""
         addon_path = os.path.dirname(os.path.dirname(__file__))
         with open(os.path.join(addon_path, 'giscedata_facturacio_report.py')) as source:
@@ -68,20 +73,24 @@ class TestsInvoiceDetailsTdEnergy(unittest.TestCase):
             header_multi=3 * int(ordinary) + int(adjustment))
         blocks = []
         if complementary is True:
-            for start, end in [('2025-08-03', '2025-08-06'), ('2025-08-07', '2025-08-10')]:
+            dates = [('2025-08-03', '2025-08-06'), ('2025-08-07', '2025-08-10')]
+            for start, end in dates[:block_count]:
                 blocks.append(dict(
                     type='energia', units='kWh', data_inici=start, data_fi=end,
                     total=2.71, iva='21%', P1=dict(
                         quantity=13, price_unit_multi=0.20846, price_subtotal=2.71,
                         price_tolls=0.014, tolls=0.182,
                         price_charges=0.019, charges=0.247)))
-        if blocks and reactive_last:
-            blocks[-1]['type'] = 'reactiva'
-            blocks[-1]['units'] = 'kVArh'
+        if blocks:
+            concept = 'reactiva' if reactive_last else final_concept
+            blocks[-1]['type'] = concept
+            blocks[-1]['units'] = {'energia': 'kWh', 'potencia': 'kW', 'reactiva': 'kVArh'}[concept]
         other = dict(
             showing_periods=showing_periods, iva_column=tax, number_of_columns=periods + 1,
-            header_multi=1, last_row='donatiu', bosocial_lines=[], altres_lines=[],
-            donatiu_lines=[dict(quantity=13, price_unit_multi=0.007, price_subtotal=0.091)],
+            header_multi=int(donation), last_row='donatiu' if donation else 'compl',
+            bosocial_lines=[], altres_lines=[],
+            donatiu_lines=[dict(quantity=13, price_unit_multi=0.007,
+                                price_subtotal=0.091)] if donation else [],
             iese_lines=[], lloguer_lines=[], igic_lines=[],
             iva_lines=[dict(name='Synthetic VAT', base=19.37, amount=4.07,
                             disclaimer_21_to_5=False, disclaimer_21_to_10=False)])
@@ -111,6 +120,102 @@ class TestsInvoiceDetailsTdEnergy(unittest.TestCase):
             id=data, _=lambda value: value,
             formatLang=lambda value, digits=2: u'%.*f' % (digits, value))
         return data, html.fromstring(output).xpath('./tr')
+
+    def bottom_borders(self, rows):
+        """Resolve explicit row borders from real CSS, not browser layout/painting."""
+        borders = {}
+        table = rows[0].getparent()
+        for rule in self.stylesheet.cssRules:
+            if rule.type != rule.STYLE_RULE:
+                continue
+            border = rule.style.getPropertyValue('border-bottom')
+            if border:
+                for element in CSSSelector(rule.selectorText)(table):
+                    borders[element] = border
+        return [(index, borders[row]) for index, row in enumerate(rows) if row in borders]
+
+    def test_closing_separator_is_below_deferred_adjustment_not_above(self):
+        data, rows = self.composed_rows(donation=False, tax=True)
+        self.assertEqual(self.bottom_borders(rows),
+                         [(6, '1.8px solid black'), (14, '1.8px solid black')])
+        self.assertIn(u'Energia [kWh]', self.cell_text(rows[7]))
+        self.assertIn(u"Serveis d'Ajust", self.cell_text(rows[14]))
+        self.assertIn('Synthetic VAT', self.cell_text(rows[15]))
+        self.assertEqual(data.energy.header_multi, 0)
+        self.assert_adjustment(self.logical_rows(rows)[:15], 3, True, standalone=True)
+
+    def test_separator_follows_adjustment_for_each_final_concept_and_layout(self):
+        for concept in ('energia', 'potencia', 'reactiva'):
+            for periods in (3, 6):
+                for tax in (False, True):
+                    for ordinary in (False, True):
+                        for block_count in (1, 2):
+                            data, rows = self.composed_rows(
+                                final_concept=concept, block_count=block_count,
+                                donation=False, periods=periods, tax=tax, ordinary=ordinary,
+                                generation=periods == 6,
+                                amount=-2.19 if periods == 6 else 7.43)
+                            offset = 3 * int(ordinary)
+                            final_rows = 3 if concept == 'reactiva' else 7
+                            index = offset + 7 * (block_count - 1) + final_rows
+                            expected = [(index, '1.8px solid black')]
+                            if block_count == 2:
+                                expected.insert(0, (offset + 6, '1.8px solid black'))
+                            self.assertEqual(self.bottom_borders(rows), expected)
+                            texts = [self.cell_text(row) for row in rows]
+                            self.assertEqual([i for i, text in enumerate(texts)
+                                              if u"Serveis d'Ajust" in text], [index])
+                            self.assertIn('Synthetic VAT', texts[index + 1])
+                            logical = self.logical_rows(rows)
+                            self.assertEqual([len(row) for row in logical],
+                                             [periods + 3 + int(tax)] * len(rows))
+                            self.assert_adjustment(
+                                logical[:index + 1], periods, tax, standalone=True,
+                                generation=periods == 6,
+                                total=u'-2.19 €(2)' if periods == 6 else u'7.43 €(2)')
+                            self.assertEqual(data.energy.header_multi, offset)
+
+    def test_existing_separators_stay_when_adjustment_is_not_deferred(self):
+        for concept in ('energia', 'potencia', 'reactiva'):
+            for periods in (3, 6):
+                data, rows = self.composed_rows(
+                    final_concept=concept, periods=periods,
+                    donation=False, adjustment=False, ordinary=True)
+                last_index = 3 + 7 + (3 if concept == 'reactiva' else 7) - 1
+                self.assertEqual(self.bottom_borders(rows),
+                                 [(9, '1.8px solid black'), (last_index, '1.8px solid black')])
+                self.assertFalse(data.energy.get('defer_adjustment_services'))
+                self.assertIn('Synthetic VAT', self.cell_text(rows[last_index + 1]))
+                self.assertEqual([len(row) for row in self.logical_rows(rows)],
+                                 [periods + 3] * len(rows))
+        for complementary in (None, False, 'hidden'):
+            for ordinary in (False, True):
+                data, rows = self.composed_rows(
+                    complementary=complementary, donation=False, ordinary=ordinary)
+                # No complementary border exists to transfer; normal SA is unchanged.
+                self.assertEqual(self.bottom_borders(rows), [])
+                index = 3 * int(ordinary)
+                self.assert_adjustment(self.logical_rows(rows)[:index + 1], 3, False,
+                                       standalone=not ordinary)
+                self.assertEqual(data.energy.header_multi, index + 1)
+
+    def test_donation_closing_border_is_not_duplicated_on_adjustment(self):
+        # last_row=donatiu never gave complementary blocks a closing border.
+        # Preserve that policy instead of inventing another separator above donation.
+        for concept in ('energia', 'potencia', 'reactiva'):
+            for adjustment in (False, True):
+                data, rows = self.composed_rows(
+                    final_concept=concept, adjustment=adjustment,
+                    donation=True, periods=6, tax=True)
+                index = 7 + (3 if concept == 'reactiva' else 7) + int(adjustment)
+                self.assertEqual(self.bottom_borders(rows), [(index, '1.8px solid black')])
+                self.assertIn(u'Donatiu voluntari', self.cell_text(rows[index]))
+                self.assertIn('Synthetic VAT', self.cell_text(rows[index + 1]))
+                if adjustment:
+                    self.assertIn(u"Serveis d'Ajust", self.cell_text(rows[index - 1]))
+                    self.assert_adjustment(self.logical_rows(rows)[:index], 6, True,
+                                           standalone=True)
+                self.assertEqual(data.energy.header_multi, 0)
 
     def test_complementary_adjustment_follows_last_charges_before_donation_and_tax(self):
         data, rows = self.composed_rows(tax=True)
