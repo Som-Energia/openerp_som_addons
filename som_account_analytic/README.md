@@ -21,9 +21,16 @@ accounting account.
 - Normalizes the legacy `account_analytic_id` result to `analytic_account_id`
   after `super()`, preserving taxes, distribution and other inherited values.
 - Keeps an already-correct `analytic_account_id` if the parent supplies it.
-- Reuses existing rule selection, including its current-date behavior and lack
-  of company filtering. No new rules, fields or database migration are introduced.
-- Does not change invoice onchanges, inline list editing or import/create APIs.
+- Keeps `account.analytic.default.account_get()` as the shared selector for manual
+  entries, invoices, synchronization and any other caller. The inherited domain
+  excludes product-specific rules when the caller explicitly passes
+  `product_id=False`; matching products and generic rules remain eligible.
+  Omitting `product_id` preserves unrestricted product lookup.
+- Preserves the parent's ranking, sequence tie-breaking, date filters, analytic
+  distribution constraints and lack of company filtering. Manual entry onchanges
+  still use the current date. No new rules, fields or database migration are needed.
+- Does not replace invoice onchanges, inline list editing or import/create APIs;
+  their existing `account_get()` calls use the shared matching behavior.
   The two invoice return fixes from ERP PR #142 remain separate.
 
 ## Tests

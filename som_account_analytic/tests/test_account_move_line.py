@@ -29,6 +29,18 @@ class TestManualEntryAnalytics(testing.OOTestCaseWithCursor):
             self.cursor, self.uid,
             {"account_id": self.account_id, "analytic_id": analytic_id},
         )
+        product_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "product", "product_product_0"
+        )[1]
+        product_analytic_id = analytic_obj.create(
+            self.cursor, self.uid, {"name": "Unrelated product default"}
+        )
+        self.default_obj.create(
+            self.cursor, self.uid, {
+                "product_id": product_id, "analytic_id": product_analytic_id,
+                "sequence": 3,
+            },
+        )
 
         result = self.line_obj.onchange_account_id(
             self.cursor, self.uid, [], self.account_id, False
