@@ -3,6 +3,7 @@
 name: account_analytic_som
 permissions:
   contents: read
+  checks: write
 on:
   workflow_dispatch:
   schedule:
