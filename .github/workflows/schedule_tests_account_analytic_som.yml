@@ -1,6 +1,8 @@
 # This workflow will pass tests of module passed by input
 
 name: account_analytic_som
+permissions:
+  contents: read
 on:
   workflow_dispatch:
   schedule:
