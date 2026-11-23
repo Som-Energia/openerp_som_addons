@@ -1,5 +1,5 @@
-<%page args="adjustment_services, showing_periods, iva_column, description_colspan" />
-<tr class="tr_bold">
+<%page args="adjustment_services, showing_periods, iva_column, description_colspan, closing_separator=False" />
+<tr class="tr_bold${' last_row' if closing_separator else ''}">
     <td class="detall_td" colspan="${description_colspan}">
         % if adjustment_services.get('is_generation_adjustment'):
             ${_(u"Serveis d'Ajust segons preu REE pel periode facturat, aplicat a assignació GenerationkWh")}
