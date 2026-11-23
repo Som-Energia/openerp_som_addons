@@ -21,6 +21,8 @@ report_tester:
 -  report_tester/**
 scripts:
 -  scripts/**
+account_analytic_som:
+-  account_analytic_som/**
 som_account_invoice_pending:
 -  som_account_invoice_pending/**
 som_atc:
