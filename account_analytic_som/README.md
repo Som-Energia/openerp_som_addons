@@ -1,6 +1,6 @@
 # Manual journal entry analytics
 
-Install `som_account_analytic` to select an analytic account in the journal entry
+Install `account_analytic_som` to select an analytic account in the journal entry
 line popup and apply existing `account.analytic.default` rules when changing its
 accounting account.
 
@@ -9,7 +9,7 @@ accounting account.
 1. Remove the equivalent temporary ERP source patches and update `account` and
    `account_analytic_distribution` to restore their original database views.
 2. Make this addon available in the ERP addons path, restart the service and
-   install `som_account_analytic` with its declared dependencies.
+   install `account_analytic_som` with its declared dependencies.
 3. Add a manual entry line, choose an accounting account with an analytic default,
    and check the analytic account is populated and saved. Also check an account
    without a matching default and the existing distribution column in the list.
@@ -39,6 +39,6 @@ From the repository checkout with the ERP environment and services available:
 
 ```sh
 OPENERP_WORKTREE_TEST_WORKSPACE=/path/to/workspace PYENV_VERSION=erp \
-    scripts/run-tests-worktree.sh --addon som_account_analytic -- \
-    --no-requirements -m som_account_analytic
+    scripts/run-tests-worktree.sh --addon account_analytic_som -- \
+    --no-requirements -m account_analytic_som
 ```
