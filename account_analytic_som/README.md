@@ -27,11 +27,42 @@ accounting account.
   `product_id=False`; matching products and generic rules remain eligible.
   Omitting `product_id` preserves unrestricted product lookup.
 - Preserves the parent's ranking, sequence tie-breaking, date filters, analytic
-  distribution constraints and lack of company filtering. Manual entry onchanges
-  still use the current date. No new rules, fields or database migration are needed.
+   distribution constraints and lack of company filtering. Manual entry onchanges
+   still use the current date.
 - Does not replace invoice onchanges, inline list editing or import/create APIs;
   their existing `account_get()` calls use the shared matching behavior.
-  The two invoice return fixes from ERP PR #142 remain separate.
+   The two invoice return fixes from ERP PR #142 remain separate.
+
+## Reassign analytics on a posted entry
+
+Select one posted journal entry and open **Actions → Reassign entry analytics...**.
+Review the proposed account for each item, change the desired assignments and
+click **Apply analytics**. Canceling does not change the entry.
+
+- Proposals use the item's explicit analytic account, otherwise the current
+  `account.analytic.default` rule, evaluated using the item's accounting date,
+  accounting account, partner, product and current user.
+- Leaving a choice empty applies the current default, if any. It does not force
+  an empty analytic assignment when a default exists.
+- Confirmation stores the resolved assignments locally and uses the standard
+  accounting validation to rebuild analytic movements. Amounts, accounts,
+  posted state and reconciliations are not changed.
+- The wizard rejects stale journal items and requires every item exactly once.
+  Items with an existing analytic distribution cannot be changed to a single
+  analytic account here; their distribution must be managed separately.
+- This is ERP-only: proposals are not read from Odoo and confirmation does not
+  synchronize Odoo or change its synchronization status.
+
+Upgrade existing installations to register the wizard, action and accounting-user
+permissions. The migration is under `migrations/5.0.25.5.0/`.
+
+### Integration extension point
+
+`account.move.apply_analytic_assignments(cursor, uid, move_id, assignments,
+context=None)` accepts all item IDs mapped to local analytic account IDs (or
+`False` for default lookup). The wizard calls it once per confirmation. Integration
+addons can inherit it, call `super()` and enqueue remote updates on commit.
+This module does not depend on `som_sync_openerp`.
 
 ## Tests
 
