@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Database-free tests of the actual TD builders and unchanged Mako components."""
+from __future__ import absolute_import
+
 import ast
 import copy
 import os
