@@ -4327,7 +4327,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 data["final_date"] = reading[5]
                 if "final_type" not in data or reading[7] != u"real":
                     data["final_type"] = reading[7]
-                adjust_reason.append(reading[9])
+                if reading[8] != 0:
+                    adjust_reason.append(reading[9])
 
         data["adjust_reason"] = self.adjust_readings_priority(adjust_reason)
         return data
@@ -4364,7 +4365,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 data["final_date"] = reading[5]
                 if "final_type" not in data or reading[7] != u"real":
                     data["final_type"] = reading[7]
-                adjust_reason.append(reading[9])
+                if reading[8] != 0:
+                    adjust_reason.append(reading[9])
         data["hide_total_surplus"] = (
             te_autoconsum_collectiu(fact, pol) and te_autoconsum_no_collectiu(fact, pol)
         )
