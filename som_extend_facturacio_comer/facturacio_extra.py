@@ -12,11 +12,6 @@ class FacturacioExtra(osv.osv):
         "polissa_state": fields.related(
             "polissa_id", "state", type="char", string="Estat pòlissa", readonly=True
         ),
-        'origin_factura_id': fields.many2many(
-            'giscedata.facturacio.factura', 'facturacio_extra_origin_factura_rel',
-            'extra_id', 'factura_id', 'Origin Invoice',
-            help=u"Factura que ha originat la creació de la línia extra", readonly=True
-        ),
     }
 
 

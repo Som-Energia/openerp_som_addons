@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-from osv import osv
+from osv import osv, fields
 from tools import cache
 from tools.translate import _
 from datetime import datetime, timedelta
@@ -111,7 +111,24 @@ class GiscedataFacturacioFactura(osv.osv):
     def get_extra_vals_for_unpayment_expenses(self, cursor, uid, fact, context=None):
         if context is None:
             context = {}
-        return {'origin_factura_id': [(6, 0, [fact.id])],}
+        return {'origin_factura_id': [(6, 0, [fact.id])]}
 
 
 GiscedataFacturacioFactura()
+
+
+class FacturacioExtra(osv.osv):
+
+    _name = "giscedata.facturacio.extra"
+    _inherit = "giscedata.facturacio.extra"
+
+    _columns = {
+        'origin_factura_id': fields.many2many(
+            'giscedata.facturacio.factura', 'facturacio_extra_origin_factura_rel',
+            'extra_id', 'factura_id', 'Origin Invoice',
+            help=u"Factura que ha originat la creació de la línia extra", readonly=True
+        ),
+    }
+
+
+FacturacioExtra()

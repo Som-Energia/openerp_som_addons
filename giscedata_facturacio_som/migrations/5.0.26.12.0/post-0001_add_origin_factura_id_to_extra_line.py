@@ -1,4 +1,6 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*
+from __future__ import absolute_import
+
 from oopgrade.oopgrade import MigrationHelper
 from tools import config
 
@@ -9,6 +11,7 @@ def up(cursor, installed_version):
 
     mh = MigrationHelper(cursor, 'som_extend_facturacio_comer')
     mh.init_model('giscedata.facturacio.extra')
+
 
 def down(cursor, installed_version):
     pass
