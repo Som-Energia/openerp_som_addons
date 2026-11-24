@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, unicode_literals
 from giscedata_facturacio.report.utils import get_atr_price
 from datetime import date, timedelta
 
