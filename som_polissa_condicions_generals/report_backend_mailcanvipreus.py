@@ -93,6 +93,11 @@ _DECIMALS = {
     ("preu_auto_nou", ): 3,
     ("preu_auto_antic_imp", ): 3,
     ("preu_auto_nou_imp", ): 3,
+    ("gkwh_estimation", "consum_total",): 0,
+    ("gkwh_estimation", "preu_nou"): 0,
+    ("gkwh_estimation", "preu_nou_imp",): 0,
+    ("gkwh_estimation", "preu_vell",): 0,
+    ("gkwh_estimation", "preu_vell_imp",): 0,
 }
 
 
@@ -194,7 +199,8 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
 
             "impostos_str": impostos_str,
             "modcon": (
-                pol_id.modcontractuals_ids[0].state == "pendent"
+                bool(pol_id.modcontractuals_ids)
+                and pol_id.modcontractuals_ids[0].state == "pendent"
                 and pol_id.mode_facturacio
                 != pol_id.modcontractuals_ids[0].mode_facturacio
                 and pol_id.modcontractuals_ids[0].mode_facturacio
@@ -341,12 +347,14 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
             "tp": sorted(pol.tarifa.get_periodes("tp", context=context).keys()),
             "te": sorted(pol.tarifa.get_periodes("te", context=context).keys()),
         }
-        if (pol.modcontractuals_ids[0].state == "pendent"
+        if (pol.modcontractuals_ids
+            and pol.modcontractuals_ids[0].state == "pendent"
             and pol.mode_facturacio
             != pol.modcontractuals_ids[0].mode_facturacio
                 and pol.modcontractuals_ids[0].mode_facturacio == 'index'):
             context["force_pricelist"] = pol.modcontractuals_ids[1].llista_preu.id
-        elif (pol.modcontractuals_ids[0].state == "pendent"
+        elif (pol.modcontractuals_ids
+              and pol.modcontractuals_ids[0].state == "pendent"
               and pol.mode_facturacio
               != pol.modcontractuals_ids[0].mode_facturacio
                 and pol.modcontractuals_ids[0].mode_facturacio == 'atr'):
@@ -389,12 +397,14 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
             types = {'gkwh': consums or {}}
         else:
             types = {"tp": potencies or {}, "te": consums or {}}
-            if (polissa_id.modcontractuals_ids[0].state == "pendent"
+            if (polissa_id.modcontractuals_ids
+                    and polissa_id.modcontractuals_ids[0].state == "pendent"
                     and polissa_id.mode_facturacio
                     != polissa_id.modcontractuals_ids[0].mode_facturacio
                     and polissa_id.modcontractuals_ids[0].mode_facturacio == 'index'):
                 ctx["force_pricelist"] = polissa_id.modcontractuals_ids[1].llista_preu.id
-            elif (polissa_id.modcontractuals_ids[0].state == "pendent"
+            elif (polissa_id.modcontractuals_ids
+                    and polissa_id.modcontractuals_ids[0].state == "pendent"
                     and polissa_id.mode_facturacio
                     != polissa_id.modcontractuals_ids[0].mode_facturacio
                     and polissa_id.modcontractuals_ids[0].mode_facturacio == 'atr'):
@@ -474,8 +484,8 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
     def calc_tax_for_anual_estimation(self, preu, context=None):
         iva = self.simplified_taxes.get('IGIC', self.simplified_taxes.get('IVA', 0.21))
         impost_electric = self.simplified_taxes.get('IE', 0)
-        preu_imp = round(preu * (1 + impost_electric), 2)
-        return round(preu_imp * (1 + iva))
+        preu_imp = round(preu * (1 + impost_electric), 2)  # pylint: disable=round-builtin
+        return round(preu_imp * (1 + iva))  # pylint: disable=round-builtin
 
     def get_iva_text(self, context=None):
         iva_str = 'IVA' if 'IVA' in self.simplified_taxes else 'IGIC'
@@ -590,7 +600,7 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
                 pol_id,
                 consums,
                 {},
-                afegir_servei_ajust=True,
+                afegir_servei_ajust=False,
                 bo_social_separat=False,
                 date=self.get_price_change_date(cursor, uid, pol_id, context),
                 is_gkwh=True,
