@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from six import string_types
 
 
-class GiscedataFacturacio(osv.osv):
+class GiscedataFacturacioFactura(osv.osv):
     _name = "giscedata.facturacio.factura"
     _inherit = "giscedata.facturacio.factura"
 
@@ -46,17 +46,9 @@ class GiscedataFacturacio(osv.osv):
                             and isinstance(match, string_types) and "%" not in match):
                         operator = "="
                         args[idx] = (field, operator, match)
-        return super(GiscedataFacturacio, self).search(
+        return super(GiscedataFacturacioFactura, self).search(
             cr, user, args, offset, limit, order, context, count
         )
-
-
-GiscedataFacturacio()
-
-
-class GiscedataFacturacioFactura(osv.osv):
-    _name = 'giscedata.facturacio.factura'
-    _inherit = 'giscedata.facturacio.factura'
 
     def invoice_open(self, cursor, uid, ids, context=None):
         if context is None:
@@ -115,6 +107,11 @@ class GiscedataFacturacioFactura(osv.osv):
                                  _("No s'ha trobat factura de proveïdor entre les dates "
                                    "{} i {}").format(factura.data_inici, factura.data_final))
         return res
+
+    def get_extra_vals_for_unpayment_expenses(self, cursor, uid, fact, context=None):
+        if context is None:
+            context = {}
+        return {'origin_factura_id': [(6, 0, [fact.id])],}
 
 
 GiscedataFacturacioFactura()
