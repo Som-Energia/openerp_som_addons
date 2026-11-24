@@ -144,6 +144,15 @@ class TestReportBackendContractSummary(testing.OOTestCase):
         self.card_obj = self.openerp.pool.get("res.partner.creditcard")
         self.imd_obj = self.openerp.pool.get("ir.model.data")
         self.contract_20td_id = self.get_ref("giscedata_polissa", "polissa_tarifa_018")
+        tax_obj = self.openerp.pool.get("account.tax")
+        conf_obj = self.openerp.pool.get("res.config")
+        for config_key, tax_name in [
+            ("default_iva_21_tax_id", "IVA 21%"),
+            ("default_iese_tax_id", "Impuesto especial sobre la electricidad"),
+        ]:
+            tax_ids = tax_obj.search(self.cursor, self.uid, [("name", "=", tax_name)])
+            self.assertTrue(tax_ids, "Missing demo tax: {}".format(tax_name))
+            conf_obj.set(self.cursor, self.uid, config_key, tax_ids[0])
 
     def tearDown(self):
         self.txn.stop()
@@ -209,10 +218,15 @@ class TestReportBackendContractSummary(testing.OOTestCase):
         self.assertFalse(result["show_section_7_final_paragraph"])
 
     def test_get_section_flags_hides_section_6_gurb_text_for_generation_only(self):
-        pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
-        self.pol_obj.write(self.cursor, self.uid, [pol.id], {"te_assignacio_gkwh": True})
+        assignment_obj = self.openerp.pool.get("generationkwh.assignment")
+        assignment_obj.create(self.cursor, self.uid, {
+            "contract_id": self.contract_20td_id,
+            "member_id": self.get_ref("som_generationkwh", "soci_0001"),
+            "priority": 1,
+        })
 
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
+        self.assertTrue(pol.te_assignacio_gkwh)
         result = self.backend_obj.get_section_flags(self.cursor, self.uid, pol, context={})
 
         self.assertFalse(result["show_section_6_final_paragraph"])
@@ -222,19 +236,28 @@ class TestReportBackendContractSummary(testing.OOTestCase):
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
         self.pol_obj.write(self.cursor, self.uid, [pol.id], {"name": False})
 
-        pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
-        result = self.backend_obj.get_data(self.cursor, self.uid, pol, context={})
+        context = {"lang": "en_US"}
+        pol = self.pol_obj.browse(
+            self.cursor, self.uid, self.contract_20td_id, context=context
+        )
+        result = self.backend_obj.get_data(self.cursor, self.uid, pol, context=context)
 
         self.assertFalse("contract_number" in result["supply"])
 
     def test_get_data_exposes_discount_visibility_without_self_consumption(self):
-        pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
-        result = self.backend_obj.get_data(self.cursor, self.uid, pol, context={})
+        context = {"lang": "en_US"}
+        pol = self.pol_obj.browse(
+            self.cursor, self.uid, self.contract_20td_id, context=context
+        )
+        result = self.backend_obj.get_data(self.cursor, self.uid, pol, context=context)
         self.assertFalse(result["discounts"]["show_legal_text"])
 
     def test_get_data_reuses_existing_prices_shape_for_indexed_and_periods(self):
-        pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
-        result = self.backend_obj.get_data(self.cursor, self.uid, pol, context={})
+        context = {"lang": "en_US"}
+        pol = self.pol_obj.browse(
+            self.cursor, self.uid, self.contract_20td_id, context=context
+        )
+        result = self.backend_obj.get_data(self.cursor, self.uid, pol, context=context)
         self.assertTrue("pricelists" in result["prices"])
         self.assertTrue("mostra_indexada" in result["prices"])
         self.assertTrue("price_summaries" in result["offer"])
