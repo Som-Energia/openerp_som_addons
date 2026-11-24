@@ -3301,11 +3301,17 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_invoice_details_info_td_data(self, fact, pol):
+        social_discount = None
+        if (self.get_is_social_tariff(fact, pol)
+                and any("GkWh" not in line.name
+                        for line in self.get_real_energy_lines(fact, pol))):
+            social_discount = self.get_social_discount_eur_kwh(fact, pol)
         has_mag = True if self.get_mag_lines_info(fact) else False
         if not has_mag:
             return {
                 "has_autoconsum": te_autoconsum(fact, pol),
                 "has_mag": has_mag,
+                "social_discount_eur_kwh": social_discount,
                 "adjustment_services": self.get_adjustment_services_data(fact),
             }
 
@@ -3315,6 +3321,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 "has_autoconsum": te_autoconsum(fact, pol),
                 "has_mag": False,
                 "library_error": mag_info.split("\n"),
+                "social_discount_eur_kwh": social_discount,
                 "adjustment_services": self.get_adjustment_services_data(fact),
             }
 
@@ -3327,6 +3334,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 "has_autoconsum": te_autoconsum(fact, pol),
                 "has_mag": False,
                 "library_error": "no aplica periode de facturacio",
+                "social_discount_eur_kwh": social_discount,
                 "data": mag_info,
                 "adjustment_services": self.get_adjustment_services_data(fact),
             }
@@ -3334,6 +3342,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data = {
             "has_autoconsum": te_autoconsum(fact, pol),
             "has_mag": has_mag,
+            "social_discount_eur_kwh": social_discount,
             "preu_mitja_mag_darrer_mes": mag_info["mes_natural_anterior"]["preu_mig_mensual_ajust"],
             "mes_mag_darrer_mes": mag_info["mes_natural_anterior"]["mes"],
             "any_mag_darrer_mes": mag_info["mes_natural_anterior"]["any"],
@@ -3411,6 +3420,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "adjustment_services": adjustment_services,
             "is_social_tariff": self.get_is_social_tariff(fact, pol),
         }
+        data["social_discount_eur_kwh"] = (
+            self.get_social_discount_eur_kwh(fact, pol)
+            if data["is_social_tariff"] else None
+        )
         return data
 
     def get_adjustment_services_data(self, fact):
@@ -4755,6 +4768,151 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             image = image.decode("ascii")
         mime = "image/jpeg" if image.startswith("/9j/") else "image/png"
         return "data:{};base64,{}".format(mime, image)
+
+    def _get_report_discount_rule(self, pricelist, product, start, end):
+        """Prove a single product-specific rule under core price_get ordering.
+
+        Core price_get exposes prices, not selected rule IDs. Do not emulate
+        category/template matching here: generic or qualified rules are unknown.
+        A version boundary anywhere in the chain also makes the amount unknown.
+        """
+        version_obj = self.pool.get("product.pricelist.version")
+        versions = version_obj.search(self.cursor, self.uid, [
+            ("pricelist_id", "=", pricelist.id),
+            ("active", "=", True),
+            "|", ("date_start", "=", False), ("date_start", "<=", end),
+            "|", ("date_end", "=", False), ("date_end", ">=", start),
+        ], context={"active_test": False})
+        if len(versions) != 1 or pricelist.currency_id.name != "EUR":
+            return None
+        version = version_obj.browse(self.cursor, self.uid, versions[0])
+        if ((version.date_start and version.date_start > start)
+                or (version.date_end and version.date_end < end)):
+            return None
+        candidates = []
+        for item in version.items_id:
+            if not item.product_id:
+                return None
+            if item.product_id.id != product.id:
+                continue
+            if item.min_quantity > 1 or item.product_tmpl_id or item.categ_id:
+                return None
+            candidates.append(item)
+        candidates.sort(key=lambda item: item.sequence)
+        if not candidates:
+            return None
+        if len(candidates) > 1 and candidates[0].sequence == candidates[1].sequence:
+            return None
+        rule = candidates[0]
+        if any([rule.price_round, rule.price_surcharge,
+                rule.price_min_margin, rule.price_max_margin]):
+            return None
+        return rule
+
+    def _get_report_discount_prices(self, pricelist, product, start, end, visited, social_prices):
+        """Return pre-discount base and engine price for a validated dated chain."""
+        if pricelist.id in visited or (visited and pricelist.id in social_prices):
+            return None
+        rule = self._get_report_discount_rule(pricelist, product, start, end)
+        if rule is None:
+            return None
+        fraction = Decimal(str(rule.price_discount))
+        if not fraction.is_finite() or not Decimal("-1") <= fraction <= 0:
+            return None
+        if rule.base == -3:
+            base = Decimal(str(rule.base_price))
+        elif rule.base == -1 and rule.base_pricelist_id:
+            prices = self._get_report_discount_prices(
+                rule.base_pricelist_id, product, start, end,
+                visited + [pricelist.id], social_prices)
+            base = prices[1] if prices is not None else None
+        else:
+            return None
+        if base is None or not base.is_finite() or base < 0:
+            return None
+        expected = base * (1 + fraction)
+        pricelist_obj = self.pool.get("product.pricelist")
+        actual = pricelist_obj.price_get(
+            self.cursor, self.uid, [pricelist.id], product.id, 1,
+            context={"date": end})[pricelist.id]
+        if actual is False or actual is None:
+            return None
+        actual = Decimal(str(actual))
+        if not actual.is_finite() or abs(actual - expected) > Decimal("0.000000000001"):
+            return None
+        return base, actual
+
+    def get_social_discount_eur_kwh(self, fact, pol):
+        """Return an exact decimal string, or None when no rule can be proven.
+
+        Only mapped social prices with an explicit P1/K rule and stable
+        effective versions are supported. Manual K, generic rules, dynamic or
+        product-field bases, rounding, margins and surcharges remain unknown.
+        """
+        if not fact.data_inici or not fact.data_final or fact.data_inici > fact.data_final:
+            return None
+        polissa_obj = self.pool.get("giscedata.polissa")
+        mapping = polissa_obj.mapping_tarifa_social(
+            self.cursor, self.uid)
+        if not pol.llista_preu or pol.llista_preu.id not in mapping.values():
+            return None
+        indexed = pol.mode_facturacio == "index"
+        if indexed and pol.coeficient_k:
+            return None
+        if pol.mode_facturacio not in ("atr", "index"):
+            return None
+        imd_obj = self.pool.get("ir.model.data")
+        if indexed:
+            product_id = imd_obj.get_object_reference(
+                self.cursor, self.uid, "giscedata_facturacio_indexada", "product_factor_k")[1]
+        else:
+            tarifa_obj = self.pool.get("giscedata.polissa.tarifa")
+            products = tarifa_obj.get_periodes_producte(
+                self.cursor, self.uid, pol.tarifa.id, "te")
+            product_id = products.get("P1")
+        if not product_id:
+            return None
+        product_obj = self.pool.get("product.product")
+        product = product_obj.browse(self.cursor, self.uid, product_id)
+        rule = self._get_report_discount_rule(
+            pol.llista_preu, product, fact.data_inici, fact.data_final)
+        if rule is None:
+            return None
+        # Never take an already socially discounted price as the base.
+        if rule.base == -1:
+            ordinary = [key for key, value in mapping.items() if value == pol.llista_preu.id]
+            if not rule.base_pricelist_id or rule.base_pricelist_id.id not in ordinary:
+                return None
+        prices = self._get_report_discount_prices(
+            pol.llista_preu, product, fact.data_inici, fact.data_final, [], mapping.values())
+        if prices is None:
+            return None
+        base = prices[0]
+        if indexed:
+            # The K product price is EUR/kWh; the policy coefficient is EUR/MWh.
+            base_coefficient_k = base * 1000
+            amount = abs(Decimal(str(rule.price_discount)) * base_coefficient_k) / 1000
+        else:
+            kwh_id = imd_obj.get_object_reference(
+                self.cursor, self.uid, "giscedata_polissa", "uom_eneg_elec")[1]
+            source_uom = product.uos_id or product.uom_id
+            uom_obj = self.pool.get("product.uom")
+            kwh = uom_obj.browse(self.cursor, self.uid, kwh_id)
+            if source_uom.category_id.id != kwh.category_id.id:
+                return None
+            amount = abs(Decimal(str(rule.price_discount)) * base)
+            source_factor = Decimal(str(source_uom.factor_inv_data or source_uom.factor))
+            target_factor = Decimal(str(kwh.factor_inv_data or kwh.factor))
+            if (not source_factor.is_finite() or not target_factor.is_finite()
+                    or source_factor <= 0 or target_factor <= 0):
+                return None
+            # Match _compute_price's UOM ratio, without its six-digit financial
+            # rounding: a positive metadata discount must never become zero.
+            amount = (amount / source_factor if source_uom.factor_inv_data
+                      else amount * source_factor)
+            amount = (amount * target_factor if kwh.factor_inv_data
+                      else amount / target_factor)
+        return format(amount.normalize(), "f")
 
     def get_is_social_tariff(self, fact, pol):
         """Use the invoice-end policy price and current business categories.
