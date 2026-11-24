@@ -41,7 +41,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 - Using a named worktree for PR-affecting work is optional. If used, place it under `<WORKSPACE>/openerp_som_addons-worktrees/`, where `<WORKSPACE>` is the directory containing the primary repository checkout; never use `/tmp/opencode`.
 - Before making edits, stop and get an explicit decision on whether to use the active checkout or a worktree. This applies even when the selected worktree already exists.
 - Before creating any worktree, stop and get explicit approval. Fetch `origin` first and create a new worktree branch from the current `origin/main`, never from a potentially stale local `main`.
-- Quan s'hagi seleccionat un worktree amb nom en un pane Herdr (`HERDR_ENV=1`), abans d'editar o executar tests useu el wrapper `create` o `open` de la skill `erp-herdr-worktree`; crear o obrir directament amb `git worktree` no n'és una alternativa.
+- Quan s'hagi seleccionat un worktree amb nom en un pane Herdr TUI (`HERDR_ENV=1`) o Herdr App (`HC_TERMINAL_ID`), abans d'editar o executar tests useu el wrapper `create` o `open` de la skill `erp-herdr-worktree`; crear o obrir directament amb `git worktree` no n'és una alternativa.
 - En presentar l'elecció entre el checkout actiu i un worktree nou, indiqueu explícitament que escollir un worktree nou autoritza el `fetch` i la creació necessaris i que no s'ha de demanar una segona confirmació per la mateixa decisió.
 
 **Main branch policy:** No facis commits directament a `main`: treballa sempre en una branca separada —també pots fer-ho en un worktree— i integra els canvis mitjançant una PR.
