@@ -2,6 +2,7 @@
 <%
 import locale
 first_pass = True
+defer_separator = id.last_row == 'compl' and bool(id.get('deferred_adjustment_services'))
 TABLA_101 = {
     '06': _(u'Inspecció - Anomalia'),
     '11': _(u'Inspecció - Frau'),
@@ -34,7 +35,8 @@ TABLA_101 = {
     </tr>
 % endfor
 % if 'compl_info' in id and id.compl_info:
-    % for lines_data in id.compl_info.energy_lines_data:
+    % for block_index, lines_data in enumerate(id.compl_info.energy_lines_data):
+        <% block_separator = id.last_row == 'compl' and not (defer_separator and block_index == len(id.compl_info.energy_lines_data) - 1) %>
         <tr >
             <td class="td_first concepte_td" rowspan="3">${_(u"Facturació Complementaria imputada per part de la Distribuïdora")}</td>
             % if lines_data.type == "energia":
@@ -73,7 +75,7 @@ TABLA_101 = {
                 <td></td>
             % endif
         </tr>
-        <tr class="td_bold ${'last_row' if id.last_row == 'compl' and lines_data.type == 'reactiva' else ''}">
+        <tr class="td_bold ${'last_row' if block_separator and lines_data.type == 'reactiva' else ''}">
             <td class="detall_td">${_(u"%s x €/%s (del %s al %s)") % (lines_data.units, lines_data.units, lines_data.data_inici, lines_data.data_fi)}</td>
             % for p in id.showing_periods:
                 % if p in lines_data:
@@ -132,7 +134,7 @@ TABLA_101 = {
                 <td></td>
             % endif
         </tr>
-        <tr class="${'last_row' if id.last_row == 'compl' else ''}">
+        <tr class="${'last_row' if block_separator else ''}">
             <td class="td_bold detall_td">${_(u"%s x €/%s") % (lines_data.units, lines_data.units)}</td>
             % for p in id.showing_periods:
                 % if p in lines_data:
@@ -148,6 +150,9 @@ TABLA_101 = {
         </tr>
         % endif
     % endfor
+% endif
+% if id.get('deferred_adjustment_services'):
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_adjustment_services.mako" args="adjustment_services=id.deferred_adjustment_services, showing_periods=id.showing_periods, iva_column=id.iva_column, description_colspan=2, closing_separator=defer_separator" />
 % endif
 % for l in id.donatiu_lines:
     <tr class= "${'last_row' if id.last_row == 'donatiu' else ''}">
