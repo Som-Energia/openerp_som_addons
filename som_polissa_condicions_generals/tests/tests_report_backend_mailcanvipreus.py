@@ -5,6 +5,7 @@ import mock
 from destral import testing
 from destral.transaction import Transaction
 from som_indexada.utils import get_preus as get_indexed_preus
+from som_indexada.utils import calculate_new_indexed_prices
 
 
 BACKEND_MODULE = 'som_polissa_condicions_generals.report_backend_mailcanvipreus'
@@ -29,6 +30,12 @@ class TestReportBackendMailcanvipreus(testing.OOTestCase):
             self.cursor, self.uid, 'som_indexada_consum_tipus',
             "{'2.0TD': {'preu_sense_F': 100}}",
         )
+        tax_obj = self.openerp.pool.get('account.tax')
+        for key, name in [
+                ('default_iva_21_tax_id', 'IVA 21%'),
+                ('default_iese_tax_id', 'Impuesto especial sobre la electricidad')]:
+            tax_id = tax_obj.search(self.cursor, self.uid, [('name', '=', name)])[0]
+            conf_obj.set(self.cursor, self.uid, key, str(tax_id))
 
         for target, value in [
             (BACKEND_MODULE + '.get_atr_price', (1.0, 0)),
@@ -122,3 +129,50 @@ class TestReportBackendMailcanvipreus(testing.OOTestCase):
             context = {}
             get_prices(self.cursor, self.uid, pol, context=context)
             self.assertNotIn('force_pricelist', context)
+
+    def test_indexed_estimation_with_real_tax_engine_and_social_charge(self):
+        tax_obj = self.openerp.pool.get('account.tax')
+        conf_obj = self.openerp.pool.get('res.config')
+        ie_id = tax_obj.create(self.cursor, self.uid, {
+            'name': 'IE estimation code', 'type': 'code', 'amount': 0.4864,
+            'python_compute': 'result = price_unit * 0.05', 'factor': 0.1,
+            'include_base_amount': True, 'sequence': 1,
+        })
+        iva_id = tax_obj.create(self.cursor, self.uid, {
+            'name': 'IVA estimation 5%', 'type': 'percent', 'amount': 0.05,
+            'sequence': 2,
+        })
+        conf_obj.set(self.cursor, self.uid, 'default_iese_tax_id', str(ie_id))
+        conf_obj.set(self.cursor, self.uid, 'default_iva_21_tax_id', str(iva_id))
+        conf_obj.set(self.cursor, self.uid, 'invoice_active_bo_social', '1')
+        conf_obj.set(self.cursor, self.uid, 'invoice_start_date_bo_social', '2020-01-01')
+        conf_obj.set(self.cursor, self.uid, 'giscedata_exclude_tariff_apply_bo_social', '[]')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        social_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_repercusio_bo_social', 'bosocial_BS01'
+        )[1]
+        self.openerp.pool.get('product.product').write(
+            self.cursor, self.uid, social_id, {'taxes_id': [(6, 0, [iva_id])]}
+        )
+        self.pol_obj.write(
+            self.cursor, self.uid, self.pol_id,
+            {'mode_facturacio': 'index', 'fiscal_position_id': False}
+        )
+        pol = self.pol_obj.browse(self.cursor, self.uid, self.pol_id)
+        for factor in [0.1, 0]:
+            tax_obj.write(self.cursor, self.uid, ie_id, {'factor': factor})
+            with mock.patch('som_indexada.utils.get_preus', side_effect=[
+                    {'factor_k': 0.005, 'tp': {}}, {'factor_k': 0.007, 'tp': {}}]), \
+                    mock.patch('som_indexada.utils.get_fs_from_k_change', return_value={}), \
+                    mock.patch.object(self.openerp.pool.get('product.pricelist'),
+                                      'price_get', return_value={pol.llista_preu.id: 0.02}):
+                result = calculate_new_indexed_prices(self.cursor, self.uid, pol)
+            energy = result['import_energia_anual_nova']
+            self.assertAlmostEqual(result['import_bo_social_anual_nova'], 7.3)
+            self.assertAlmostEqual(result['import_total_anual_nova'], energy + 7.3)
+            self.assertAlmostEqual(result['ie'], 5 * factor, places=3)
+            self.assertAlmostEqual(result['iva'], 5, places=3)
+            self.assertAlmostEqual(
+                result['import_total_anual_nova_amb_impost'],
+                energy * (1 + 0.05 * factor) * 1.05 + 7.3 * 1.05, places=4
+            )
