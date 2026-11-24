@@ -378,7 +378,7 @@ class RepresentaSom(Representa):
             desv_sistema_per_hora, on=['timestamp'], how='left')
         banda_secundaria_df['preu_bs3_sistema'] = (
             (banda_secundaria_df['desviament_subir_sistema']
-             + banda_secundaria_df['desviament_subir_sistema'])
+             + banda_secundaria_df['desviament_bajar_sistema'])
             * banda_secundaria_df['preu_bs3']
         )
 
