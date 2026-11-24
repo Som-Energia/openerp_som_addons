@@ -10,6 +10,7 @@ from mako.template import Template
 from yamlns import namespace as ns
 from yamlns.testutils import assertNsEqual
 from datetime import datetime, timedelta
+from decimal import Decimal
 from .. import giscedata_facturacio_report
 
 
@@ -56,7 +57,7 @@ class Tests_FacturacioFacturaReport_base(testing.OOTestCase):
 
 
 class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_base):
-    phrase = u"Electricitat utilitzada amb descompte social aplicat"
+    phrase = u"Preu energia amb descompte social aplicat [€/kWh]"
 
     def setUp(self):
         super(Tests_FacturacioFacturaReport_social_tariff, self).setUp()
@@ -108,8 +109,10 @@ class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_
     def render_component(self, name, **kwargs):
         path = os.path.join(os.path.dirname(__file__), "..", "report", "components", name)
         translate = kwargs.pop("translate", lambda text: text)
+        format_lang = kwargs.pop("format_lang", lambda value, **kw: (
+            format(value, "f") if isinstance(value, Decimal) else str(value)))
         return TemplateLookup(directories=[path]).get_template(name + ".mako").render(
-            _=translate, formatLang=lambda value, **kw: str(value),
+            _=translate, formatLang=format_lang,
             addons_path="/addons", **kwargs)
 
     def test_social_catalogs_and_spanish_energy_render(self):
@@ -120,7 +123,7 @@ class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_
         with open(os.path.join(path, "es_ES.po"), "rb") as source:
             spanish = read_po(source)
         self.assertIn(self.phrase, pot)
-        translation = u"Electricidad utilizada con descuento social aplicado"
+        translation = u"Precio de la energía con descuento social aplicado [€/kWh]"
         self.assertEqual(spanish[self.phrase].string, translation)
         line = ns(origin="real", date_from="01/01/2026", date_to="31/01/2026",
                   total=28, P1=dict(quantity=140, price_unit_multi=0.2, price_subtotal=28))
@@ -131,7 +134,7 @@ class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_
         result = self.render_component(
             "invoice_details_td_energy", id=data,
             translate=lambda text: translation if text == self.phrase else text)
-        self.assertIn(translation + u" [€/kWh]", result)
+        self.assertIn(translation, result)
         self.assertNotIn(self.phrase, result)
 
     def test_summary_social_and_ordinary_and_cached_payload(self):
@@ -145,7 +148,8 @@ class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_
             if social is not None:
                 data.is_social_tariff = social
             result = self.render_component("invoice_summary_td", invs=data)
-            self.assertEqual(self.phrase in result, social is True)
+            self.assertNotIn(u"amb descompte social aplicat", result)
+            self.assertIn(u"Electricitat utilitzada</td>", result)
             self.assertIn("28 &euro;", result)
             self.assertIn("43 &euro;", result)
 
@@ -160,7 +164,7 @@ class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_
                 if social is not None:
                     data.is_social_tariff = social
                 result = self.render_component("invoice_details_td_energy", id=data)
-                self.assertEqual(self.phrase + u" [€/kWh]" in result, social is True)
+                self.assertEqual(self.phrase in result, social is True)
                 if not social:
                     label = (u"Preu mitjà de l'energia" if indexed else u"Preu energia")
                     self.assertIn(label + u" [€/kWh]", result)
@@ -169,6 +173,73 @@ class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_
                 self.assertIn("140", result)
                 self.assertIn("28", result)
                 self.assertNotIn("*", result)
+
+    def test_social_discount_note_known_unknown_zero_and_precision(self):
+        line = ns(origin="real", date_from="01/01/2026", date_to="31/01/2026",
+                  total=28, P1=dict(quantity=140, price_unit_multi=0.2, price_subtotal=28))
+        for amount in [None, "0", "0.0278", "0.000000001"]:
+            data = ns(auvi_energy_lines_data=[], energy_lines_data=[line],
+                      showing_periods=["P1"], header_multi=3, iva_column=False,
+                      indexed=False, mag_line_data=False,
+                      adjustment_services=ns(total=0, iva=21, is_generation_adjustment=False),
+                      is_social_tariff=True, social_discount_eur_kwh=amount)
+            result = self.render_component("invoice_details_td_energy", id=data)
+            self.assertEqual(result.count("<tr"), 4)
+            self.assertNotIn(u"se li ha deduït", result)
+            info = ns(
+                has_mag=False, has_autoconsum=True, adjustment_services=ns(total=0),
+                social_discount_eur_kwh=amount)
+            if amount is None:
+                del info["social_discount_eur_kwh"]
+            result += self.render_component("invoice_details_info_td", id_info=info)
+            self.assertIn(self.phrase, result)
+            self.assertIn(u"Serveis d'Ajust segons preu REE", result)
+            self.assertIn("(2)", result)
+            if amount is None:
+                self.assertNotIn("*", result)
+                self.assertNotIn(u"se li ha deduït", result)
+            else:
+                self.assertIn(self.phrase + " *", result)
+                self.assertIn(
+                    u"Al preu de l’energia reflectit en aquesta línia se li ha deduït "
+                    u"el descompte social que actualment correspon a un import de "
+                    + amount + u" €/kWh.", result)
+                self.assertEqual(result.count("*"), 2)
+                self.assertGreater(result.index(u"* Al preu"), result.index("(2)"))
+
+    def test_social_note_catalog_and_localized_spanish_precision(self):
+        from babel.messages.pofile import read_po
+        path = os.path.join(os.path.dirname(__file__), "..", "i18n")
+        with open(os.path.join(path, "giscedata_facturacio_comer_som.pot"), "rb") as source:
+            pot = read_po(source)
+        with open(os.path.join(path, "es_ES.po"), "rb") as source:
+            spanish = read_po(source)
+        note = (u"Al preu de l’energia reflectit en aquesta línia se li ha deduït "
+                u"el descompte social que actualment correspon a un import de %s €/kWh.")
+        translated = (u"Al precio de la energía reflejado en esta línea se le ha deducido "
+                      u"el descuento social que actualmente corresponde a un importe "
+                      u"de %s €/kWh.")
+        self.assertIn(note, pot)
+        self.assertEqual(spanish[note].string, translated)
+        lang_obj = self.model("res.lang")
+        lang_id = lang_obj.create(self.cursor, self.uid, {
+            "name": "Spanish report test", "code": "es_ES",
+            "decimal_point": ",", "thousands_sep": ".", "grouping": "[3,0]",
+        })
+        lang = lang_obj.browse(self.cursor, self.uid, lang_id)
+
+        def format_lang(value, digits=2):
+            return lang.format("%." + str(digits) + "f", value, grouping=True)
+
+        result = self.render_component(
+            "invoice_details_info_td",
+            id_info=ns(has_mag=False, has_autoconsum=True, adjustment_services=ns(total=0),
+                       social_discount_eur_kwh="0.000000001"),
+            translate=lambda text: spanish[text].string if text in spanish else text,
+            format_lang=format_lang)
+        self.assertIn(translated % "0,000000001", result)
+        self.assertIn("(1)", result)
+        self.assertIn("(2)", result)
 
     def test_generic_flags_zero_to_four_order(self):
         sources = ["data:image/png;base64," + value for value in ["AA==", "AQ==", "Ag==", "Aw=="]]
@@ -180,6 +251,242 @@ class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_
             self.assertEqual(positions, sorted(positions))
             self.assertNotIn('src=""', result)
             self.assertNotIn('src="False"', result)
+
+    def setup_discount_rules(self, indexed=False):
+        self.price_obj = self.model("product.pricelist")
+        self.version_obj = self.model("product.pricelist.version")
+        self.item_obj = self.model("product.pricelist.item")
+        if indexed:
+            ordinary = "pricelist_indexada_20td_peninsula_2024"
+            social = "tarifa_indexada_20TD_peninsula_social"
+            self.ordinary_id = self.get_fixture("som_indexada", ordinary)
+            self.social_id = self.get_fixture("som_tarifa_social", social)
+            product_id = self.get_fixture(
+                "giscedata_facturacio_indexada", "product_factor_k")
+        else:
+            product_id = self.get_fixture(
+                "giscedata_polissa", "p1_e_tarifa_20TD_product_product")
+        self.product = self.model("product.product").browse(
+            self.cursor, self.uid, product_id)
+        versions = self.version_obj.search(self.cursor, self.uid, [
+            ("pricelist_id", "in", [self.social_id, self.ordinary_id])],
+            context={"active_test": False})
+        self.version_obj.unlink(self.cursor, self.uid, versions)
+        self.versions = {}
+        for price_id in [self.ordinary_id, self.social_id]:
+            self.versions[price_id] = self.version_obj.create(self.cursor, self.uid, {
+                "name": "Historical report test", "pricelist_id": price_id,
+                "date_start": "2016-01-01", "date_end": "2016-12-31",
+            })
+        self.base_rule = self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": self.versions[self.ordinary_id],
+            "product_id": product_id, "base": -3, "base_price": 0.02 if indexed else 0.2,
+            "sequence": 5, "min_quantity": 1,
+        })
+        self.social_rule = self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": self.versions[self.social_id],
+            "product_id": product_id, "base": -1,
+            "base_pricelist_id": self.ordinary_id, "price_discount": -0.37,
+            "sequence": 5, "min_quantity": 1,
+        })
+        return ns(
+            llista_preu=self.price_obj.browse(self.cursor, self.uid, self.social_id),
+            mode_facturacio="index" if indexed else "atr", coeficient_k=0,
+            tarifa=self.model("giscedata.polissa.tarifa").browse(
+                self.cursor, self.uid, self.get_fixture("giscedata_polissa", "tarifa_20TD")))
+
+    def discount_amount(self, pol):
+        return self.r_obj.get_social_discount_eur_kwh(self.fact, pol)
+
+    def test_discount_orm_periods_uses_p1_base_and_variable_fraction(self):
+        pol = self.setup_discount_rules()
+        self.assertEqual(self.discount_amount(pol), "0.074")
+        self.item_obj.write(self.cursor, self.uid, self.social_rule, {"price_discount": -0.25})
+        self.assertEqual(self.discount_amount(pol), "0.05")
+        actual = self.price_obj.price_get(
+            self.cursor, self.uid, [self.social_id], self.product.id, 1,
+            context={"date": self.fact.data_final})[self.social_id]
+        self.assertAlmostEqual(actual, 0.15)
+
+    def test_discount_orm_indexed_normalizes_coefficient_not_twice(self):
+        pol = self.setup_discount_rules(indexed=True)
+        self.assertEqual(self.discount_amount(pol), "0.0074")
+        pol.coeficient_k = 17.22
+        self.assertIsNone(self.discount_amount(pol))
+        pol.llista_preu = self.price_obj.browse(self.cursor, self.uid, self.ordinary_id)
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_historical_version_not_latest(self):
+        pol = self.setup_discount_rules()
+        future = self.version_obj.create(self.cursor, self.uid, {
+            "name": "Future discount", "pricelist_id": self.social_id,
+            "date_start": "2026-01-01",
+        })
+        self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": future, "product_id": self.product.id,
+            "base": -1, "base_pricelist_id": self.ordinary_id,
+            "price_discount": -0.9, "sequence": 1, "min_quantity": 1,
+        })
+        self.assertEqual(self.discount_amount(pol), "0.074")
+
+    def test_discount_orm_validates_ordinary_base_pricelist_chain(self):
+        pol = self.setup_discount_rules()
+        currency = pol.llista_preu.currency_id.id
+        third = self.price_obj.create(self.cursor, self.uid, {
+            "name": "Report literal base", "type": "sale", "currency_id": currency,
+        })
+        version = self.version_obj.create(self.cursor, self.uid, {
+            "name": "Historical base", "pricelist_id": third,
+            "date_start": "2016-01-01", "date_end": "2016-12-31",
+        })
+        self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": version, "product_id": self.product.id,
+            "base": -3, "base_price": 0.2, "sequence": 1, "min_quantity": 1,
+        })
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {
+            "base": -1, "base_pricelist_id": third,
+        })
+        self.assertEqual(self.discount_amount(pol), "0.074")
+
+    def test_discount_orm_zero_and_small_positive_are_not_unknown(self):
+        pol = self.setup_discount_rules()
+        self.item_obj.write(self.cursor, self.uid, self.social_rule, {"price_discount": 0})
+        self.assertEqual(self.discount_amount(pol), "0")
+        self.item_obj.write(self.cursor, self.uid, self.social_rule, {"price_discount": -0.0001})
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {"base_price": 0.000001})
+        self.assertEqual(self.discount_amount(pol), "0.0000000001")
+
+    def test_discount_orm_unsupported_adjustments_and_absent_rule_are_unknown(self):
+        pol = self.setup_discount_rules()
+        for field in ["price_round", "price_surcharge", "price_min_margin", "price_max_margin"]:
+            self.item_obj.write(self.cursor, self.uid, self.social_rule, {field: 0.01})
+            self.assertIsNone(self.discount_amount(pol))
+            self.item_obj.write(self.cursor, self.uid, self.social_rule, {field: 0})
+        self.item_obj.unlink(self.cursor, self.uid, self.social_rule)
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_rule_precedence_and_ambiguous_ties(self):
+        pol = self.setup_discount_rules()
+        other = self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": self.versions[self.social_id],
+            "product_id": self.product.id, "base": -1,
+            "base_pricelist_id": self.ordinary_id, "price_discount": -0.5,
+            "sequence": 10, "min_quantity": 1,
+        })
+        self.assertEqual(self.discount_amount(pol), "0.074")
+        self.item_obj.write(self.cursor, self.uid, other, {"sequence": 5})
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_version_change_inside_invoice_is_unknown(self):
+        pol = self.setup_discount_rules()
+        self.version_obj.write(
+            self.cursor, self.uid, self.versions[self.ordinary_id],
+            {"date_end": self.fact.data_inici})
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_generic_rule_and_discounted_social_base_are_unknown(self):
+        pol = self.setup_discount_rules()
+        self.item_obj.write(self.cursor, self.uid, self.social_rule, {"product_id": False})
+        self.assertIsNone(self.discount_amount(pol))
+        self.item_obj.write(self.cursor, self.uid, self.social_rule, {
+            "product_id": self.product.id,
+            "base_pricelist_id": self.get_fixture(
+                "som_tarifa_social", "tarifa_20TD_SOM_INSULAR_SOCIAL"),
+        })
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_quantity_tiers_are_unknown(self):
+        pol = self.setup_discount_rules()
+        self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": self.versions[self.social_id],
+            "product_id": self.product.id, "base": -1,
+            "base_pricelist_id": self.ordinary_id, "price_discount": -0.5,
+            "sequence": 1, "min_quantity": 10,
+        })
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_base_chain_never_includes_another_social_price(self):
+        pol = self.setup_discount_rules()
+        other_social = self.get_fixture(
+            "som_tarifa_social", "tarifa_20TD_SOM_INSULAR_SOCIAL")
+        version = self.version_obj.create(self.cursor, self.uid, {
+            "name": "Already reduced", "pricelist_id": other_social,
+            "date_start": "2016-01-01", "date_end": "2016-12-31",
+        })
+        self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": version, "product_id": self.product.id,
+            "base": -3, "base_price": 0.15, "sequence": 1, "min_quantity": 1,
+        })
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {
+            "base": -1, "base_pricelist_id": other_social,
+        })
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_periods_normalizes_engine_uom(self):
+        pol = self.setup_discount_rules()
+        source = self.product.uom_id
+        mwh = self.model("product.uom").create(self.cursor, self.uid, {
+            "name": "MWh report test", "category_id": source.category_id.id,
+            "factor": source.factor / 1000.0, "rounding": 0.000001,
+        })
+        self.model("product.product").write(
+            self.cursor, self.uid, self.product.id, {"uom_id": mwh})
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {"base_price": 200})
+        self.assertEqual(self.discount_amount(pol), "0.074")
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {"base_price": 0.000001})
+        self.assertEqual(self.discount_amount(pol), "0.00000000037")
+
+    def test_discount_orm_invalid_base_and_unrelated_uom_are_unknown(self):
+        pol = self.setup_discount_rules()
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {"base": -4})
+        self.assertIsNone(self.discount_amount(pol))
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {
+            "base": -3, "base_price": -0.2,
+        })
+        self.assertIsNone(self.discount_amount(pol))
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {"base_price": 0.2})
+        unit = self.get_fixture("product", "product_uom_unit")
+        self.model("product.product").write(
+            self.cursor, self.uid, self.product.id, {"uom_id": unit, "uom_po_id": unit})
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_known_amount_is_read_only(self):
+        pol = self.setup_discount_rules()
+        before = self.item_obj.read(
+            self.cursor, self.uid, [self.social_rule, self.base_rule])
+        invoice_before = self.factura_obj.read(self.cursor, self.uid, self.fact.id)
+        self.assertEqual(self.discount_amount(pol), "0.074")
+        self.assertEqual(self.item_obj.read(
+            self.cursor, self.uid, [self.social_rule, self.base_rule]), before)
+        self.assertEqual(self.factura_obj.read(
+            self.cursor, self.uid, self.fact.id), invoice_before)
+
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+                       "get_atr_price", return_value=0.1)
+    def test_discount_orm_both_component_payloads_share_proven_amount(self, atr_price):
+        pol = self.setup_discount_rules()
+        pol.id = self.fact.polissa_id.id
+        pol.te_autoconsum = self.fact.polissa_id.te_autoconsum
+        self.r_obj.readings_cache[self.fact.id] = [{} for unused in range(19)]
+        self.addCleanup(self.r_obj.del_readings_data, self.fact)
+        self.linia_f_obj.write(
+            self.cursor, self.uid, [line.id for line in self.fact.linies_energia], {
+                "name": "P1", "data_desde": self.fact.data_inici,
+                "data_fins": self.fact.data_final,
+            })
+        energy = self.r_obj.get_sub_component_invoice_details_td_energy_data(
+            self.fact, pol, {})
+        info = self.r_obj.get_component_invoice_details_info_td_data(self.fact, pol)
+        self.assertEqual(energy["social_discount_eur_kwh"], "0.074")
+        self.assertEqual(info["social_discount_eur_kwh"], "0.074")
+        self.assertTrue(energy["energy_lines_data"])
+        self.linia_f_obj.write(
+            self.cursor, self.uid, [line.id for line in self.fact.linies_energia], {
+                "name": "P1 GkWh",
+            })
+        info = self.r_obj.get_component_invoice_details_info_td_data(
+            self.bf(self.fact.id), pol)
+        self.assertIsNone(info["social_discount_eur_kwh"])
 
     def historical_policy(self, historical_price, current_price, categories=None):
         pol = self.fact.polissa_id
