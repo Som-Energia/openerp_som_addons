@@ -93,6 +93,11 @@ _DECIMALS = {
     ("preu_auto_nou", ): 3,
     ("preu_auto_antic_imp", ): 3,
     ("preu_auto_nou_imp", ): 3,
+    ("gkwh_estimation", "consum_total",): 0,
+    ("gkwh_estimation", "preu_nou"): 0,
+    ("gkwh_estimation", "preu_nou_imp",): 0,
+    ("gkwh_estimation", "preu_vell",): 0,
+    ("gkwh_estimation", "preu_vell_imp",): 0,
 }
 
 
