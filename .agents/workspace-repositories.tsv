@@ -25,7 +25,6 @@ omie-modules	origin	default-branch	-	all
 somenergia-generationkwh	origin	default-branch	-	all
 plantmeter	origin	default-branch	-	all
 som_sync_openerp_modules	origin	default-branch	-	all
-giscedata_facturacio_indexada_som	origin	default-branch	-	all
 oorq	origin	branch	api_v5	all
 poweremail2	origin	branch	v5_backport	all
 ws_transactions	origin	default-branch	-	all

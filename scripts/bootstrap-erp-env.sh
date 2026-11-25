@@ -28,9 +28,6 @@ fi
 if [ ! -d "$ROOT_DIR_SRC/som_sync_openerp_modules" ]; then
 	git clone --depth 1 https://github.com/Som-Energia/som_sync_openerp_modules.git "$ROOT_DIR_SRC/som_sync_openerp_modules"
 fi
-if [ ! -d "$ROOT_DIR_SRC/giscedata_facturacio_indexada_som" ]; then
-	git clone --depth 1 https://github.com/Som-Energia/giscedata_facturacio_indexada_som.git "$ROOT_DIR_SRC/giscedata_facturacio_indexada_som"
-fi
 if [ ! -d "$ROOT_DIR_SRC/oorq" ]; then
 	git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 "$ROOT_DIR_SRC/oorq"
 fi
