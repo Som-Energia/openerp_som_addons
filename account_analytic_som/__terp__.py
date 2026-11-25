@@ -8,7 +8,11 @@
     "depends": ["account_analytic_default", "account_analytic_distribution"],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml": ["views/account_view.xml"],
+    "update_xml": [
+        "views/account_view.xml",
+        "wizard/wizard_reassign_move_analytics_view.xml",
+        "security/ir.model.access.csv",
+    ],
     "active": False,
     "installable": True,
 }

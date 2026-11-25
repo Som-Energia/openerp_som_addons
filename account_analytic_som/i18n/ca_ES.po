@@ -1,0 +1,155 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# * account_analytic_som
+msgid ""
+msgstr ""
+"Project-Id-Version: GISCE-ERP\n"
+"PO-Revision-Date: 2026-11-25 00:00+0000\n"
+"Language: ca_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: account_analytic_som
+#: field:wizard.reassign.move.analytics.line,wizard_id:0
+msgid "Wizard"
+msgstr "Assistent"
+
+#. module: account_analytic_som
+#: field:wizard.reassign.move.analytics.line,move_line_id:0
+msgid "Journal item"
+msgstr "Apunt comptable"
+
+#. module: account_analytic_som
+#: field:wizard.reassign.move.analytics.line,account_id:0
+msgid "Account"
+msgstr "Compte"
+
+#. module: account_analytic_som
+#: field:wizard.reassign.move.analytics.line,name:0
+msgid "Description"
+msgstr "Descripció"
+
+#. module: account_analytic_som
+#: field:wizard.reassign.move.analytics.line,debit:0
+msgid "Debit"
+msgstr "Deure"
+
+#. module: account_analytic_som
+#: field:wizard.reassign.move.analytics.line,credit:0
+msgid "Credit"
+msgstr "Haver"
+
+#. module: account_analytic_som
+#: field:wizard.reassign.move.analytics.line,analytic_account_id:0
+msgid "Analytic account"
+msgstr "Compte analític"
+
+#. module: account_analytic_som
+#: field:wizard.reassign.move.analytics,move_id:0
+msgid "Journal entry"
+msgstr "Assentament comptable"
+
+#. module: account_analytic_som
+#: field:wizard.reassign.move.analytics,snapshot:0
+msgid "Original journal items"
+msgstr "Apunts comptables originals"
+
+#. module: account_analytic_som
+#: field:wizard.reassign.move.analytics,line_ids:0
+#: view:wizard.reassign.move.analytics:0
+msgid "Journal items"
+msgstr "Apunts comptables"
+
+#. module: account_analytic_som
+#: view:wizard.reassign.move.analytics:0
+msgid "Reassign entry analytics"
+msgstr "Reassigna l'analítica de l'assentament"
+
+#. module: account_analytic_som
+#: model:ir.actions.act_window,name:account_analytic_som.action_wizard_reassign_move_analytics
+#: model:ir.values,name:account_analytic_som.value_wizard_reassign_move_analytics
+msgid "Reassign entry analytics..."
+msgstr "Reassigna l'analítica de l'assentament..."
+
+#. module: account_analytic_som
+#: view:wizard.reassign.move.analytics:0
+msgid "Journal item analytics"
+msgstr "Analítica de l'apunt comptable"
+
+#. module: account_analytic_som
+#: view:wizard.reassign.move.analytics:0
+msgid "Proposals use the item's analytic account or its current default, not Odoo's current values."
+msgstr "Les propostes utilitzen el compte analític de l'apunt o el seu valor per defecte actual, no els valors actuals d'Odoo."
+
+#. module: account_analytic_som
+#: view:wizard.reassign.move.analytics:0
+msgid "An empty analytic account applies the current default, if available. Only ERP analytics are updated."
+msgstr "Si el compte analític és buit, s'aplica el valor per defecte actual, si n'hi ha. Només s'actualitza l'analítica de l'ERP."
+
+#. module: account_analytic_som
+#: view:wizard.reassign.move.analytics:0
+msgid "Cancel"
+msgstr "Cancel·la"
+
+#. module: account_analytic_som
+#: view:wizard.reassign.move.analytics:0
+msgid "Apply analytics"
+msgstr "Aplica l'analítica"
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/models/account_move.py:0
+#: code:addons/account_analytic_som/wizard/wizard_reassign_move_analytics.py:0
+msgid "Error"
+msgstr "Error"
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/wizard/wizard_reassign_move_analytics.py:0
+msgid "Select exactly one journal entry."
+msgstr "Seleccioneu exactament un assentament comptable."
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/wizard/wizard_reassign_move_analytics.py:0
+msgid "Confirm one reassignment at a time."
+msgstr "Confirmeu una sola reassignació cada vegada."
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/wizard/wizard_reassign_move_analytics.py:0
+msgid "The journal items have changed. Reopen the wizard."
+msgstr "Els apunts comptables han canviat. Torneu a obrir l'assistent."
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/wizard/wizard_reassign_move_analytics.py:0
+msgid "Duplicate journal items are not allowed."
+msgstr "No es permeten apunts comptables duplicats."
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/models/account_move.py:0
+msgid "The journal entry is not accessible."
+msgstr "No es pot accedir a l'assentament comptable."
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/models/account_move.py:0
+msgid "Select a posted entry with valid journal items."
+msgstr "Seleccioneu un assentament confirmat amb apunts comptables vàlids."
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/models/account_move.py:0
+msgid "Provide each journal item exactly once."
+msgstr "Indiqueu cada apunt comptable exactament una vegada."
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/models/account_move.py:0
+msgid "Choose an available analytic account for the entry's company."
+msgstr "Seleccioneu un compte analític disponible per a l'empresa de l'assentament."
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/models/account_move.py:0
+msgid "Items with an analytic distribution cannot be reassigned to a single analytic account using this wizard."
+msgstr "Els apunts amb una distribució analítica no es poden reassignar a un únic compte analític amb aquest assistent."
+
+#. module: account_analytic_som
+#: code:addons/account_analytic_som/models/account_move.py:0
+msgid "Configure an analytic journal before reassigning."
+msgstr "Configureu un diari analític abans de fer la reassignació."

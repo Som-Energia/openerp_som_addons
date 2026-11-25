@@ -21,5 +21,15 @@ class AccountMoveLine(osv.osv):
             values.setdefault("analytic_account_id", analytic_id)
         return result
 
+    def get_default_analytic_account(self, cursor, uid, line_id, context=None):
+        """Resolve the default using the entry line's accounting date."""
+        line = self.browse(cursor, uid, line_id, context=context)
+        rule = self.pool.get("account.analytic.default").account_get(
+            cursor, uid, account_id=line.account_id.id,
+            partner_id=line.partner_id.id, product_id=line.product_id.id,
+            user_id=uid, date=line.date, context=context,
+        )
+        return rule.analytic_id.id if rule and rule.analytic_id else False
+
 
 AccountMoveLine()
