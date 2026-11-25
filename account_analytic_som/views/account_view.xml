@@ -10,7 +10,7 @@
                 <xpath expr="//field[@name='line_id']/form/field[@name='account_id']" position="attributes">
                     <attribute name="on_change">onchange_account_id(account_id, partner_id)</attribute>
                 </xpath>
-                <xpath expr="//field[@name='line_id']/form/field[@name='account_id']" position="after">
+                <xpath expr="//field[@name='line_id']/form/field[@name='date']" position="after">
                     <field name="analytic_account_id"/>
                 </xpath>
             </field>
