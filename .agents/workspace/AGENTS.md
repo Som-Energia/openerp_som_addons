@@ -23,6 +23,6 @@ Repositoris disponibles al workspace (la llista és orientativa; comprova sempre
 - ERP i add-ons: `openerp_som_addons`, `erp`, `erp-empowering`, `destral`
 - Facturació, switching i integracions: `giscedata_facturacio_indexada_som`, `switching`, `sii`, `sepa`, `sermepa`, `sippers`, `ws_transactions`, `distri-remesa-parser`
 - Serveis i llibreries: `aeroo`, `cchloader`, `libComXML`, `libFacturacioATR`, `minio_backend`, `mongodb_backend`, `ooop`, `ooquery`, `oorq`
-- Altres productes i mòduls: `arquia`, `crm_poweremail`, `empowering`, `enerdata`, `gestionatr`, `ir_attachment_mongodb`, `openerp-sentry`, `plantmeter`, `poweremail`, `poweremail-modules`, `qreu`, `somenergia-generationkwh`
+- Altres productes i mòduls: `arquia`, `crm_poweremail`, `empowering`, `enerdata`, `gestionatr`, `ir_attachment_mongodb`, `plantmeter`, `poweremail`, `poweremail-modules`, `qreu`, `somenergia-generationkwh`
 
 Si no queda clar quin repositori és la font de veritat, atura't després de l'anàlisi i demana confirmació.

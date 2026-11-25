@@ -28,7 +28,6 @@ som_sync_openerp_modules	origin	default-branch	-	all
 giscedata_facturacio_indexada_som	origin	default-branch	-	all
 oorq	origin	branch	api_v5	all
 poweremail2	origin	branch	v5_backport	all
-openerp-sentry	origin	branch	v5_legacy	all
 ws_transactions	origin	default-branch	-	all
 ir_attachment_mongodb	origin	default-branch	-	all
 mongodb_backend	origin	branch	gisce	all

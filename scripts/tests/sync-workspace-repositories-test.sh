@@ -74,6 +74,29 @@ assert_equal "$(git -C "$tmp/branchrepo" branch --show-current)" rolling_erp01
 assert_equal "$(git -C "$tmp/defaultrepo" branch --show-current)" master
 assert_equal "$(git -C "$tmp/tagrepo" describe --exact-match --tags HEAD)" v2
 
+# A dependency alias must identify the same checkout as Git's physical path.
+mv "$tmp/branchrepo" "$tmp/branchrepo physical"
+ln -s "branchrepo physical" "$tmp/branchrepo"
+sync > "$tmp/symlink-out" 2> "$tmp/symlink-err" || \
+    fail "dependency symlink was mistaken for another worktree: $(<"$tmp/symlink-err")"
+assert_equal "$(git -C "$tmp/branchrepo" branch --show-current)" rolling_erp01
+
+# A genuinely different worktree must still block the target branch.
+make_seed occupiedrepo
+git -C "$tmp/occupiedrepo-seed" branch target
+make_clone occupiedrepo
+git -C "$tmp/occupiedrepo" worktree add -q "$tmp/occupiedrepo-other" target
+cp "$tmp/openerp_som_addons/.agents/workspace-repositories.tsv" "$tmp/manifest-before-occupied"
+printf '%s\n' $'occupiedrepo\torigin\tbranch\ttarget\tall' \
+    >> "$tmp/openerp_som_addons/.agents/workspace-repositories.tsv"
+if sync > "$tmp/occupied-out" 2> "$tmp/occupied-err"; then
+    fail 'target branch checked out in another worktree was accepted'
+fi
+grep -q 'already checked out in' "$tmp/occupied-err" || \
+    fail 'occupied target branch was not reported'
+assert_equal "$(git -C "$tmp/occupiedrepo" branch --show-current)" master
+cp "$tmp/manifest-before-occupied" "$tmp/openerp_som_addons/.agents/workspace-repositories.tsv"
+
 # A tag that exists only in the local clone must not be selected over remote v2.
 git -C "$tmp/tagrepo" config user.name 'Workspace sync test'
 git -C "$tmp/tagrepo" config user.email 'workspace-sync@example.invalid'
