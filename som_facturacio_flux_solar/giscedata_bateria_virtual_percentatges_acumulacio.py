@@ -68,7 +68,7 @@ class GiscedataBateriaVirtualResumFacturacio(PgView, osv.osv):
 
     _inherit = 'giscedata.bateria.virtual.resum.facturacio'
     _view_file = get_module_resource(
-        'giscedata_facturacio_bateria_virtual', 'sql',
+        'som_facturacio_flux_solar', 'sql',
         'detall_bateria_virtual_resum_facturacio_percentatges_acumulacio.sql'
     )
 
