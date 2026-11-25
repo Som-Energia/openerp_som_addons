@@ -67,7 +67,7 @@ excepcions puntuals:
 scripts/sync-workspace-repositories.sh --branch erp=developer
 scripts/sync-workspace-repositories.sh \
     --branch erp=developer \
-    --branch giscedata_facturacio_indexada_som=FIX_invoice_rounding
+    --branch libFacturacioATR=FIX_invoice_rounding
 ```
 
 Per recordar-les només en aquest checkout/worktree, afegeix `--persist`:

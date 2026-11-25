@@ -63,7 +63,7 @@ L'entorn ERP depén de diversos repositoris clonats al mateix nivell que aquest 
 - `Som-Energia/omie-modules` + `Som-Energia/OMIE`
 - `Som-Energia/somenergia-generationkwh`
 - `gisce/oorq` (cua de jobs asíncrons)
-- `poweremail`, `openerp-sentry`, `ws_transactions`, `ir_attachment_mongodb`, `mongodb_backend`
+- `poweremail`, `ws_transactions`, `ir_attachment_mongodb`, `mongodb_backend`
 
 ## Desplegament
 

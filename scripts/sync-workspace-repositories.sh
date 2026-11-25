@@ -555,7 +555,7 @@ for repository in "${available_repositories[@]}"; do
         /^worktree / { worktree = substr($0, 10); next }
         /^branch / && substr($0, 8) == requested { print worktree }
     ')"
-    if [[ -n "$occupied_worktree" ]] && [[ "$occupied_worktree" != "$path" ]]; then
+    if [[ -n "$occupied_worktree" ]] && [[ ! "$occupied_worktree" -ef "$path" ]]; then
         error "$repository/$branch is already checked out in $occupied_worktree"
         problems=1
         continue
