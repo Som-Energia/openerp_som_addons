@@ -16,6 +16,16 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #. module: giscedata_facturacio_comer_som
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:107
+msgid "Preu energia amb descompte social aplicat [€/kWh]"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_info_td/invoice_details_info_td.mako
+msgid "Al preu de l’energia reflectit en aquesta línia se li ha deduït el descompte social que actualment correspon a un import de %s €/kWh."
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
 #: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4293
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:7
 msgid "Energia Reactiva Capacitiva (kVArh)"

@@ -2,6 +2,7 @@
 <%import locale
 first_pass = True
 first_energy_line = True
+social_discount = id.get('social_discount_eur_kwh') if id.get('is_social_tariff', False) else None
 %>
 % if False:
     ${_(u"sense lectura")}
@@ -103,7 +104,9 @@ first_energy_line = True
         % endif
     </tr>
     <tr>
-        % if id.indexed:
+        % if id.get('is_social_tariff', False):
+            <td class="detall_td">${_(u"Preu energia amb descompte social aplicat [€/kWh]")}${" *" if social_discount is not None else ""}</td>
+        % elif id.indexed:
             <td class="detall_td">${_(u"Preu mitjà de l'energia [€/kWh]")}</td>
         % else:
             <td class="detall_td">${_(u"Preu energia [€/kWh]")}</td>

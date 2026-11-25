@@ -10,6 +10,7 @@ from mako.template import Template
 from yamlns import namespace as ns
 from yamlns.testutils import assertNsEqual
 from datetime import datetime, timedelta
+from decimal import Decimal
 from .. import giscedata_facturacio_report
 
 
@@ -53,6 +54,566 @@ class Tests_FacturacioFacturaReport_base(testing.OOTestCase):
 
     def assertYamlfy(self, result):
         self.assertTrue(len(list((ns.loads(ns(result).dump()).keys()))) >= 0)
+
+
+class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_base):
+    phrase = u"Preu energia amb descompte social aplicat [€/kWh]"
+
+    def setUp(self):
+        super(Tests_FacturacioFacturaReport_social_tariff, self).setUp()
+        self.fact = self.bf(self.get_fixture("giscedata_facturacio", "factura_0001"))
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+        self.mapping = self.polissa_obj.mapping_tarifa_social(self.cursor, self.uid)
+        self.ordinary_id = self.get_fixture(
+            "som_indexada", "pricelist_periodes_20td_peninsula")
+        self.social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
+        self.company_category = self.get_fixture("som_polissa", "categ_tarifa_empresa")
+        self.social_category = self.get_fixture("som_tarifa_social", "categ_tarifa_social")
+        self.date_context = {"date": self.fact.data_final}
+
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+                       "get_atr_price", return_value=0.1)
+    def test_social_component_data_uses_historical_detector(self, atr_price):
+        # This legacy invoice has no period-formatted meter readings.
+        self.r_obj.readings_cache[self.fact.id] = [{} for unused in range(19)]
+        self.addCleanup(self.r_obj.del_readings_data, self.fact)
+        self.linia_f_obj.write(
+            self.cursor, self.uid, [line.id for line in self.fact.linies_energia], {
+                "name": "P1", "data_desde": self.fact.data_inici,
+                "data_fins": self.fact.data_final,
+            })
+        historical = self.historical_policy(self.social_id, self.ordinary_id)
+        mod_ids = self.polissa_obj._get_modcon_date(
+            self.cursor, self.uid, historical.id, self.fact.data_final)
+        results = []
+        for price, expected in [(self.social_id, True), (self.ordinary_id, False)]:
+            self.model("giscedata.polissa.modcontractual").write(
+                self.cursor, self.uid, mod_ids, {"llista_preu": price})
+            pol = self.polissa_obj.browse(
+                self.cursor, self.uid, historical.id, context=self.date_context)
+            summary = self.r_obj.get_component_invoice_summary_td_data(self.fact, pol)
+            energy = self.r_obj.get_sub_component_invoice_details_td_energy_data(
+                self.fact, pol, {})
+            flags = self.r_obj.get_component_flags_data(self.fact, pol)
+            self.assertEqual(summary["is_social_tariff"], expected)
+            self.assertEqual(energy["is_social_tariff"], expected)
+            self.assertEqual(flags["is_social_tariff"], expected)
+            self.assertEqual(summary["total_energy"], 28.0)
+            self.assertTrue(energy["energy_lines_data"])
+            del summary["is_social_tariff"]
+            del energy["is_social_tariff"]
+            results.append((summary, energy))
+        self.assertEqual(results[0], results[1])
+
+    def render_component(self, name, **kwargs):
+        path = os.path.join(os.path.dirname(__file__), "..", "report", "components", name)
+        translate = kwargs.pop("translate", lambda text: text)
+        format_lang = kwargs.pop("format_lang", lambda value, **kw: (
+            format(value, "f") if isinstance(value, Decimal) else str(value)))
+        return TemplateLookup(directories=[path]).get_template(name + ".mako").render(
+            _=translate, formatLang=format_lang,
+            addons_path="/addons", **kwargs)
+
+    def test_social_catalogs_and_spanish_energy_render(self):
+        from babel.messages.pofile import read_po
+        path = os.path.join(os.path.dirname(__file__), "..", "i18n")
+        with open(os.path.join(path, "giscedata_facturacio_comer_som.pot"), "rb") as source:
+            pot = read_po(source)
+        with open(os.path.join(path, "es_ES.po"), "rb") as source:
+            spanish = read_po(source)
+        self.assertIn(self.phrase, pot)
+        translation = u"Precio de la energía con descuento social aplicado [€/kWh]"
+        self.assertEqual(spanish[self.phrase].string, translation)
+        line = ns(origin="real", date_from="01/01/2026", date_to="31/01/2026",
+                  total=28, P1=dict(quantity=140, price_unit_multi=0.2, price_subtotal=28))
+        data = ns(auvi_energy_lines_data=[], energy_lines_data=[line],
+                  showing_periods=["P1"], header_multi=3, iva_column=False,
+                  indexed=False, mag_line_data=False, adjustment_services=False,
+                  is_social_tariff=True)
+        result = self.render_component(
+            "invoice_details_td_energy", id=data,
+            translate=lambda text: translation if text == self.phrase else text)
+        self.assertIn(translation, result)
+        self.assertNotIn(self.phrase, result)
+
+    def test_summary_social_and_ordinary_and_cached_payload(self):
+        data = ns(total_power=12, total_energy=28, has_exces_potencia=False,
+                  has_autoconsum=False, inductive_is_visible=False,
+                  capacitive_is_visible=False, total_bosocial2023=0, iese=1,
+                  total_rent=2, total_boe17_2021=0, total_altres=0,
+                  total_bosocial=0, impostos={}, has_flux_solar_discount=False,
+                  donatiu=0, total_amount=43)
+        for social in [None, False, True]:
+            if social is not None:
+                data.is_social_tariff = social
+            result = self.render_component("invoice_summary_td", invs=data)
+            self.assertNotIn(u"amb descompte social aplicat", result)
+            self.assertIn(u"Electricitat utilitzada</td>", result)
+            self.assertIn("28 &euro;", result)
+            self.assertIn("43 &euro;", result)
+
+    def test_energy_social_period_indexed_and_cached_payload(self):
+        line = ns(origin="real", date_from="01/01/2026", date_to="31/01/2026",
+                  total=28, P1=dict(quantity=140, price_unit_multi=0.2, price_subtotal=28))
+        for indexed in [False, True]:
+            for social in [None, False, True]:
+                data = ns(auvi_energy_lines_data=[line], energy_lines_data=[line],
+                          showing_periods=["P1"], header_multi=6, iva_column=False,
+                          indexed=indexed, mag_line_data=False, adjustment_services=False)
+                if social is not None:
+                    data.is_social_tariff = social
+                result = self.render_component("invoice_details_td_energy", id=data)
+                self.assertEqual(self.phrase in result, social is True)
+                if not social:
+                    label = (u"Preu mitjà de l'energia" if indexed else u"Preu energia")
+                    self.assertIn(label + u" [€/kWh]", result)
+                self.assertIn(u"Electricitat utilitzada [kWh]", result)
+                self.assertIn(u"Preu energia AV [€/kWh]", result)
+                self.assertIn("140", result)
+                self.assertIn("28", result)
+                self.assertNotIn("*", result)
+
+    def test_social_discount_note_known_unknown_zero_and_precision(self):
+        line = ns(origin="real", date_from="01/01/2026", date_to="31/01/2026",
+                  total=28, P1=dict(quantity=140, price_unit_multi=0.2, price_subtotal=28))
+        for amount in [None, "0", "0.0278", "0.000000001"]:
+            data = ns(auvi_energy_lines_data=[], energy_lines_data=[line],
+                      showing_periods=["P1"], header_multi=3, iva_column=False,
+                      indexed=False, mag_line_data=False,
+                      adjustment_services=ns(total=0, iva=21, is_generation_adjustment=False),
+                      is_social_tariff=True, social_discount_eur_kwh=amount)
+            result = self.render_component("invoice_details_td_energy", id=data)
+            self.assertEqual(result.count("<tr"), 4)
+            self.assertNotIn(u"se li ha deduït", result)
+            info = ns(
+                has_mag=False, has_autoconsum=True, adjustment_services=ns(total=0),
+                social_discount_eur_kwh=amount)
+            if amount is None:
+                del info["social_discount_eur_kwh"]
+            result += self.render_component("invoice_details_info_td", id_info=info)
+            self.assertIn(self.phrase, result)
+            self.assertIn(u"Serveis d'Ajust segons preu REE", result)
+            self.assertIn("(2)", result)
+            if amount is None:
+                self.assertNotIn("*", result)
+                self.assertNotIn(u"se li ha deduït", result)
+            else:
+                self.assertIn(self.phrase + " *", result)
+                self.assertIn(
+                    u"Al preu de l’energia reflectit en aquesta línia se li ha deduït "
+                    u"el descompte social que actualment correspon a un import de "
+                    + amount + u" €/kWh.", result)
+                self.assertEqual(result.count("*"), 2)
+                self.assertGreater(result.index(u"* Al preu"), result.index("(2)"))
+
+    def test_social_note_catalog_and_localized_spanish_precision(self):
+        from babel.messages.pofile import read_po
+        path = os.path.join(os.path.dirname(__file__), "..", "i18n")
+        with open(os.path.join(path, "giscedata_facturacio_comer_som.pot"), "rb") as source:
+            pot = read_po(source)
+        with open(os.path.join(path, "es_ES.po"), "rb") as source:
+            spanish = read_po(source)
+        note = (u"Al preu de l’energia reflectit en aquesta línia se li ha deduït "
+                u"el descompte social que actualment correspon a un import de %s €/kWh.")
+        translated = (u"Al precio de la energía reflejado en esta línea se le ha deducido "
+                      u"el descuento social que actualmente corresponde a un importe "
+                      u"de %s €/kWh.")
+        self.assertIn(note, pot)
+        self.assertEqual(spanish[note].string, translated)
+        lang_obj = self.model("res.lang")
+        lang_id = lang_obj.create(self.cursor, self.uid, {
+            "name": "Spanish report test", "code": "es_ES",
+            "decimal_point": ",", "thousands_sep": ".", "grouping": "[3,0]",
+        })
+        lang = lang_obj.browse(self.cursor, self.uid, lang_id)
+
+        def format_lang(value, digits=2):
+            return lang.format("%." + str(digits) + "f", value, grouping=True)
+
+        result = self.render_component(
+            "invoice_details_info_td",
+            id_info=ns(has_mag=False, has_autoconsum=True, adjustment_services=ns(total=0),
+                       social_discount_eur_kwh="0.000000001"),
+            translate=lambda text: spanish[text].string if text in spanish else text,
+            format_lang=format_lang)
+        self.assertIn(translated % "0,000000001", result)
+        self.assertIn("(1)", result)
+        self.assertIn("(2)", result)
+
+    def test_generic_flags_zero_to_four_order(self):
+        sources = ["data:image/png;base64," + value for value in ["AA==", "AQ==", "Ag==", "Aw=="]]
+        for count in range(5):
+            data = ns(flag_images=[dict(src=src) for src in sources[:count]])
+            result = self.render_component("flags", flags=data)
+            self.assertEqual(result.count("<img "), count)
+            positions = [result.index('src="' + src + '"') for src in sources[:count]]
+            self.assertEqual(positions, sorted(positions))
+            self.assertNotIn('src=""', result)
+            self.assertNotIn('src="False"', result)
+
+    def setup_discount_rules(self, indexed=False):
+        self.price_obj = self.model("product.pricelist")
+        self.version_obj = self.model("product.pricelist.version")
+        self.item_obj = self.model("product.pricelist.item")
+        if indexed:
+            ordinary = "pricelist_indexada_20td_peninsula_2024"
+            social = "tarifa_indexada_20TD_peninsula_social"
+            self.ordinary_id = self.get_fixture("som_indexada", ordinary)
+            self.social_id = self.get_fixture("som_tarifa_social", social)
+            product_id = self.get_fixture(
+                "giscedata_facturacio_indexada", "product_factor_k")
+        else:
+            product_id = self.get_fixture(
+                "giscedata_polissa", "p1_e_tarifa_20TD_product_product")
+        self.product = self.model("product.product").browse(
+            self.cursor, self.uid, product_id)
+        versions = self.version_obj.search(self.cursor, self.uid, [
+            ("pricelist_id", "in", [self.social_id, self.ordinary_id])],
+            context={"active_test": False})
+        self.version_obj.unlink(self.cursor, self.uid, versions)
+        self.versions = {}
+        for price_id in [self.ordinary_id, self.social_id]:
+            self.versions[price_id] = self.version_obj.create(self.cursor, self.uid, {
+                "name": "Historical report test", "pricelist_id": price_id,
+                "date_start": "2016-01-01", "date_end": "2016-12-31",
+            })
+        self.base_rule = self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": self.versions[self.ordinary_id],
+            "product_id": product_id, "base": -3, "base_price": 0.02 if indexed else 0.2,
+            "sequence": 5, "min_quantity": 1,
+        })
+        self.social_rule = self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": self.versions[self.social_id],
+            "product_id": product_id, "base": -1,
+            "base_pricelist_id": self.ordinary_id, "price_discount": -0.37,
+            "sequence": 5, "min_quantity": 1,
+        })
+        return ns(
+            llista_preu=self.price_obj.browse(self.cursor, self.uid, self.social_id),
+            mode_facturacio="index" if indexed else "atr", coeficient_k=0,
+            tarifa=self.model("giscedata.polissa.tarifa").browse(
+                self.cursor, self.uid, self.get_fixture("giscedata_polissa", "tarifa_20TD")))
+
+    def discount_amount(self, pol):
+        return self.r_obj.get_social_discount_eur_kwh(self.fact, pol)
+
+    def test_discount_orm_periods_uses_p1_base_and_variable_fraction(self):
+        pol = self.setup_discount_rules()
+        self.assertEqual(self.discount_amount(pol), "0.074")
+        self.item_obj.write(self.cursor, self.uid, self.social_rule, {"price_discount": -0.25})
+        self.assertEqual(self.discount_amount(pol), "0.05")
+        actual = self.price_obj.price_get(
+            self.cursor, self.uid, [self.social_id], self.product.id, 1,
+            context={"date": self.fact.data_final})[self.social_id]
+        self.assertAlmostEqual(actual, 0.15)
+
+    def test_discount_orm_indexed_normalizes_coefficient_not_twice(self):
+        pol = self.setup_discount_rules(indexed=True)
+        self.assertEqual(self.discount_amount(pol), "0.0074")
+        pol.coeficient_k = 17.22
+        self.assertIsNone(self.discount_amount(pol))
+        pol.llista_preu = self.price_obj.browse(self.cursor, self.uid, self.ordinary_id)
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_historical_version_not_latest(self):
+        pol = self.setup_discount_rules()
+        future = self.version_obj.create(self.cursor, self.uid, {
+            "name": "Future discount", "pricelist_id": self.social_id,
+            "date_start": "2026-01-01",
+        })
+        self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": future, "product_id": self.product.id,
+            "base": -1, "base_pricelist_id": self.ordinary_id,
+            "price_discount": -0.9, "sequence": 1, "min_quantity": 1,
+        })
+        self.assertEqual(self.discount_amount(pol), "0.074")
+
+    def test_discount_orm_validates_ordinary_base_pricelist_chain(self):
+        pol = self.setup_discount_rules()
+        currency = pol.llista_preu.currency_id.id
+        third = self.price_obj.create(self.cursor, self.uid, {
+            "name": "Report literal base", "type": "sale", "currency_id": currency,
+        })
+        version = self.version_obj.create(self.cursor, self.uid, {
+            "name": "Historical base", "pricelist_id": third,
+            "date_start": "2016-01-01", "date_end": "2016-12-31",
+        })
+        self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": version, "product_id": self.product.id,
+            "base": -3, "base_price": 0.2, "sequence": 1, "min_quantity": 1,
+        })
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {
+            "base": -1, "base_pricelist_id": third,
+        })
+        self.assertEqual(self.discount_amount(pol), "0.074")
+
+    def test_discount_orm_zero_and_small_positive_are_not_unknown(self):
+        pol = self.setup_discount_rules()
+        self.item_obj.write(self.cursor, self.uid, self.social_rule, {"price_discount": 0})
+        self.assertEqual(self.discount_amount(pol), "0")
+        self.item_obj.write(self.cursor, self.uid, self.social_rule, {"price_discount": -0.0001})
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {"base_price": 0.000001})
+        self.assertEqual(self.discount_amount(pol), "0.0000000001")
+
+    def test_discount_orm_unsupported_adjustments_and_absent_rule_are_unknown(self):
+        pol = self.setup_discount_rules()
+        for field in ["price_round", "price_surcharge", "price_min_margin", "price_max_margin"]:
+            self.item_obj.write(self.cursor, self.uid, self.social_rule, {field: 0.01})
+            self.assertIsNone(self.discount_amount(pol))
+            self.item_obj.write(self.cursor, self.uid, self.social_rule, {field: 0})
+        self.item_obj.unlink(self.cursor, self.uid, self.social_rule)
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_rule_precedence_and_ambiguous_ties(self):
+        pol = self.setup_discount_rules()
+        other = self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": self.versions[self.social_id],
+            "product_id": self.product.id, "base": -1,
+            "base_pricelist_id": self.ordinary_id, "price_discount": -0.5,
+            "sequence": 10, "min_quantity": 1,
+        })
+        self.assertEqual(self.discount_amount(pol), "0.074")
+        self.item_obj.write(self.cursor, self.uid, other, {"sequence": 5})
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_version_change_inside_invoice_is_unknown(self):
+        pol = self.setup_discount_rules()
+        self.version_obj.write(
+            self.cursor, self.uid, self.versions[self.ordinary_id],
+            {"date_end": self.fact.data_inici})
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_generic_rule_and_discounted_social_base_are_unknown(self):
+        pol = self.setup_discount_rules()
+        self.item_obj.write(self.cursor, self.uid, self.social_rule, {"product_id": False})
+        self.assertIsNone(self.discount_amount(pol))
+        self.item_obj.write(self.cursor, self.uid, self.social_rule, {
+            "product_id": self.product.id,
+            "base_pricelist_id": self.get_fixture(
+                "som_tarifa_social", "tarifa_20TD_SOM_INSULAR_SOCIAL"),
+        })
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_quantity_tiers_are_unknown(self):
+        pol = self.setup_discount_rules()
+        self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": self.versions[self.social_id],
+            "product_id": self.product.id, "base": -1,
+            "base_pricelist_id": self.ordinary_id, "price_discount": -0.5,
+            "sequence": 1, "min_quantity": 10,
+        })
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_base_chain_never_includes_another_social_price(self):
+        pol = self.setup_discount_rules()
+        other_social = self.get_fixture(
+            "som_tarifa_social", "tarifa_20TD_SOM_INSULAR_SOCIAL")
+        version = self.version_obj.create(self.cursor, self.uid, {
+            "name": "Already reduced", "pricelist_id": other_social,
+            "date_start": "2016-01-01", "date_end": "2016-12-31",
+        })
+        self.item_obj.create(self.cursor, self.uid, {
+            "price_version_id": version, "product_id": self.product.id,
+            "base": -3, "base_price": 0.15, "sequence": 1, "min_quantity": 1,
+        })
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {
+            "base": -1, "base_pricelist_id": other_social,
+        })
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_periods_normalizes_engine_uom(self):
+        pol = self.setup_discount_rules()
+        source = self.product.uom_id
+        mwh = self.model("product.uom").create(self.cursor, self.uid, {
+            "name": "MWh report test", "category_id": source.category_id.id,
+            "factor": source.factor / 1000.0, "rounding": 0.000001,
+        })
+        self.model("product.product").write(
+            self.cursor, self.uid, self.product.id, {"uom_id": mwh})
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {"base_price": 200})
+        self.assertEqual(self.discount_amount(pol), "0.074")
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {"base_price": 0.000001})
+        self.assertEqual(self.discount_amount(pol), "0.00000000037")
+
+    def test_discount_orm_invalid_base_and_unrelated_uom_are_unknown(self):
+        pol = self.setup_discount_rules()
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {"base": -4})
+        self.assertIsNone(self.discount_amount(pol))
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {
+            "base": -3, "base_price": -0.2,
+        })
+        self.assertIsNone(self.discount_amount(pol))
+        self.item_obj.write(self.cursor, self.uid, self.base_rule, {"base_price": 0.2})
+        unit = self.get_fixture("product", "product_uom_unit")
+        self.model("product.product").write(
+            self.cursor, self.uid, self.product.id, {"uom_id": unit, "uom_po_id": unit})
+        self.assertIsNone(self.discount_amount(pol))
+
+    def test_discount_orm_known_amount_is_read_only(self):
+        pol = self.setup_discount_rules()
+        before = self.item_obj.read(
+            self.cursor, self.uid, [self.social_rule, self.base_rule])
+        invoice_before = self.factura_obj.read(self.cursor, self.uid, self.fact.id)
+        self.assertEqual(self.discount_amount(pol), "0.074")
+        self.assertEqual(self.item_obj.read(
+            self.cursor, self.uid, [self.social_rule, self.base_rule]), before)
+        self.assertEqual(self.factura_obj.read(
+            self.cursor, self.uid, self.fact.id), invoice_before)
+
+    @mock.patch.object(giscedata_facturacio_report.GiscedataFacturacioFacturaReport,
+                       "get_atr_price", return_value=0.1)
+    def test_discount_orm_both_component_payloads_share_proven_amount(self, atr_price):
+        pol = self.setup_discount_rules()
+        pol.id = self.fact.polissa_id.id
+        pol.te_autoconsum = self.fact.polissa_id.te_autoconsum
+        self.r_obj.readings_cache[self.fact.id] = [{} for unused in range(19)]
+        self.addCleanup(self.r_obj.del_readings_data, self.fact)
+        self.linia_f_obj.write(
+            self.cursor, self.uid, [line.id for line in self.fact.linies_energia], {
+                "name": "P1", "data_desde": self.fact.data_inici,
+                "data_fins": self.fact.data_final,
+            })
+        energy = self.r_obj.get_sub_component_invoice_details_td_energy_data(
+            self.fact, pol, {})
+        info = self.r_obj.get_component_invoice_details_info_td_data(self.fact, pol)
+        self.assertEqual(energy["social_discount_eur_kwh"], "0.074")
+        self.assertEqual(info["social_discount_eur_kwh"], "0.074")
+        self.assertTrue(energy["energy_lines_data"])
+        self.linia_f_obj.write(
+            self.cursor, self.uid, [line.id for line in self.fact.linies_energia], {
+                "name": "P1 GkWh",
+            })
+        info = self.r_obj.get_component_invoice_details_info_td_data(
+            self.bf(self.fact.id), pol)
+        self.assertIsNone(info["social_discount_eur_kwh"])
+
+    def historical_policy(self, historical_price, current_price, categories=None):
+        pol = self.fact.polissa_id
+        self.polissa_obj.write(self.cursor, self.uid, [pol.id], {
+            "llista_preu": current_price,
+            "category_id": [(6, 0, categories or [])],
+        }, context={"skip_cnt_llista_preu_compatible": True})
+        self.model("giscedata.polissa.modcontractual").create(self.cursor, self.uid, {
+            "polissa_id": pol.id,
+            "llista_preu": historical_price,
+            "tarifa": pol.tarifa.id,
+            "data_inici": "2016-01-01",
+            "data_final": "2016-12-31",
+            "cups": pol.cups.id,
+            "tipus": "mod",
+            "name": "1",
+            "tensio_normalitzada": 1,
+            "potencia": 1,
+            "tensio": 220,
+            "tipus_subseccio": "00",
+            "distribuidora": 1,
+            "tipo_pago": 1,
+            "notificacio": "titular",
+            "trafo": 0.0,
+            "facturacio": 2,
+            "facturacio_potencia": "icp",
+            "potencies_periode": "P1: 3.4 P2: 3.4",
+            "titular": pol.titular.id,
+            "pagador": pol.titular.id,
+        })
+        historical = self.polissa_obj.browse(
+            self.cursor, self.uid, pol.id, context=self.date_context)
+        self.assertEqual(historical.llista_preu.id, historical_price)
+        current = self.polissa_obj.read(self.cursor, self.uid, pol.id, ["llista_preu"])
+        self.assertEqual(current["llista_preu"][0], current_price)
+        return historical
+
+    def test_social_dependency_installs_owner_data_and_mapping(self):
+        mapping = self.polissa_obj.mapping_tarifa_social(self.cursor, self.uid)
+        self.assertEqual(len(mapping), 5)
+        social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
+        self.assertIn(social_id, mapping.values())
+        category_id = self.get_fixture("som_tarifa_social", "categ_tarifa_social")
+        category = self.model("giscedata.polissa.category").read(
+            self.cursor, self.uid, category_id, ["code"])
+        self.assertEqual(category["code"], "TARIFA_SOCIAL")
+
+    def test_ordinary_pricelist_without_categories_is_not_social(self):
+        pol = self.historical_policy(self.ordinary_id, self.ordinary_id)
+        mod_id = self.polissa_obj._get_modcon_date(
+            self.cursor, self.uid, pol.id, self.fact.data_final)
+        self.assertEqual(len(self.mapping), 5)
+        for price_id in self.mapping:
+            self.model("giscedata.polissa.modcontractual").write(
+                self.cursor, self.uid, [mod_id], {"llista_preu": price_id})
+            historical = self.polissa_obj.browse(
+                self.cursor, self.uid, pol.id, context=self.date_context)
+            self.assertEqual(historical.llista_preu.id, price_id)
+            self.assertIs(self.r_obj.get_is_social_tariff(self.fact, historical), False)
+
+    def test_all_canonical_social_pricelists_qualify(self):
+        references = [
+            "tarifa_20TD_SOM_SOCIAL", "tarifa_20TD_SOM_INSULAR_SOCIAL",
+            "tarifa_indexada_20TD_peninsula_social", "tarifa_indexada_20TD_balears_social",
+            "tarifa_indexada_20TD_canaries_social",
+        ]
+        social_ids = [self.get_fixture("som_tarifa_social", ref) for ref in references]
+        self.assertEqual(set(social_ids), set(self.mapping.values()))
+        pol = self.historical_policy(self.social_id, self.ordinary_id)
+        mod_id = self.polissa_obj._get_modcon_date(
+            self.cursor, self.uid, pol.id, self.fact.data_final)
+        for price_id in social_ids:
+            self.model("giscedata.polissa.modcontractual").write(
+                self.cursor, self.uid, [mod_id], {"llista_preu": price_id})
+            historical = self.polissa_obj.browse(
+                self.cursor, self.uid, pol.id, context=self.date_context)
+            self.assertEqual(historical.llista_preu.id, price_id)
+            self.assertIs(self.r_obj.get_is_social_tariff(self.fact, historical), True)
+
+    def test_current_social_pricelist_does_not_leak_into_old_invoice(self):
+        pol = self.historical_policy(self.ordinary_id, self.social_id)
+        self.assertIs(self.r_obj.get_is_social_tariff(self.fact, pol), False)
+
+    def test_current_business_categories_apply_to_historical_invoice(self):
+        pol = self.historical_policy(self.ordinary_id, self.ordinary_id)
+        for categories, expected in [
+                ([self.company_category], False),
+                ([self.social_category], False),
+                ([self.company_category, self.social_category], True),
+                ([], False)]:
+            self.polissa_obj.write(self.cursor, self.uid, [pol.id], {
+                "category_id": [(6, 0, categories)],
+            })
+            self.assertIs(self.r_obj.get_is_social_tariff(self.fact, pol), expected)
+
+    def test_social_pricelist_does_not_require_business_category(self):
+        pol = self.historical_policy(
+            self.social_id, self.ordinary_id, [self.social_category])
+        self.assertIs(self.r_obj.get_is_social_tariff(self.fact, pol), True)
+
+    def test_missing_pricelist_does_not_qualify(self):
+        pol = self.historical_policy(self.ordinary_id, self.ordinary_id)
+        mod_id = self.polissa_obj._get_modcon_date(
+            self.cursor, self.uid, pol.id, self.fact.data_final)
+        self.model("giscedata.polissa.modcontractual").write(
+            self.cursor, self.uid, [mod_id], {"llista_preu": False})
+        historical = self.polissa_obj.browse(
+            self.cursor, self.uid, pol.id, context=self.date_context)
+        self.assertFalse(historical.llista_preu)
+        self.assertIs(self.r_obj.get_is_social_tariff(self.fact, historical), False)
+
+    def test_detector_preserves_policy_invoice_and_date_context(self):
+        pol = self.historical_policy(
+            self.ordinary_id, self.social_id, [self.company_category, self.social_category])
+        fields = ["llista_preu", "category_id", "write_date"]
+        before = self.polissa_obj.read(self.cursor, self.uid, pol.id, fields)
+        invoice_fields = ["llista_preu", "data_final", "write_date"]
+        invoice_before = self.factura_obj.read(
+            self.cursor, self.uid, self.fact.id, invoice_fields)
+
+        self.assertIs(self.r_obj.get_is_social_tariff(self.fact, pol), True)
+
+        self.assertEqual(self.polissa_obj.read(self.cursor, self.uid, pol.id, fields), before)
+        self.assertEqual(self.factura_obj.read(
+            self.cursor, self.uid, self.fact.id, invoice_fields), invoice_before)
+        self.assertEqual(self.date_context, {"date": self.fact.data_final})
+        self.assertEqual(pol.llista_preu.id, self.ordinary_id)
 
 
 class Tests_FacturacioFacturaReport_fill_and_find(Tests_FacturacioFacturaReport_base):
@@ -367,11 +928,14 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": False,
-                "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_flag": "flag-auto-es.png",
                 "autoconsum_banner": False,
                 "is_gkwh": False,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_es.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [],
             },
         )
 
@@ -395,11 +959,14 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": True,
-                "autoconsum_flag": "flag_auto_little_ca.png",
+                "autoconsum_flag": "flag-auto_ca.png",
                 "autoconsum_banner": False,
                 "is_gkwh": False,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_ca.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-auto_ca.png"}],  # noqa: E501
             },
         )
 
@@ -423,11 +990,14 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": True,
-                "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_flag": "flag-auto-es.png",
                 "autoconsum_banner": False,
                 "is_gkwh": False,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_es.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-auto-es.png"}],  # noqa: E501
             },
         )
 
@@ -451,11 +1021,14 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": False,
-                "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_flag": "flag-auto-es.png",
                 "autoconsum_banner": False,
                 "is_gkwh": True,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_es.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [{"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-GkWh_es.png"}],  # noqa: E501
             },
         )
 
@@ -479,11 +1052,17 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": True,
-                "autoconsum_flag": "flag_auto_little_ca.png",
+                "autoconsum_flag": "flag-auto_ca.png",
                 "autoconsum_banner": False,
                 "is_gkwh": True,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_ca.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-auto_ca.png"},  # noqa: E501
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-GkWh_ca.png"},  # noqa: E501
+                ],
             },
         )
 
@@ -507,13 +1086,36 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             result,
             {
                 "is_autoconsum": True,
-                "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_flag": "flag-auto-es.png",
                 "autoconsum_banner": False,
                 "is_gkwh": True,
-                "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_flag": "flag-GkWh_es.png",
                 "gkwh_banner": False,
+                "is_social_tariff": False,
+                "social_banner": False,
+                "flag_images": [
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-auto-es.png"},  # noqa: E501
+                    {"src": "/giscedata_facturacio_comer_som/report/components/flags/flag-GkWh_es.png"},  # noqa: E501
+                ],
             },
         )
+
+    @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
+    @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
+    def test_unsupported_flag_locale_preserves_legacy_fallbacks(self, gkwh, auto):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        prefix = "/giscedata_facturacio_comer_som/report/components/flags/"
+        for lang in ["en_US", "zz_ZZ"]:
+            with mock.patch.object(giscedata_facturacio_report, "get_lang_partner",
+                                   return_value=lang):
+                result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            auto_flag = "flag_auto_little_{}.png".format(lang[:2])
+            self.assertEqual(result["autoconsum_flag"], auto_flag)
+            self.assertEqual(result["gkwh_flag"], "flag_gkwh_little.png")
+            self.assertEqual(result["flag_images"], [
+                {"src": prefix + auto_flag},
+                {"src": prefix + "flag_gkwh_little.png"},
+            ])
 
     def create_flag_banner(self, code, image, **values):
         banner_obj = self.model("report.banner")
@@ -526,6 +1128,141 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
         }
         fields.update(values)
         return banner_obj.create(self.cursor, self.uid, fields)
+
+    @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
+    @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
+    def test_social_static_locale_fallback_renders_existing_asset(self, gkwh, auto):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.bf(f_id)
+        self.setup_langs()
+        social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
+        component_path = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), "..", "report", "components", "flags"))
+        addons_path = os.path.abspath(os.path.join(component_path, "..", "..", "..", ".."))
+        template = TemplateLookup(directories=[component_path]).get_template("flags.mako")
+        prefix = "/giscedata_facturacio_comer_som/report/components/flags/"
+        ordinary_id = self.get_fixture("som_indexada", "pricelist_periodes_20td_peninsula")
+        for lang, suffix, auto_flag in [
+                ("ca_ES", "ca", "flag-auto_ca.png"),
+                ("es_ES", "es", "flag-auto-es.png")]:
+            self.partner_obj.write(self.cursor, self.uid, fact.partner_id.id, {"lang": lang})
+            self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+                "llista_preu": social_id,
+            }, context={"skip_cnt_llista_preu_compatible": True})
+            expected = [prefix + auto_flag,
+                        prefix + "flag-GkWh_{}.png".format(suffix),
+                        prefix + "flag-dte-social_{}.png".format(suffix)]
+            result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            self.assertEqual([item["src"] for item in result["flag_images"]], expected)
+            self.assertFalse(result["social_banner"])
+            html = template.render(flags=ns(result), addons_path=addons_path)
+            self.assertEqual(html.count("<img "), 3)
+            positions = [html.index('src="' + addons_path + src + '"') for src in expected]
+            self.assertEqual(positions, sorted(positions))
+            for src in expected:
+                self.assertTrue(os.path.isfile(addons_path + src), src)
+            self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+                "llista_preu": ordinary_id, "category_id": [(6, 0, [])],
+            }, context={"skip_cnt_llista_preu_compatible": True})
+            ordinary = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            html = template.render(flags=ns(ordinary), addons_path=addons_path)
+            self.assertEqual(html.count("<img "), 2)
+            self.assertNotIn("flag-dte-social", html)
+
+    @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
+    @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
+    def test_social_banner_coexists_and_missing_image_has_no_slot(self, gkwh, auto):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.bf(f_id)
+        social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
+        ordinary_id = self.get_fixture("som_indexada", "pricelist_periodes_20td_peninsula")
+        self.setup_langs()
+        self.partner_obj.write(self.cursor, self.uid, fact.partner_id.id, {"lang": "es_ES"})
+        self.create_flag_banner("invoice_flag_autoconsum_ca", "Y2E=")
+        self.create_flag_banner("invoice_flag_autoconsum_es", "ZXM=")
+        self.create_flag_banner("invoice_flag_gkwh", "/9j/4AAQ")
+        self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+            "llista_preu": social_id,
+        }, context={"skip_cnt_llista_preu_compatible": True})
+        missing_path = os.path.join(
+            os.path.dirname(giscedata_facturacio_report.__file__),
+            "report", "components", "flags", "flag-dte-social_es.png")
+        real_isfile = os.path.isfile
+
+        def isfile_except_social(path):
+            return False if path == missing_path else real_isfile(path)
+
+        with mock.patch.object(os.path, "isfile", side_effect=isfile_except_social) as isfile:
+            missing = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            isfile.assert_any_call(missing_path)
+        self.assertTrue(missing["is_social_tariff"])
+        self.assertEqual(len(missing["flag_images"]), 2)
+        self.assertFalse(missing["social_banner"])
+        for lang, image in [("ca_ES", "c29jaWFsY2E="), ("es_ES", "c29jaWFsZXM=")]:
+            self.create_flag_banner("invoice_flag_social", image,
+                                    domain="[('lang_partner', '=', '{}')]".format(lang))
+        component_path = os.path.join(
+            os.path.dirname(__file__), "..", "report", "components", "flags")
+        template = TemplateLookup(directories=[component_path]).get_template("flags.mako")
+        missing_html = template.render(flags=ns(missing), addons_path="/addons")
+        self.assertEqual(missing_html.count("<img "), 2)
+        self.assertNotIn("flag-dte-social", missing_html)
+        for src in ["data:image/png;base64,ZXM=", "data:image/jpeg;base64,/9j/4AAQ"]:
+            self.assertIn('src="' + src + '"', missing_html)
+        for lang, image, social_image in [("ca_ES", "Y2E=", "c29jaWFsY2E="),
+                                          ("es_ES", "ZXM=", "c29jaWFsZXM=")]:
+            self.partner_obj.write(self.cursor, self.uid, fact.partner_id.id, {"lang": lang})
+            result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+            expected = ["data:image/png;base64," + image,
+                        "data:image/jpeg;base64,/9j/4AAQ",
+                        "data:image/png;base64," + social_image]
+            self.assertEqual([item["src"] for item in result["flag_images"]], expected)
+            html = template.render(flags=ns(result), addons_path="/addons")
+            self.assertEqual(html.count("<img "), 3)
+            self.assertIn('src="' + expected[2] + '"', html)
+            positions = [html.index('src="' + src + '"') for src in expected]
+            self.assertEqual(positions, sorted(positions))
+            self.assertNotIn("flag-dte-social", html)
+        self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+            "llista_preu": ordinary_id, "category_id": [(6, 0, [])],
+        }, context={"skip_cnt_llista_preu_compatible": True})
+        ordinary = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+        self.assertFalse(ordinary["social_banner"])
+        self.assertEqual(len(ordinary["flag_images"]), 2)
+
+    @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=False)
+    @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=False)
+    def test_social_missing_locale_asset_has_no_image_or_slot(self, gkwh, auto):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.bf(f_id)
+        social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
+        self.polissa_obj.write(self.cursor, self.uid, [fact.polissa_id.id], {
+            "llista_preu": social_id,
+        }, context={"skip_cnt_llista_preu_compatible": True})
+        component_path = os.path.join(
+            os.path.dirname(__file__), "..", "report", "components", "flags")
+        template = TemplateLookup(directories=[component_path]).get_template("flags.mako")
+        real_isfile = os.path.isfile
+        for lang in ["es_ES", "zz_ZZ"]:
+            missing_path = os.path.join(
+                os.path.dirname(giscedata_facturacio_report.__file__),
+                "report", "components", "flags", "flag-dte-social_{}.png".format(lang[:2]))
+
+            def isfile_except_social(path):
+                return False if path == missing_path else real_isfile(path)
+
+            with mock.patch.object(giscedata_facturacio_report, "get_lang_partner",
+                                   return_value=lang):
+                with mock.patch.object(os.path, "isfile",
+                                       side_effect=isfile_except_social) as isfile:
+                    result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+                    isfile.assert_any_call(missing_path)
+            self.assertTrue(result["is_social_tariff"])
+            self.assertFalse(result["social_banner"])
+            self.assertEqual(result["flag_images"], [])
+            html = template.render(flags=ns(result), addons_path="/addons")
+            self.assertEqual(html.count("<img "), 0)
+            self.assertNotIn("<div", html)
 
     @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
     @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
@@ -590,8 +1327,7 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
         result = template.render(flags=flags, addons_path="/addons")
         self.assertIn('src="data:image/png;base64,aW1hZ2U="', result)
         self.assertIn('/flags/flag_gkwh_little.png', result)
-        self.assertIn('logo_little_left', result)
-        self.assertIn('logo_little_right', result)
+        self.assertEqual(result.count('<img '), 2)
 
         legacy_flags = ns({
             "is_autoconsum": True,
@@ -601,7 +1337,7 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
         })
         legacy_result = template.render(flags=legacy_flags, addons_path="/addons")
         self.assertIn('/flags/flag_auto_little_ca.png', legacy_result)
-        self.assertIn('logo_little_center', legacy_result)
+        self.assertEqual(legacy_result.count('<img '), 1)
 
 
 class Tests_FacturacioFacturaReport_renovation_date(Tests_FacturacioFacturaReport_base):

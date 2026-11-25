@@ -4,6 +4,8 @@
 </style>
 <%
 import locale
+from decimal import Decimal
+social_discount = id_info.get('social_discount_eur_kwh')
 mesos_text = {
     1: _(u"Gener"),
     2: _(u"Febrer"),
@@ -40,6 +42,10 @@ mes_text = mesos_text[id_info.mes_mag_darrer_mes] if id_info.has_mag and id_info
     % if id_info.adjustment_services:
         <br>
         ${_(u"(2) Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica de España (REE), no inclosos en el terme d'energia.")}
+    % endif
+    % if social_discount is not None:
+        <br>
+        * ${_(u"Al preu de l’energia reflectit en aquesta línia se li ha deduït el descompte social que actualment correspon a un import de %s €/kWh.") % formatLang(Decimal(social_discount), digits=max(6, len(social_discount.partition('.')[2])))}
     % endif
 </td>
 </tr>
