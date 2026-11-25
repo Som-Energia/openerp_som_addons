@@ -152,6 +152,7 @@ class TarifaPoolSOM(TarifaPool):
         try:
             perdues = 'perdqh' in component.lower()
             pmdiario = 'prmdiari' in component.lower()
+            compodem = 'monthlycompodem' in component.lower()
             start_date = datetime.strptime(data_inici, '%Y-%m-%d')
             if perdues:
                 component_class = self.perdclassqh
@@ -159,6 +160,9 @@ class TarifaPoolSOM(TarifaPool):
             elif pmdiario and (
                     start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10)):
                 component_class = Pmdiario
+                component = component_class.name
+            elif compodem:
+                component_class = MonthlyCompodem
                 component = component_class.name
             else:
                 component_class = self.get_component_class(component.title())
@@ -552,9 +556,18 @@ class TarifaPoolSOM(TarifaPool):
                 'codsvsuqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
 
         # RAD3 and BS3
-        compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
-        rad3 = compodem.get_component("RAD3")
-        bs3 = compodem.get_component("BS3")
+        compodem = self.get_component_with_fallback(
+            'monthlycompodem', start_date_str, end_date_str, day, fallback=preu_dema)
+        if preu_dema:
+            if hasattr(compodem, "filename") and compodem.filename and "compodem" in compodem.filename:
+                rad3 = compodem.get_component("RAD3")
+                bs3 = compodem.get_component("BS3")
+            else:
+                rad3 = Component(start_date)
+                bs3 = Component(start_date)
+        else:
+            rad3 = compodem.get_component("RAD3")
+            bs3 = compodem.get_component("BS3")
 
         # NOT YET es comenta fins que es decideixi pasar a producció.
         # # get first version date on version
