@@ -231,6 +231,319 @@ class TestsGurbCups(TestsGurbBase):
         self.assertTrue(unrelated_beta.active)
         self.assertFalse(unrelated_beta.end_date)
 
+    def _prepare_confirmed_cancellation(self, pending_signal=None):
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+        service_o = self.openerp.pool.get("giscedata.facturacio.services")
+        product_o = self.openerp.pool.get("product.product")
+        refs = self.get_references()
+        self.activar_polissa_CUPS()
+        cups_o.send_signal(self.cursor, self.uid, [refs["gurb_cups_id"]], [
+            "button_create_cups", "button_activate_cups",
+        ])
+        if pending_signal:
+            cups_o.send_signal(
+                self.cursor, self.uid, [refs["gurb_cups_id"]], pending_signal
+            )
+        cups_o.add_service_to_contract(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-02-01"
+        )
+        service_ids = service_o.search(
+            self.cursor, self.uid, [("polissa_id", "=", refs["pol_id"])]
+        )
+        self.assertEqual(len(service_ids), 1)
+        refs["service_id"] = service_ids[0]
+        other_product_id = product_o.copy(
+            self.cursor, self.uid, refs["product_id"], {"name": "Unrelated service"}
+        )
+        refs["unrelated_service_id"] = service_o.copy(
+            self.cursor, self.uid, service_ids[0], {"producte": other_product_id}
+        )
+        refs["closed_service_id"] = service_o.copy(
+            self.cursor, self.uid, service_ids[0], {"data_fi": "2016-03-01"}
+        )
+        beta_o.write(self.cursor, self.uid, refs["gurb_cups_beta_2_id"], {
+            "active": False, "end_date": "2016-01-31",
+        })
+        refs["active_beta_id"] = beta_o.create(self.cursor, self.uid, {
+            "gurb_cups_id": refs["gurb_cups_id"],
+            "active": True,
+            "start_date": "2016-02-01",
+            "beta_kw": 3,
+            "extra_beta_kw": 0,
+            "gift_beta_kw": 0,
+        })
+        return refs
+
+    def _assert_confirmed_cancellation(self, refs, end_date="2016-06-06"):
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+        service_o = self.openerp.pool.get("giscedata.facturacio.services")
+        cups = cups_o.browse(
+            self.cursor, self.uid, refs["gurb_cups_id"], context={"active_test": False}
+        )
+        self.assertEqual(cups.state, "cancel")
+        self.assertFalse(cups.active)
+        self.assertEqual(cups.end_date, end_date)
+        beta = beta_o.browse(self.cursor, self.uid, refs["active_beta_id"])
+        self.assertFalse(beta.active)
+        self.assertEqual(beta.end_date, end_date)
+        historical_beta = beta_o.browse(
+            self.cursor, self.uid, refs["gurb_cups_beta_2_id"]
+        )
+        self.assertEqual(historical_beta.end_date, "2016-01-31")
+        unrelated_beta = beta_o.browse(self.cursor, self.uid, refs["gurb_cups_beta_id"])
+        self.assertTrue(unrelated_beta.active)
+        self.assertFalse(unrelated_beta.end_date)
+        self.assertEqual(service_o.read(
+            self.cursor, self.uid, refs["service_id"], ["data_fi"]
+        )["data_fi"], end_date)
+        self.assertFalse(service_o.read(
+            self.cursor, self.uid, refs["unrelated_service_id"], ["data_fi"]
+        )["data_fi"])
+        self.assertEqual(service_o.read(
+            self.cursor, self.uid, refs["closed_service_id"], ["data_fi"]
+        )["data_fi"], "2016-03-01")
+
+    def test_confirmed_cancellation_from_active(self):
+        refs = self._prepare_confirmed_cancellation()
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        context = {
+            "active_ids": [refs["unrelated_service_id"]],
+            "gurb_cancellation_confirmed": True,
+        }
+        cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06",
+            context=context
+        )
+        self._assert_confirmed_cancellation(refs)
+        self.assertEqual(context, {
+            "active_ids": [refs["unrelated_service_id"]],
+            "gurb_cancellation_confirmed": True,
+        })
+
+    def test_confirmed_cancellation_from_pending_modification_keeps_beta_unpromoted(self):
+        refs = self._prepare_confirmed_cancellation()
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+        self.create_new_gurb_cups_beta(
+            refs["gurb_cups_id"], "2016-04-01", 1.5, 0.5, 0,
+            context={"activate": False}
+        )
+        pending_ids = beta_o.search(self.cursor, self.uid, [
+            ("gurb_cups_id", "=", refs["gurb_cups_id"]),
+            ("future_beta", "=", True),
+            ("active", "=", True),
+        ])
+        self.assertEqual(len(pending_ids), 1)
+        self.assertEqual(cups_o.read(
+            self.cursor, self.uid, refs["gurb_cups_id"], ["state"]
+        )["state"], "comming_modification")
+        beta_fields = ["start_date", "beta_kw", "extra_beta_kw", "gift_beta_kw", "future_beta"]
+        pending_before = beta_o.read(self.cursor, self.uid, pending_ids[0], beta_fields)
+        current_before = beta_o.read(
+            self.cursor, self.uid, refs["active_beta_id"], beta_fields
+        )
+        self.assertTrue(pending_before["future_beta"])
+        self.assertFalse(current_before["future_beta"])
+        self.assertLessEqual(pending_before["start_date"], "2016-06-06")
+        context = {"gurb_cancellation_confirmed": True, "active_test": False}
+        original_context = context.copy()
+
+        cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06", context=context
+        )
+
+        self._assert_confirmed_cancellation(refs)
+        pending = beta_o.browse(self.cursor, self.uid, pending_ids[0])
+        self.assertFalse(pending.active)
+        self.assertEqual(pending.end_date, "2016-06-06")
+        self.assertEqual(
+            beta_o.read(self.cursor, self.uid, pending_ids[0], beta_fields), pending_before
+        )
+        self.assertEqual(beta_o.read(
+            self.cursor, self.uid, refs["active_beta_id"], beta_fields
+        ), current_before)
+        self.assertEqual(context, original_context)
+
+    def test_cancel_gurb_cups_preserves_original_signature(self):
+        import inspect
+        from som_gurb.models.som_gurb_cups import SomGurbCups
+
+        getargspec = getattr(inspect, "getfullargspec", None) or inspect.getargspec
+        argspec = getargspec(SomGurbCups.cancel_gurb_cups)
+        self.assertEqual(argspec.args, [
+            "self", "cursor", "uid", "gurb_cups_id", "end_date", "context",
+        ])
+        self.assertEqual(argspec.defaults, (None,))
+        self.assertIsNone(argspec.varargs)
+        self.assertIsNone(getattr(argspec, "varkw", getattr(argspec, "keywords", None)))
+
+    def test_confirmed_cancellation_with_positional_context(self):
+        refs = self._prepare_confirmed_cancellation()
+        context = {"gurb_cancellation_confirmed": True, "active_test": False}
+        self.openerp.pool.get("som.gurb.cups").cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06", context
+        )
+        self._assert_confirmed_cancellation(refs)
+        self.assertEqual(context, {
+            "gurb_cancellation_confirmed": True, "active_test": False,
+        })
+
+    def test_unconfirmed_cancellation_with_positional_context(self):
+        refs = self._prepare_confirmed_cancellation()
+        context = {"gurb_cancellation_confirmed": False, "active_test": False}
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06", context
+        )
+        cups = cups_o.browse(self.cursor, self.uid, refs["gurb_cups_id"])
+        self.assertEqual(cups.state, "atr_pending")
+        self.assertTrue(cups.active)
+        self.assertFalse(cups.end_date)
+        beta = self.openerp.pool.get("som.gurb.cups.beta").browse(
+            self.cursor, self.uid, refs["active_beta_id"]
+        )
+        self.assertTrue(beta.active)
+        self.assertFalse(beta.end_date)
+        self.assertFalse(self.openerp.pool.get("giscedata.facturacio.services").read(
+            self.cursor, self.uid, refs["service_id"], ["data_fi"]
+        )["data_fi"])
+        self.assertEqual(context, {
+            "gurb_cancellation_confirmed": False, "active_test": False,
+        })
+
+    def test_confirmed_cancellation_from_atr_pending(self):
+        refs = self._prepare_confirmed_cancellation("button_atr_pending")
+        self.openerp.pool.get("som.gurb.cups").cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06",
+            context={"gurb_cancellation_confirmed": True}
+        )
+        self._assert_confirmed_cancellation(refs)
+
+    def test_confirmed_cancellation_from_comming_cancellation(self):
+        refs = self._prepare_confirmed_cancellation("button_coming_cancellation")
+        self.openerp.pool.get("som.gurb.cups").cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06",
+            context={"gurb_cancellation_confirmed": True}
+        )
+        self._assert_confirmed_cancellation(refs)
+
+    def test_confirmed_cancellation_is_idempotent(self):
+        refs = self._prepare_confirmed_cancellation("button_coming_cancellation")
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06",
+            context={"gurb_cancellation_confirmed": True}
+        )
+        cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-07-01",
+            context={"active_test": False, "gurb_cancellation_confirmed": True}
+        )
+        self._assert_confirmed_cancellation(refs)
+
+    def test_confirmed_cancellation_rejects_unsupported_state(self):
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        refs = self.get_references()
+        with self.assertRaises(osv.except_osv):
+            cups_o.cancel_gurb_cups(
+                self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06",
+                context={"gurb_cancellation_confirmed": True}
+            )
+        cups = cups_o.browse(self.cursor, self.uid, refs["gurb_cups_id"])
+        self.assertEqual(cups.state, "draft")
+        self.assertTrue(cups.active)
+        self.assertFalse(cups.end_date)
+
+    def test_confirmed_cancellation_scopes_services_despite_caller_selection(self):
+        refs = self._prepare_confirmed_cancellation()
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        service_o = self.openerp.pool.get("giscedata.facturacio.services")
+        second_service_id = service_o.copy(
+            self.cursor, self.uid, refs["service_id"],
+            {"producte": refs["owner_product_id"]}
+        )
+        other_contract_service_id = service_o.copy(
+            self.cursor, self.uid, refs["service_id"],
+            {"polissa_id": refs["owner_pol_id"]}
+        )
+        context = {
+            "active_id": refs["unrelated_service_id"],
+            "active_ids": [refs["unrelated_service_id"]],
+            "dont_raise_exception": False,
+            "gurb_cancellation_confirmed": True,
+        }
+        original_context = context.copy()
+        cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06",
+            context=context
+        )
+        self._assert_confirmed_cancellation(refs)
+        self.assertEqual(service_o.read(
+            self.cursor, self.uid, second_service_id, ["data_fi"]
+        )["data_fi"], "2016-06-06")
+        self.assertFalse(service_o.read(
+            self.cursor, self.uid, other_contract_service_id, ["data_fi"]
+        )["data_fi"])
+        self.assertEqual(context, original_context)
+
+    def test_confirmed_cancellation_without_open_service(self):
+        refs = self._prepare_confirmed_cancellation()
+        service_o = self.openerp.pool.get("giscedata.facturacio.services")
+        service_o.write(
+            self.cursor, self.uid, refs["service_id"], {"data_fi": "2016-04-01"}
+        )
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06",
+            context={"gurb_cancellation_confirmed": True}
+        )
+        cups = cups_o.browse(self.cursor, self.uid, refs["gurb_cups_id"])
+        self.assertEqual(cups.state, "cancel")
+        self.assertFalse(cups.active)
+        self.assertEqual(service_o.read(
+            self.cursor, self.uid, refs["service_id"], ["data_fi"]
+        )["data_fi"], "2016-04-01")
+
+    def test_unconfirmed_cancellation_from_active_preserves_service(self):
+        refs = self._prepare_confirmed_cancellation()
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06"
+        )
+        cups = cups_o.browse(self.cursor, self.uid, refs["gurb_cups_id"])
+        self.assertEqual(cups.state, "atr_pending")
+        self.assertTrue(cups.active)
+        self.assertFalse(cups.end_date)
+        beta = self.openerp.pool.get("som.gurb.cups.beta").browse(
+            self.cursor, self.uid, refs["active_beta_id"]
+        )
+        self.assertTrue(beta.active)
+        self.assertFalse(beta.end_date)
+        self.assertFalse(self.openerp.pool.get("giscedata.facturacio.services").read(
+            self.cursor, self.uid, refs["service_id"], ["data_fi"]
+        )["data_fi"])
+
+    def test_unconfirmed_cancellation_from_atr_pending_keeps_legacy_state(self):
+        refs = self._prepare_confirmed_cancellation("button_atr_pending")
+        cups_o = self.openerp.pool.get("som.gurb.cups")
+        cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, refs["gurb_cups_id"], "2016-06-06"
+        )
+        cups = cups_o.browse(self.cursor, self.uid, refs["gurb_cups_id"])
+        # Legacy M2 handling closes data without a valid workflow transition.
+        self.assertEqual(cups.state, "atr_pending")
+        self.assertFalse(cups.active)
+        self.assertEqual(cups.end_date, "2016-06-06")
+        beta = self.openerp.pool.get("som.gurb.cups.beta").browse(
+            self.cursor, self.uid, refs["active_beta_id"]
+        )
+        self.assertFalse(beta.active)
+        self.assertEqual(beta.end_date, "2016-06-06")
+        self.assertEqual(self.openerp.pool.get("giscedata.facturacio.services").read(
+            self.cursor, self.uid, refs["service_id"], ["data_fi"]
+        )["data_fi"], "2016-06-06")
+
     @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64")
     def test_create_initial__invoice_bank_transfer(
         self, generate_gurb_invoice_base64_mock_function
