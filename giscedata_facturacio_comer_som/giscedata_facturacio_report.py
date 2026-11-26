@@ -17,6 +17,7 @@ import json
 from collections import Counter
 import base64
 from decimal import Decimal
+from .complementary_blocks import merge_complementary_blocks
 
 STRING_TYPES = (str, type(u""))
 
@@ -1300,11 +1301,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         returns a dictionary with all the flags data needed for the flag component
         """
         lang = get_lang_partner(fact).lower()[0:2]
+        is_autoconsum = te_autoconsum(fact, pol)
+        is_gkwh = te_gkwh(fact)
         data = {
-            "is_autoconsum": te_autoconsum(fact, pol),  # fact.te_autoconsum
+            "is_autoconsum": is_autoconsum,
             "autoconsum_flag": "flag_auto_little_{}.png".format(lang),
-            "is_gkwh": te_gkwh(fact),
+            "autoconsum_banner": self.get_flag_banner(
+                fact, "invoice_flag_autoconsum_{}".format(lang)
+            ) if is_autoconsum else False,
+            "is_gkwh": is_gkwh,
             "gkwh_flag": "flag_gkwh_little.png",
+            "gkwh_banner": self.get_flag_banner(
+                fact, "invoice_flag_gkwh"
+            ) if is_gkwh else False,
         }
         return data
 
@@ -1913,6 +1922,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         """
         dphone = self.get_distri_phone(pol) or " "
         cphone = fact.company_id.partner_id.address[0].phone
+        cphone = cphone.replace(".", "").replace(" ", "")
 
         data = {
             "distri_name": pol.distribuidora.name,
@@ -1923,9 +1933,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "has_agreement_partner": pol.soci.ref in agreementPartners.keys(),
             "agreement_partner_name": pol.soci.name,
             "is_energetica": pol.soci.ref in agreementPartners.keys() and pol.soci.ref == "S019753",
-            "comer_phone": ".".join([cphone[i: i + 3] for i in range(0, len(cphone), 3)])
-            if "." not in cphone
-            else cphone,
+            "comer_phone": " ".join([cphone[i: i + 3] for i in range(0, len(cphone), 3)]),
             "lang": get_lang_partner(fact),
         }
         return data
@@ -2906,6 +2914,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "iva_column": has_iva_column(fact),
             "amount_total": fact.amount_total,
         }
+        energy = data["energy"]
+        other_concepts = data["other_concepts"]
+        complementary_blocks = (other_concepts.get("compl_info") or {}).get("energy_lines_data", [])
+        if energy["adjustment_services"] and complementary_blocks:
+            energy["defer_adjustment_services"] = True
+            energy["header_multi"] -= 1
+            other_concepts["deferred_adjustment_services"] = energy["adjustment_services"]
         return data
 
     def get_sub_component_invoice_details_td(self, fact, pol, linies, lectures=None):
@@ -3780,10 +3795,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         ]
 
         block = []
+        source_signatures = []
+        # A global expediente label cannot establish per-line provenance when
+        # several source invoices/F1s are involved. Keep those blocks separate.
+        known_origin = (
+            len(origins) == 1 and bool(origins[0]) and len(f1_ids) == 1
+            and len(set(expedients)) == 1 and len(types) == 1
+        )
         for type, units, compl_lines_x in compl_matrix:
             for start_date in sorted(set([x.data_desde for x in compl_lines_x])):
                 date_lines = [x for x in compl_lines_x if x.data_desde == start_date]
                 lines = {}
+                period_sources = {}
+                power_basis_known = True
                 total = 0.0
                 for l in date_lines:  # noqa: E741
                     sign = -1.0 if l.price_subtotal < 0.0 else 1.0
@@ -3793,6 +3817,20 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     else:
                         atr_tolls = 0.0
                         atr_charges = 0.0
+                    source = (
+                        l.tipus, l.product_id.id, l.uos_id.id,
+                        tuple(sorted(tax.id for tax in l.invoice_line_tax_id)),
+                        l.price_unit_multi, atr_tolls * sign, atr_charges * sign,
+                    )
+                    if type == 'potencia':
+                        # Power is a level, not consumption. Compare its raw
+                        # multiplier and unit before legacy grouping hides them.
+                        multiplier_unit = l.uom_multi_id.id if l.uom_multi_id else False
+                        source += (l.quantity, l.multi, multiplier_unit)
+                        power_basis_known = (
+                            power_basis_known and l.multi > 0 and bool(multiplier_unit)
+                        )
+                    period_sources.setdefault(l.product_id.name, []).append(source)
                     if l.product_id.name in lines:
                         lines[l.product_id.name]["quantity"] += l["quantity"]
                         lines[l.product_id.name]["price_subtotal"] += l["price_subtotal"]
@@ -3816,8 +3854,24 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 lines["type"] = type
                 lines["units"] = units
                 block.append(lines)
+                homogeneous = all(
+                    all(source == sources[0] for source in sources)
+                    for sources in period_sources.values())
+                if type == 'potencia':
+                    homogeneous = homogeneous and all(
+                        len(sources) == 1 for sources in period_sources.values())
+                same_end = len(set(x.data_fins for x in date_lines)) == 1
+                if known_origin and homogeneous and same_end and power_basis_known:
+                    source_signatures.append(tuple(
+                        (period, sources[0])
+                        for period, sources in sorted(period_sources.items())))
+                else:
+                    source_signatures.append(None)
 
-        data['energy_lines_data'] = block
+        data['energy_lines_data'] = merge_complementary_blocks(block, source_signatures)
+        if len(data['energy_lines_data']) < len(block):
+            # Native containers survive fill_all_components_data's YAML roundtrip.
+            data['original_energy_lines_data'] = block
         return data
 
     def get_sub_component_invoice_details_td_excess_power_maximeter(self, fact, pol):
@@ -4114,7 +4168,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         other_data = self.get_sub_component_invoice_details_td_other_concepts_data(fact, pol)
         if 'compl_info' in other_data and 'energy_lines_data' in other_data['compl_info']:
             periods = self.get_matrix_show_periods(pol)
-            for block in other_data['compl_info']['energy_lines_data']:
+            compl_info = other_data['compl_info']
+            blocks = compl_info.get('original_energy_lines_data', compl_info['energy_lines_data'])
+            # Retain historical per-original-block, per-period cent rounding.
+            for block in blocks:
                 for period in periods:
                     if period in block:
                         data = block[period]
@@ -4270,7 +4327,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 data["final_date"] = reading[5]
                 if "final_type" not in data or reading[7] != u"real":
                     data["final_type"] = reading[7]
-                adjust_reason.append(reading[9])
+                if reading[8] != 0:
+                    adjust_reason.append(reading[9])
 
         data["adjust_reason"] = self.adjust_readings_priority(adjust_reason)
         return data
@@ -4307,7 +4365,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 data["final_date"] = reading[5]
                 if "final_type" not in data or reading[7] != u"real":
                     data["final_type"] = reading[7]
-                adjust_reason.append(reading[9])
+                if reading[8] != 0:
+                    adjust_reason.append(reading[9])
         data["hide_total_surplus"] = (
             te_autoconsum_collectiu(fact, pol) and te_autoconsum_no_collectiu(fact, pol)
         )
@@ -4679,6 +4738,39 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'link_ov_suns': link_ov_suns,
             'link_no_compens': link_nc,
         }
+
+    def get_flag_banner(self, fact, code):
+        """Return a data URI for a configured invoice flag, or False."""
+        date = fact.date_invoice or fact.data_final
+        if not date:
+            return False
+
+        banner_obj = self.pool.get("report.banner")
+        model = "giscedata.facturacio.factura"
+        banner_id = banner_obj.get_banner_id(
+            self.cursor, self.uid, model, date, code=code, model_id=fact.id
+        )
+        if not banner_id:
+            return False
+
+        banner = banner_obj.read(
+            self.cursor, self.uid, banner_id,
+            ["code", "start_date", "end_date", "image_mongo"]
+        )
+        # get_banner_id may return a model-wide default outside the search.
+        if (banner["code"] != code or not banner["image_mongo"]
+                or banner["start_date"] > date
+                or (banner["end_date"] and banner["end_date"] < date)):
+            return False
+        image = banner_obj.get_banner(
+            self.cursor, self.uid, model, date, code=code, model_id=fact.id
+        )
+        if not image:
+            return False
+        if not isinstance(image, STRING_TYPES):
+            image = image.decode("ascii")
+        mime = "image/jpeg" if image.startswith("/9j/") else "image/png"
+        return "data:{};base64,{}".format(mime, image)
 
 
 GiscedataFacturacioFacturaReport()

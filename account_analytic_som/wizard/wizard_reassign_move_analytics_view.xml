@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_reassign_move_analytics" model="ir.ui.view">
+            <field name="name">wizard.reassign.move.analytics.form</field>
+            <field name="model">wizard.reassign.move.analytics</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Reassign entry analytics">
+                    <field name="move_id" colspan="4"/>
+                    <field name="snapshot" invisible="1"/>
+                    <label string="Proposals use the item's analytic account or its current default, not Odoo's current values." colspan="4"/>
+                    <label string="An empty analytic account applies the current default, if available. Only ERP analytics are updated." colspan="4"/>
+                    <field name="line_ids" colspan="4" nolabel="1">
+                        <tree string="Journal items" editable="bottom">
+                            <field name="move_line_id"/>
+                            <field name="account_id"/>
+                            <field name="name"/>
+                            <field name="debit"/>
+                            <field name="credit"/>
+                            <field name="analytic_account_id"/>
+                        </tree>
+                        <form string="Journal item analytics">
+                            <field name="move_line_id"/>
+                            <field name="account_id"/>
+                            <field name="name"/>
+                            <field name="debit"/>
+                            <field name="credit"/>
+                            <field name="analytic_account_id"/>
+                        </form>
+                    </field>
+                    <group colspan="4" col="2">
+                        <button special="cancel" string="Cancel" icon="gtk-cancel"/>
+                        <button name="action_apply" string="Apply analytics" type="object" icon="gtk-execute"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_reassign_move_analytics" model="ir.actions.act_window">
+            <field name="name">Reassign entry analytics...</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.reassign.move.analytics</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_reassign_move_analytics" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Reassign entry analytics...</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">account.move</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_reassign_move_analytics'))"/>
+        </record>
+    </data>
+</openerp>

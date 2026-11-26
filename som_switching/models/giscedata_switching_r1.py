@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from osv import osv
+from tools.translate import _
 
 
 class GiscedataSwitchingR1_01(osv.osv):
@@ -56,3 +58,50 @@ class GiscedataSwitchingR1_01(osv.osv):
 
 
 GiscedataSwitchingR1_01()
+
+
+class GiscedataSwitchingR1_04(osv.osv):
+    _name = "giscedata.switching.r1.04"
+    _inherit = "giscedata.switching.r1.04"
+
+    def create(self, cursor, uid, vals, context=None):
+        # La creació inicial automàtica encara no inclou els comentaris.
+        if "comentaris" in vals:
+            self.check_comments(vals["comentaris"])
+        return super(GiscedataSwitchingR1_04, self).create(
+            cursor, uid, vals, context=context
+        )
+
+    def write(self, cursor, uid, ids, vals, context=None):
+        if "comentaris" in vals:
+            self.check_comments(vals["comentaris"])
+        elif list(vals) != ["sw_id"]:
+            # step.info enllaça el pas amb el cas abans d'editar el formulari.
+            steps = self.read(cursor, uid, ids, ["comentaris"], context=context)
+            if isinstance(steps, dict):
+                steps = [steps]
+            for step in steps:
+                self.check_comments(step["comentaris"])
+        return super(GiscedataSwitchingR1_04, self).write(
+            cursor, uid, ids, vals, context=context
+        )
+
+    def generar_xml(self, cursor, uid, pas_id, context=None):
+        if pas_id:
+            step_id = pas_id[0] if isinstance(pas_id, (list, tuple)) else pas_id
+            step = self.read(cursor, uid, step_id, ["comentaris"], context=context)
+            self.check_comments(step["comentaris"])
+        return super(GiscedataSwitchingR1_04, self).generar_xml(
+            cursor, uid, pas_id, context=context
+        )
+
+    def check_comments(self, comments):
+        if not (comments or "").strip():
+            raise osv.except_osv(
+                _(u"Atenció"),
+                _(u"Cal omplir el camp Comentaris del pas 04 de la R1 "
+                  u"abans de desar-lo o exportar-lo."),
+            )
+
+
+GiscedataSwitchingR1_04()

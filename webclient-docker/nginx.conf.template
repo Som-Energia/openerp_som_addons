@@ -11,7 +11,13 @@ server {
         proxy_read_timeout 86400;
     }
 
+    location = /custom.css {
+        alias /opt/webclient-local/custom.css;
+        add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+    }
+
     location / {
         try_files $uri $uri/ /index.html;
     }
+
 }

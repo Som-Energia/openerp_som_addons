@@ -34,5 +34,13 @@
             <field name="view_id" ref="view_wizard_report_test_group_view_tests_form"/>
             <field name="target">new</field>
         </record>
+        <record id="value_wizard_report_test_group_view_tests" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Veure diferències</field>
+            <field name="key">action</field>
+            <field name="key2">client_action_multi</field>
+            <field name="model">report.test.group</field>
+            <field name="value" eval="'ir.actions.act_window,' + str(ref('action_wizard_report_test_group_view_tests'))"/>
+        </record>
     </data>
 </openerp>

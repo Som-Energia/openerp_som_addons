@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
-from osv import osv
+from __future__ import absolute_import
+
+from osv import osv, fields
 from tools import cache
-from datetime import datetime
+from tools.translate import _
+from datetime import datetime, timedelta
+from six import string_types
 
 
-class GiscedataFacturacio(osv.osv):
+class GiscedataFacturacioFactura(osv.osv):
     _name = "giscedata.facturacio.factura"
     _inherit = "giscedata.facturacio.factura"
 
@@ -35,24 +39,16 @@ class GiscedataFacturacio(osv.osv):
                 if len(arg) == 3:
                     field, operator, match = arg
                     if (exact_number and field == "number" and operator == "ilike"
-                            and isinstance(match, (unicode, str)) and "%" not in match):
+                            and isinstance(match, string_types) and "%" not in match):
                         operator = "="
                         args[idx] = (field, operator, match)
                     if (exact_origin and field == "origin" and operator == "ilike"
-                            and isinstance(match, (unicode, str)) and "%" not in match):
+                            and isinstance(match, string_types) and "%" not in match):
                         operator = "="
                         args[idx] = (field, operator, match)
-        return super(GiscedataFacturacio, self).search(
+        return super(GiscedataFacturacioFactura, self).search(
             cr, user, args, offset, limit, order, context, count
         )
-
-
-GiscedataFacturacio()
-
-
-class GiscedataFacturacioFactura(osv.osv):
-    _name = 'giscedata.facturacio.factura'
-    _inherit = 'giscedata.facturacio.factura'
 
     def invoice_open(self, cursor, uid, ids, context=None):
         if context is None:
@@ -83,5 +79,56 @@ class GiscedataFacturacioFactura(osv.osv):
 
         return res
 
+    def get_data_inici_interessos(self, cursor, uid, factura, context=None):
+        if context is None:
+            context = {}
+
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        search_vals = [
+            ('data_inici', '>=', factura.data_inici),
+            ('data_final', '<=', factura.data_final),
+            ('cups_id', '=', factura.cups_id.id),
+            ('refund_by_id', '=', False),
+            ('type', 'in', ['in_invoice', 'in_refund']),
+            ('rectificative_type', '!=', 'BRA'),
+            ('origin_date_invoice', '!=', False),
+        ]
+        fact_prov_ids = fact_obj.search(
+            cursor, uid, search_vals, order="origin_date_invoice desc", context=context
+        )
+        if fact_prov_ids:
+            date_inv_orig = fact_obj.read(
+                cursor, uid, fact_prov_ids[0], ['origin_date_invoice'], context=context
+            )['origin_date_invoice']
+            date_inv_orig = datetime.strptime(date_inv_orig, '%Y-%m-%d') + timedelta(days=31)
+            res = date_inv_orig.strftime('%Y-%m-%d')
+        else:
+            raise osv.except_osv(_("No s'ha trobat factura de proveïdor"),
+                                 _("No s'ha trobat factura de proveïdor entre les dates "
+                                   "{} i {}").format(factura.data_inici, factura.data_final))
+        return res
+
+    def get_extra_vals_for_unpayment_expenses(self, cursor, uid, fact, context=None):
+        if context is None:
+            context = {}
+        return {'origin_factura_id': [(6, 0, [fact.id])]}
+
 
 GiscedataFacturacioFactura()
+
+
+class FacturacioExtra(osv.osv):
+
+    _name = "giscedata.facturacio.extra"
+    _inherit = "giscedata.facturacio.extra"
+
+    _columns = {
+        'origin_factura_id': fields.many2many(
+            'giscedata.facturacio.factura', 'facturacio_extra_origin_factura_rel',
+            'extra_id', 'factura_id', 'Origin Invoice',
+            help=u"Factura que ha originat la creació de la línia extra", readonly=True
+        ),
+    }
+
+
+FacturacioExtra()

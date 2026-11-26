@@ -15,6 +15,7 @@ class AccountInvoice(osv.osv):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
+        self._lock_payment_route(cursor, uid, ids, context=context)
         blocked_invoice_names = []
         for invoice in self.browse(cursor, uid, ids, context=context):
             payment_type = getattr(invoice, "payment_type", False)
@@ -38,6 +39,17 @@ class AccountInvoice(osv.osv):
         return super(AccountInvoice, self).afegeix_a_remesa(
             cursor, uid, ids, order_id, context=context
         )
+
+    def _lock_payment_route(self, cursor, uid, ids, context=None):
+        if not ids:
+            return []
+        self.check_perm(cursor, uid, "write", context=context)
+        # Both payment routes must lock before reading their eligibility checks.
+        cursor.execute(
+            "SELECT id FROM account_invoice WHERE id IN %s ORDER BY id FOR UPDATE",
+            (tuple(sorted(set(ids))),),
+        )
+        return [row[0] for row in cursor.fetchall()]
 
 
 AccountInvoice()

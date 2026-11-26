@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import, division
+
 from osv import osv, fields
 from tools.translate import _
 from datetime import datetime
@@ -399,6 +401,9 @@ class SomGurbCau(osv.osv):
         ),
         "sig_data": fields.char("Dades SIG", size=60),
         "activation_date": fields.date("Data activació GURB CAU"),
+        "last_distribution_agreement_date": fields.date(
+            "Data d'últim acord de repartiment"
+        ),
         "state": fields.selection(_GURB_STATES, "Estat del GURB CAU", readonly=True),
         "state_date": fields.date("Data activació estat", readonly=True),
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_cau_id", "Betes", readonly=False),

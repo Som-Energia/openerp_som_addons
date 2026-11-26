@@ -421,6 +421,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 ctx.update({'force_pricelist': pol.modcontractuals_ids[0].llista_preu.id})
         if polissa.data_baixa:
             ctx = {'date': datetime.strptime(polissa.data_baixa, '%Y-%m-%d')}
+        if not use_modcon_pricelist and pol.llista_preu:
+            # Include future versions of the current list, independently of modcons.
+            ctx['force_pricelist'] = pol.llista_preu.id
         if not pol.llista_preu:
             tarifes_a_mostrar = []
             if dict_preus_tp_potencia:

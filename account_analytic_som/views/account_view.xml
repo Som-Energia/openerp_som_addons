@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_account_move_form_analytic_som" model="ir.ui.view">
+            <field name="name">account.move.form.analytic.som</field>
+            <field name="model">account.move</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account_analytic_distribution.view_account_move_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='line_id']/form/field[@name='account_id']" position="attributes">
+                    <attribute name="on_change">onchange_account_id(account_id, partner_id)</attribute>
+                </xpath>
+                <xpath expr="//field[@name='line_id']/form/field[@name='date']" position="after">
+                    <field name="analytic_account_id"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -86,7 +86,7 @@ fi
 pip install --no-build-isolation -e .
 
 cd "$ROOT_DIR_SRC/somenergia-generationkwh"
-pip install -e . || true
+pip install -e .
 
 cd "$ROOT_DIR_SRC/plantmeter"
 pip install -e . || true

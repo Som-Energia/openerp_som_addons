@@ -53,6 +53,20 @@ class IncompleteSimulationPolicy(SomWebformsException):
         )
 
 
+class InvalidAveragePriceTariff(SomWebformsException):
+    def __init__(self):
+        super(InvalidAveragePriceTariff, self).__init__(
+            text="Average price tariff must be '2.0TD' or '3.0TD'"
+        )
+
+
+class InvalidAveragePriceType(SomWebformsException):
+    def __init__(self):
+        super(InvalidAveragePriceType, self).__init__(
+            text="Average price type must be 'index' or 'ssaa'"
+        )
+
+
 class MissingSimulationConfig(SomWebformsException):
     def __init__(self):
         super(MissingSimulationConfig, self).__init__(

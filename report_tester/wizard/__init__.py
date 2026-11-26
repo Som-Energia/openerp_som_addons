@@ -8,3 +8,4 @@ from . import wizard_report_test_execute_test
 from . import wizard_report_test_group_view_tests
 from . import wizard_report_test_view_attached
 from . import wizard_report_test_attach_to_invoice
+from . import wizard_report_test_group_csv

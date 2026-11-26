@@ -1,7 +1,48 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, division, unicode_literals
 from giscedata_facturacio.report.utils import get_atr_price
 from datetime import date, timedelta
+from ast import literal_eval
+
+from .taxes import compute_estimation_taxes, get_tax_polissa
+
+
+def get_bo_social_estimation(cursor, uid, pol, context=None):
+    """Annual financing charge, separate from the energy/power tax base."""
+    context = dict(context or {})
+    context['date'] = context.get('date') or date.today().strftime('%Y-%m-%d')
+    if hasattr(context['date'], 'strftime'):
+        context['date'] = context['date'].strftime('%Y-%m-%d')
+    conf_obj = pol.pool.get('res.config')
+    if not int(conf_obj.get(cursor, uid, 'invoice_active_bo_social', '0')):
+        return 0, 0
+    start_date = conf_obj.get(
+        cursor, uid, 'invoice_start_date_bo_social', '2016-01-01'
+    ) or '2016-01-01'
+    excluded = literal_eval(conf_obj.get(
+        cursor, uid, 'giscedata_exclude_tariff_apply_bo_social', '[]'
+    ))
+    if context['date'] < start_date or pol.tarifa.name in excluded:
+        return 0, 0
+    product_id = pol.pool.get('ir.model.data').get_object_reference(
+        cursor, uid, 'giscedata_repercusio_bo_social', 'bosocial_BS01'
+    )[1]
+    product = pol.pool.get('product.product').browse(
+        cursor, uid, product_id, context=context
+    )
+    # Request a daily price even if the product is configured per month/year.
+    context['uom'] = pol.pool.get('ir.model.data').get_object_reference(
+        cursor, uid, 'giscedata_repercusio_bo_social', 'product_uom_day'
+    )[1]
+    pricelist_id = context.get('force_pricelist', pol.llista_preu.id)
+    price = pol.pool.get('product.pricelist').price_get(
+        cursor, uid, [pricelist_id], product_id, 1, context=context
+    )[pricelist_id]
+    annual = price * 365
+    with_taxes, _rates = compute_estimation_taxes(
+        cursor, uid, pol, annual, taxes=product.taxes_id, context=context, product=product
+    )
+    return annual, with_taxes
 
 
 def get_fs_from_k_change(cursor, uid, pol, context=None):
@@ -42,12 +83,14 @@ def get_preus(cursor, uid, pol, with_taxes=False, context=None):
         "tp": sorted(pol.tarifa.get_periodes("tp", context=context).keys()),
         "te": sorted(pol.tarifa.get_periodes("te", context=context).keys()),
     }
-    if (pol.modcontractuals_ids[0].state == "pendent"
+    if (pol.modcontractuals_ids
+        and pol.modcontractuals_ids[0].state == "pendent"
         and pol.mode_facturacio
         != pol.modcontractuals_ids[0].mode_facturacio
             and pol.modcontractuals_ids[0].mode_facturacio == 'index'):
         context["force_pricelist"] = pol.modcontractuals_ids[1].llista_preu.id
-    elif(pol.modcontractuals_ids[0].state == "pendent"
+    elif (pol.modcontractuals_ids
+            and pol.modcontractuals_ids[0].state == "pendent"
             and pol.mode_facturacio
             != pol.modcontractuals_ids[0].mode_facturacio
             and pol.modcontractuals_ids[0].mode_facturacio == 'atr'):
@@ -75,8 +118,7 @@ def get_preus(cursor, uid, pol, with_taxes=False, context=None):
 
 
 def calculate_new_indexed_prices(cursor, uid, pol, context=None):
-    if context is None:
-        context = {}
+    context = dict(context or {})
 
     context_preus_antics = dict(context)
     context_preus_antics["date"] = date.today().strftime("%Y-%m-%d")
@@ -97,8 +139,8 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     f_antiga = fs.get('k_old', dict_preus_antiga.get('factor_k', 0))
     f_nova = fs.get('k_new', dict_preus_nova.get('factor_k', 0))
 
-    f_antiga_kwh = f_antiga / 1000
-    f_nova_kwh = f_nova / 1000
+    f_antiga_kwh = f_antiga  # it's already in kwh
+    f_nova_kwh = f_nova  # it's already in kwh
 
     # Preus energia
     indexada_consum_tipus = eval(
@@ -114,8 +156,9 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
             % tarifa_acces
         )
     preu_sense_F = indexada_consum_tipus[tarifa_acces][key_price_name]
-    preu_mitja_antic = (1.015 * f_antiga + preu_sense_F)
-    preu_mitja_nou = (1.015 * f_nova + preu_sense_F)
+    # Keep report averages in EUR/MWh; F is already EUR/kWh.
+    preu_mitja_antic = (1.015 * f_antiga_kwh * 1000 + preu_sense_F)
+    preu_mitja_nou = (1.015 * f_nova_kwh * 1000 + preu_sense_F)
 
     conany = pol.cups.conany_kwh if pol.cups.conany_kwh > 0 else 1
 
@@ -139,25 +182,49 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     import_potencia_anual_antiga = preu_potencia_antiga
     import_potencia_anual_nova = preu_potencia_nova
 
-    # Imports totals
-    import_total_anual_antiga = import_energia_anual_antiga + import_potencia_anual_antiga
-    import_total_anual_nova = import_energia_anual_nova + import_potencia_anual_nova
+    pol_obj = pol.pool.get('giscedata.polissa')
+    fiscal_pol_antiga = get_tax_polissa(
+        cursor, uid, pol_obj, pol.id, context=context_preus_antics
+    )
+    fiscal_pol_nova = get_tax_polissa(
+        cursor, uid, pol_obj, pol.id, context=context_preus_nous
+    )
+    bo_social_antiga, bo_social_antiga_imp = get_bo_social_estimation(
+        cursor, uid, fiscal_pol_antiga, context=context_preus_antics
+    )
+    bo_social_nova, bo_social_nova_imp = get_bo_social_estimation(
+        cursor, uid, fiscal_pol_nova, context=context_preus_nous
+    )
+    base_antiga = import_energia_anual_antiga + import_potencia_anual_antiga
+    base_nova = import_energia_anual_nova + import_potencia_anual_nova
+    import_total_anual_antiga = base_antiga + bo_social_antiga
+    import_total_anual_nova = base_nova + bo_social_nova
 
     impacte_import = import_total_anual_nova - import_total_anual_antiga
-    impacte_perc = impacte_import / import_total_anual_antiga
+    impacte_perc = impacte_import / import_total_anual_antiga if import_total_anual_antiga else 0
 
-    # Nota: 1.0511 * 1.21 és el factor per impostos (IE + IVA)
-    import_total_anual_antiga_amb_impost = import_total_anual_antiga * 1.0511 * 1.21
-    import_total_anual_nova_amb_impost = import_total_anual_nova * 1.0511 * 1.21
+    base_antiga_imp, taxes_antiga = compute_estimation_taxes(
+        cursor, uid, fiscal_pol_antiga, base_antiga, context=context_preus_antics
+    )
+    base_nova_imp, taxes_nova = compute_estimation_taxes(
+        cursor, uid, fiscal_pol_nova, base_nova, context=context_preus_nous
+    )
+    import_total_anual_antiga_amb_impost = base_antiga_imp + bo_social_antiga_imp
+    import_total_anual_nova_amb_impost = base_nova_imp + bo_social_nova_imp
 
     impacte_import_amb_impost = (
         import_total_anual_nova_amb_impost - import_total_anual_antiga_amb_impost
     )
-    impacte_perc_amb_impost = impacte_import_amb_impost / import_total_anual_antiga_amb_impost
+    impacte_perc_amb_impost = (
+        impacte_import_amb_impost / import_total_anual_antiga_amb_impost
+        if import_total_anual_antiga_amb_impost else 0
+    )
 
     dades_index = {
-        "iva": 21,
-        "ie": 5.11,
+        "iva": taxes_nova.get('IGIC', taxes_nova.get('IVA', 0)) * 100,
+        "ie": taxes_nova.get('IE', 0) * 100,
+        "impostos_antiga": taxes_antiga,
+        "impostos_nova": taxes_nova,
         "conany": conany,
         "pot_contractada": potencia,
         "preu_sense_F": preu_sense_F,
@@ -171,6 +238,8 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
         "import_potencia_anual_nova": import_potencia_anual_nova,
         "import_energia_anual_antiga": import_energia_anual_antiga,
         "import_energia_anual_nova": import_energia_anual_nova,
+        "import_bo_social_anual_antiga": bo_social_antiga,
+        "import_bo_social_anual_nova": bo_social_nova,
         "import_total_anual_antiga": import_total_anual_antiga,
         "import_total_anual_nova": import_total_anual_nova,
         "impacte_import": impacte_import,

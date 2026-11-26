@@ -2,6 +2,7 @@
 set -euo pipefail
 
 REPO="${WEBCLIENT_REPO:-gisce/webclient}"
+WEBCLIENT_TAG="${WEBCLIENT_TAG:-}"
 HTML_DIR="${HTML_DIR:-/usr/share/nginx/html}"
 STATE_FILE="${STATE_FILE:-/var/lib/webclient/current_tag}"
 
@@ -12,9 +13,15 @@ if [[ -n "${GITHUB_TOKEN:-}" ]]; then
     auth=(-H "Authorization: Bearer $GITHUB_TOKEN")
 fi
 
+if [[ -n "$WEBCLIENT_TAG" ]]; then
+    release_url="https://api.github.com/repos/$REPO/releases/tags/$WEBCLIENT_TAG"
+else
+    release_url="https://api.github.com/repos/$REPO/releases/latest"
+fi
+
 release_json=$(curl -fsSL "${auth[@]}" \
     -H "Accept: application/vnd.github+json" \
-    "https://api.github.com/repos/$REPO/releases/latest")
+    "$release_url")
 
 tag=$(echo "$release_json" | jq -r '.tag_name')
 zip_url=$(echo "$release_json" \

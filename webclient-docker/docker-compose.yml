@@ -6,10 +6,15 @@ services:
     restart: unless-stopped
     network_mode: host
     environment:
-      CHECK_INTERVAL: "21600"
+      CHECK_INTERVAL: "${CHECK_INTERVAL:-21600}"
       GITHUB_TOKEN: "${GITHUB_TOKEN:-}"
+      WEBCLIENT_REPO: "${WEBCLIENT_REPO:-gisce/webclient}"
+      WEBCLIENT_TAG: "${WEBCLIENT_TAG:-}"
+      WEBCLIENT_LISTEN_PORT: "${WEBCLIENT_LISTEN_PORT:-8081}"
+      WEBCLIENT_API_UPSTREAM: "${WEBCLIENT_API_UPSTREAM:-http://localhost:8068/}"
     volumes:
       - webclient-state:/var/lib/webclient
+      - ./:/opt/webclient-local:ro
 
 volumes:
   webclient-state:

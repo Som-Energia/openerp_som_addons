@@ -5,3 +5,5 @@ from .test_res_partner_creditcard import *
 from .test_polissa_card_payment import *
 from .test_remesa_card_payment import *
 from .test_redsys_card_collection import *
+from .test_card_payment_translations import *
+from .test_payment_route_concurrency import *

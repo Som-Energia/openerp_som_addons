@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from osv import osv
+from som_indexada.taxes import get_simplified_taxes
 
 
 class GiscedataPolissa(osv.osv):
@@ -42,46 +43,7 @@ class GiscedataPolissa(osv.osv):
         }
 
     def get_simplified_taxes(self, cursor, uid, polissa_id, context=None):
-        context = context or {}
-        browse_context = context.copy()
-        if browse_context.get("date") and hasattr(browse_context["date"], "strftime"):
-            browse_context["date"] = browse_context["date"].strftime("%Y-%m-%d")
-
-        state = self.read(cursor, uid, polissa_id, ["state"], context={})["state"]
-        if state == "esborrany":
-            polissa = self.browse(cursor, uid, polissa_id, context={})
-        else:
-            polissa = self.browse(cursor, uid, polissa_id, context=browse_context)
-
-        fp_obj = self.pool.get('account.fiscal.position')
-        atax_obj = self.pool.get('account.tax')
-        conf_obj = self.pool.get('res.config')
-
-        fiscal_position = polissa.fiscal_position_id
-        if not fiscal_position:
-            fiscal_position = polissa.titular.property_account_position
-
-        iva_tax_id = int(conf_obj.get(cursor, uid, 'default_iva_21_tax_id'))
-        iese_tax_id = int(conf_obj.get(cursor, uid, 'default_iese_tax_id'))
-
-        iva_tax = atax_obj.browse(cursor, uid, iva_tax_id, context=browse_context)
-        iese_tax = atax_obj.browse(cursor, uid, iese_tax_id, context=browse_context)
-
-        mapped_tax_ids = fp_obj.map_tax(
-            cursor, uid, fiscal_position, [iva_tax, iese_tax], context=browse_context)
-        tax_data = atax_obj.read(
-            cursor, uid, mapped_tax_ids, ['name', 'amount'], context=browse_context)
-
-        simplified_taxes = {}
-        for tax in tax_data:
-            if 'IVA' in tax['name']:
-                simplified_taxes['IVA'] = 0.1 if context.get('iva10') else tax['amount']
-            elif 'IGIC' in tax['name']:
-                simplified_taxes['IGIC'] = tax['amount']
-            else:
-                simplified_taxes['IE'] = tax['amount']
-
-        return simplified_taxes
+        return get_simplified_taxes(cursor, uid, self, polissa_id, context=context)
 
 
 GiscedataPolissa()

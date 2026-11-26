@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division
+
 from datetime import datetime, timedelta
 import dbconfig
 from consolemsg import step, success, warn
 from erppeek import Client
 from tqdm import tqdm
 import psycopg2
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import csv
 
 """_summary_
@@ -54,7 +59,7 @@ TOTS_CONTRACTES = 'True'  # En cas de canvi de titular, comptem 2 contractes
 
 
 def write_csv(report, header, filename):
-    csv_doc = StringIO.StringIO()
+    csv_doc = StringIO()
     writer_report = csv.writer(csv_doc, delimiter=';')
     writer_report.writerow(header)
     writer_report.writerows(report)
@@ -248,7 +253,6 @@ def contractes_estimats_no_refactures(cur):
              ('origen_comer_id','=', 6)])
         if not l_ids:
             continue
-        import pudb;pu.db
         pol_ids.append(pol_id)"""
 
     return len(pol_ids)
@@ -272,7 +276,8 @@ def main():
     ncontractes_actius = obtenir_contractes_actius_periode(
         c, START_DATE, datetime.today().strftime('%Y-%m-%d'))
     step(u"Nombre de contractes actius des del {}:  {}".format(START_DATE, ncontractes_actius))
-    percentatge_estimats = round(len(llista_polisses) * 100.0 / ncontractes_actius, 2)
+    percentatge_estimats = '{:.2f}'.format(
+        len(llista_polisses) * 100.0 / ncontractes_actius)
     step(u"Percentatge de contractes amb alguna estimació respecte totals: {}%".format(percentatge_estimats))  # noqa: E501
     llista_factures_refacturades = obtenir_factures_refacturades(c, llista_factures)
     nrefacturades = len(llista_factures_refacturades)
