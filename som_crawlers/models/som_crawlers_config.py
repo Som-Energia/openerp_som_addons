@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv, fields
 from datetime import datetime
 
@@ -23,6 +25,11 @@ class SomCrawlersConfig(osv.osv):
             "Contrasenya del portal",
             size=100,
             help="Contrasenya del portal web o servidor FTP/SFTP",
+        ),
+        "api_key": fields.char(
+            "API-Key",
+            size=512,
+            help="Clau d'accés a la API d'i-DE. No s'inclou als logs.",
         ),
         "url_portal": fields.char(
             "URL del portal",
@@ -209,15 +216,18 @@ class SomCrawlersConfig(osv.osv):
             )
         else:
             self.write(cursor, uid, ids, {field_name: new_value}, context=None)
-            message = (
-                "S'ha actualitzat el valor: "
-                + field_label
-                + ': "'
-                + str(old_value)
-                + '" -> "'
-                + str(new_value)
-                + '"'
-            )
+            if field_name == "api_key":
+                message = "S'ha actualitzat l'API-Key"
+            else:
+                message = (
+                    "S'ha actualitzat el valor: "
+                    + field_label
+                    + ': "'
+                    + str(old_value)
+                    + '" -> "'
+                    + str(new_value)
+                    + '"'
+                )
             self._log(cursor, uid, ids, message)
 
             return new_value
