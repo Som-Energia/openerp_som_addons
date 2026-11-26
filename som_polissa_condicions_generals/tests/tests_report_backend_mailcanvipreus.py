@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from datetime import date
+
 import mock
 from destral import testing
 from destral.transaction import Transaction
+from giscedata_facturacio.report.utils import get_atr_price
 from som_indexada.utils import get_preus as get_indexed_preus
 from som_indexada.utils import calculate_new_indexed_prices
+from som_indexada.taxes import get_simplified_taxes
 
 
 BACKEND_MODULE = 'som_polissa_condicions_generals.report_backend_mailcanvipreus'
@@ -85,6 +89,7 @@ class TestReportBackendMailcanvipreus(testing.OOTestCase):
 
     def _get_policy(self, mode, pending_mode=None):
         pol = mock.Mock()
+        pol.llista_preu.id = 30
         pol.mode_facturacio = mode
         pol.tarifa.get_periodes.return_value = {'P1': 1}
         pol.modcontractuals_ids = []
@@ -101,7 +106,8 @@ class TestReportBackendMailcanvipreus(testing.OOTestCase):
         for get_prices in [self.backend.get_preus, get_indexed_preus]:
             context = {}
             get_prices(self.cursor, self.uid, pol, context=context)
-            self.assertEqual(context.get('force_pricelist'), expected)
+            selected = 30 if get_prices is get_indexed_preus and expected is None else expected
+            self.assertEqual(context.get('force_pricelist'), selected)
 
         context = {'potencia_anual': True}
         total = self.backend.calcularPreuTotal(
@@ -128,7 +134,10 @@ class TestReportBackendMailcanvipreus(testing.OOTestCase):
         for get_prices in [self.backend.get_preus, get_indexed_preus]:
             context = {}
             get_prices(self.cursor, self.uid, pol, context=context)
-            self.assertNotIn('force_pricelist', context)
+            if get_prices is get_indexed_preus:
+                self.assertEqual(context['force_pricelist'], 30)
+            else:
+                self.assertNotIn('force_pricelist', context)
 
     def test_indexed_estimation_with_real_tax_engine_and_social_charge(self):
         tax_obj = self.openerp.pool.get('account.tax')
@@ -176,3 +185,167 @@ class TestReportBackendMailcanvipreus(testing.OOTestCase):
                 result['import_total_anual_nova_amb_impost'],
                 energy * (1 + 0.05 * factor) * 1.05 + 7.3 * 1.05, places=4
             )
+
+    def test_indexed_estimation_after_automatic_renewal_without_future_modcon(self):
+        year = date.today().year
+        self.pol_obj.write(self.cursor, self.uid, self.pol_id, {
+            'mode_facturacio': 'index', 'renovacio_auto': True,
+        })
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.pol_id], ['validar', 'contracte']
+        )
+        pol = self.pol_obj.browse(self.cursor, self.uid, self.pol_id)
+        modcon_obj = self.openerp.pool.get('giscedata.polissa.modcontractual')
+        modcon_obj.write(self.cursor, self.uid, pol.modcontractual_activa.id, {
+            'data_inici': '{}-01-01'.format(year),
+            'data_final': '{}-12-31'.format(year),
+        })
+        pol = self.pol_obj.browse(self.cursor, self.uid, self.pol_id)
+        original_modcons = [modcon.id for modcon in pol.modcontractuals_ids]
+        self.openerp.pool.get('giscedata.cups.ps').write(
+            self.cursor, self.uid, pol.cups.id, {'conany_kwh': 1000}
+        )
+        conf_obj = self.openerp.pool.get('res.config')
+        conf_obj.set(self.cursor, self.uid, 'invoice_active_bo_social', '1')
+        conf_obj.set(self.cursor, self.uid, 'invoice_start_date_bo_social', '2020-01-01')
+        conf_obj.set(self.cursor, self.uid, 'giscedata_exclude_tariff_apply_bo_social', '[]')
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        factor_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_facturacio_indexada', 'product_factor_k'
+        )[1]
+        social_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'giscedata_repercusio_bo_social', 'bosocial_BS01'
+        )[1]
+        contexts = []
+
+        def price_get(cursor, uid, pricelist_ids, product_id, *args, **kwargs):
+            ctx = kwargs.get('context', args[-1] if isinstance(args[-1], dict) else {})
+            contexts.append(dict(ctx))
+            self.assertEqual(pricelist_ids, [pol.llista_preu.id])
+            future = ctx['date'] > '{}-12-31'.format(year)
+            if product_id == factor_id:
+                price = 0.007 if future else 0.005
+            elif product_id == social_id:
+                price = 0.02 if future else 0.01
+            else:
+                price = 20 if future else 10
+            return {pol.llista_preu.id: price}
+
+        with mock.patch('som_indexada.utils.date') as clock, \
+                mock.patch('som_indexada.utils.get_atr_price', wraps=get_atr_price), \
+                mock.patch('som_indexada.utils.get_fs_from_k_change', return_value={}), \
+                mock.patch.object(self.openerp.pool.get('product.pricelist'),
+                                  'price_get', side_effect=price_get):
+            # Keep the existing +60-day horizon and land exactly on January 1.
+            clock.today.return_value = date(year, 11, 2)
+            result = calculate_new_indexed_prices(self.cursor, self.uid, pol)
+        self.assertAlmostEqual(result['import_energia_anual_antiga'], 105.075)
+        self.assertAlmostEqual(result['import_energia_anual_nova'], 107.105)
+        self.assertAlmostEqual(result['import_bo_social_anual_antiga'], 3.65)
+        self.assertAlmostEqual(result['import_bo_social_anual_nova'], 7.3)
+        self.assertAlmostEqual(
+            result['import_potencia_anual_nova'],
+            result['import_potencia_anual_antiga'] * 2
+        )
+        self.assertTrue(any(ctx['date'] == '{}-01-01'.format(year + 1) for ctx in contexts))
+        self.assertGreater(
+            result['import_total_anual_nova_amb_impost'], result['import_total_anual_nova']
+        )
+        self.assertEqual(
+            [modcon.id for modcon in
+             self.pol_obj.browse(self.cursor, self.uid, self.pol_id).modcontractuals_ids],
+            original_modcons
+        )
+
+    def test_period_report_with_generation_without_future_modcon(self):
+        year = date.today().year
+        future_date = '{}-01-01'.format(year + 1)
+        self.pol_obj.write(self.cursor, self.uid, self.pol_id, {
+            'mode_facturacio': 'atr', 'renovacio_auto': True,
+        })
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.pol_id], ['validar', 'contracte']
+        )
+        pol = self.pol_obj.browse(self.cursor, self.uid, self.pol_id)
+        self.openerp.pool.get('giscedata.polissa.modcontractual').write(
+            self.cursor, self.uid, pol.modcontractual_activa.id, {
+                'data_inici': '{}-01-01'.format(year),
+                'data_final': '{}-12-31'.format(year),
+            }
+        )
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        member_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
+        )[1]
+        self.openerp.pool.get('generationkwh.assignment').create(
+            self.cursor, self.uid, {
+                'contract_id': self.pol_id, 'member_id': member_id, 'priority': 1,
+            }
+        )
+        pol = self.pol_obj.browse(self.cursor, self.uid, self.pol_id)
+        self.assertTrue(pol.te_assignacio_gkwh)
+        original_modcons = [modcon.id for modcon in pol.modcontractuals_ids]
+        line = mock.Mock()
+        line.factura_id.tarifa_acces_id = pol.tarifa
+        line.factura_id.invoice_id.date_invoice = date.today().strftime('%Y-%m-%d')
+        line.factura_id.type = 'out_invoice'
+        line.factura_line_id.product_id.name = 'P1'
+        line.factura_line_id.quantity = 10
+        context = {
+            'avoid_formatting': True, 'lang': 'ca_ES', 'force_pricelist': pol.llista_preu.id,
+        }
+
+        def price_get(cursor, uid, policy, period, kind, context, with_taxes=False):
+            return (2.0 if context['date'] >= future_date else 1.0, 0)
+
+        def real_taxes(cursor, uid, pol_id, context=None):
+            return get_simplified_taxes(cursor, uid, self.pol_obj, pol_id, context=context)
+
+        owner_obj = self.openerp.pool.get('generationkwh.invoice.line.owner')
+        with mock.patch(BACKEND_MODULE + '.date') as clock, \
+                mock.patch(BACKEND_MODULE + '.get_atr_price', side_effect=price_get), \
+                mock.patch.object(self.backend, 'get_price_change_date',
+                                  return_value=future_date), \
+                mock.patch.object(self.pol_obj, 'get_simplified_taxes',
+                                  side_effect=real_taxes), \
+                mock.patch.object(self.pol_obj, 'get_generationkwh_use',
+                                  wraps=self.pol_obj.get_generationkwh_use) as use, \
+                mock.patch.object(owner_obj, 'browse', return_value=[line]):
+            clock.today.return_value = date(year, 11, 2)
+            result = self.backend.get_data(self.cursor, self.uid, self.pol_id, context=context)
+
+        estimation = result['gkwh_estimation']
+        self.assertEqual(estimation['origen'], 'partial_data')
+        self.assertEqual(estimation['consum_total'], 120)
+        self.assertEqual(estimation['preu_vell'], 120)
+        self.assertEqual(estimation['preu_nou'], 240)
+        self.assertEqual(result['preus_nous_generation']['P1'], 2)
+        self.assertNotIn('date', use.call_args[1]['context'])
+        self.assertEqual(use.call_args[1]['context']['lang'], 'ca_ES')
+        self.assertEqual(use.call_args[1]['context']['force_pricelist'], pol.llista_preu.id)
+        self.assertNotIn('date', context)
+        self.assertEqual(
+            [modcon.id for modcon in
+             self.pol_obj.browse(self.cursor, self.uid, self.pol_id).modcontractuals_ids],
+            original_modcons
+        )
+
+    def test_generation_without_history_does_not_change_pricing_context(self):
+        pol = self.pol_obj.browse(self.cursor, self.uid, self.pol_id)
+        for context in [None, False, {'date': '2027-01-01', 'lang': 'ca_ES'}]:
+            original_context = dict(context or {})
+            with mock.patch.object(self.pol_obj, 'generationkwh_anual_estimation',
+                                   return_value=(False, 'no_data')) as estimate, \
+                    mock.patch.object(self.backend, 'calcularPreuTotal') as prices:
+                result = self.backend.get_gkwh_estimation(
+                    self.cursor, self.uid, pol, context=context
+                )
+            self.assertEqual(result['gkwh_estimation']['origen'], 'no_data')
+            self.assertIs(result['gkwh_estimation']['preu_nou'], False)
+            expected_context = dict(original_context)
+            expected_context.pop('date', None)
+            estimate.assert_called_once_with(
+                self.cursor, self.uid, self.pol_id, context=expected_context
+            )
+            self.assertFalse(prices.called)
+            self.assertEqual(context or {}, original_context)

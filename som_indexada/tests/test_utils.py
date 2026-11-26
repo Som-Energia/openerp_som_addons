@@ -41,7 +41,6 @@ class TestCalculateNewIndexedPrices(unittest.TestCase):
         with mock.patch.object(utils, 'get_preus', side_effect=prices), \
                 mock.patch.object(utils, 'get_fs_from_k_change',
                                   return_value=factor_change or {}), \
-                mock.patch.object(utils, 'get_tax_polissa', return_value=pol), \
                 mock.patch.object(utils, 'get_bo_social_estimation',
                                   side_effect=social_prices or [(0, 0)] * 2), \
                 mock.patch.object(utils, 'compute_estimation_taxes',
@@ -118,6 +117,34 @@ class TestCalculateNewIndexedPrices(unittest.TestCase):
         )
         self.assertEqual(result['iva'], 3)
         self.assertEqual(result['ie'], 0)
+
+    def test_both_estimates_keep_supplied_contract_conditions(self):
+        old_pol = mock.Mock(potencia=2)
+        old_pol.tarifa.name = '2.0TD'
+        old_pol.cups.conany_kwh = 1000
+        old_power = mock.Mock(potencia=2)
+        old_power.periode_id.name = 'P1'
+        old_pol.potencies_periode = [old_power]
+        old_pol.pool.get.return_value.get.return_value = (
+            "{'2.0TD': {'preu_sense_F': 100}, '3.0TD': {'preu_sense_F': 150}}"
+        )
+        with mock.patch.object(utils, 'get_preus', side_effect=[
+            {'factor_k': 0.005, 'tp': {'P1': 10}},
+            {'factor_k': 0.007, 'tp': {'P1': 20}},
+        ]) as prices, \
+                mock.patch.object(utils, 'get_fs_from_k_change', return_value={}), \
+                mock.patch.object(utils, 'get_bo_social_estimation',
+                                  return_value=(0, 0)) as social, \
+                mock.patch.object(utils, 'compute_estimation_taxes',
+                                  side_effect=lambda c, u, p, amount, **kw: (amount, {})) as tax:
+            result = utils.calculate_new_indexed_prices(None, 1, old_pol)
+        self.assertAlmostEqual(result['import_energia_anual_nova'], 107.105)
+        self.assertEqual(result['import_potencia_anual_nova'], 40)
+        for calls in [prices.call_args_list, social.call_args_list, tax.call_args_list]:
+            self.assertIs(calls[0][0][2], old_pol)
+            self.assertIs(calls[1][0][2], old_pol)
+            self.assertLess(calls[0][1]['context']['date'], calls[1][1]['context']['date'])
+        old_pol.pool.get.return_value.browse.assert_not_called()
 
 
 class TestIndexedEstimationHelpers(unittest.TestCase):
@@ -219,4 +246,25 @@ class TestIndexedEstimationHelpers(unittest.TestCase):
         )
         pol_obj.browse.assert_called_once_with(
             None, 1, 17, context={'date': '2026-01-01'}
+        )
+
+
+class TestIndexedPricelistSelection(unittest.TestCase):
+
+    def test_forced_pricelist_is_used_for_power_energy_and_factor(self):
+        pol = mock.Mock()
+        pol.tarifa.get_periodes.return_value = {'P1': 1}
+        pol.modcontractuals_ids = []
+        pol.llista_preu.id = 10
+        pol.pool.get.return_value.get_object_reference.return_value = ('product', 99)
+        pol.pool.get.return_value.price_get.return_value = {42: 0.007}
+        context = {'force_pricelist': 42, 'date': '2027-01-01'}
+        with mock.patch.object(utils, 'get_atr_price', return_value=(2, 0)) as atr:
+            result = utils.get_preus(None, 1, pol, context=context)
+        self.assertEqual(result['factor_k'], 0.007)
+        for call in atr.call_args_list:
+            self.assertEqual(call[1]['context']['force_pricelist'], 42)
+            self.assertEqual(call[1]['context']['date'], '2027-01-01')
+        pol.pool.get.return_value.price_get.assert_called_once_with(
+            None, 1, [42], mock.ANY, 1, context=context
         )

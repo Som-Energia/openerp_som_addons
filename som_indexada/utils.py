@@ -4,7 +4,7 @@ from giscedata_facturacio.report.utils import get_atr_price
 from datetime import date, timedelta
 from ast import literal_eval
 
-from .taxes import compute_estimation_taxes, get_tax_polissa
+from .taxes import compute_estimation_taxes
 
 
 def get_bo_social_estimation(cursor, uid, pol, context=None):
@@ -83,18 +83,22 @@ def get_preus(cursor, uid, pol, with_taxes=False, context=None):
         "tp": sorted(pol.tarifa.get_periodes("tp", context=context).keys()),
         "te": sorted(pol.tarifa.get_periodes("te", context=context).keys()),
     }
-    if (pol.modcontractuals_ids
-        and pol.modcontractuals_ids[0].state == "pendent"
-        and pol.mode_facturacio
-        != pol.modcontractuals_ids[0].mode_facturacio
-            and pol.modcontractuals_ids[0].mode_facturacio == 'index'):
-        context["force_pricelist"] = pol.modcontractuals_ids[1].llista_preu.id
-    elif (pol.modcontractuals_ids
-            and pol.modcontractuals_ids[0].state == "pendent"
-            and pol.mode_facturacio
-            != pol.modcontractuals_ids[0].mode_facturacio
-            and pol.modcontractuals_ids[0].mode_facturacio == 'atr'):
-        context["force_pricelist"] = pol.modcontractuals_ids[0].llista_preu.id
+    pricelist_id = context.get('force_pricelist')
+    if pricelist_id is None and (pol.modcontractuals_ids
+                                 and pol.modcontractuals_ids[0].state == "pendent"
+                                 and pol.mode_facturacio
+                                 != pol.modcontractuals_ids[0].mode_facturacio
+                                 and pol.modcontractuals_ids[0].mode_facturacio == 'index'):
+        pricelist_id = pol.modcontractuals_ids[1].llista_preu.id
+    elif pricelist_id is None and (pol.modcontractuals_ids
+                                   and pol.modcontractuals_ids[0].state == "pendent"
+                                   and pol.mode_facturacio
+                                   != pol.modcontractuals_ids[0].mode_facturacio
+                                   and pol.modcontractuals_ids[0].mode_facturacio == 'atr'):
+        pricelist_id = pol.modcontractuals_ids[0].llista_preu.id
+    if pricelist_id is None:
+        pricelist_id = pol.llista_preu.id
+    context["force_pricelist"] = pricelist_id
     for terme, values in periods.items():
         result[terme] = {}
         for periode in values:
@@ -110,8 +114,8 @@ def get_preus(cursor, uid, pol, with_taxes=False, context=None):
         factor_k = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k')
         price_factor_k = pl_obj.price_get(
-            cursor, uid, [pol.llista_preu.id], factor_k[1], 1, context=context)
-        result['factor_k'] = price_factor_k.get(pol.llista_preu.id, 0.0)
+            cursor, uid, [pricelist_id], factor_k[1], 1, context=context)
+        result['factor_k'] = price_factor_k.get(pricelist_id, 0.0)
     except Exception:
         result['factor_k'] = 0.0
     return result
@@ -126,6 +130,7 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     context_preus_nous = dict(context)
     context_preus_nous["date"] = (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
 
+    # Compare price dates using the same supplied contract conditions.
     dict_preus_antiga = get_preus(
         cursor, uid, pol, with_taxes=False, context=context_preus_antics
     )
@@ -182,18 +187,11 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     import_potencia_anual_antiga = preu_potencia_antiga
     import_potencia_anual_nova = preu_potencia_nova
 
-    pol_obj = pol.pool.get('giscedata.polissa')
-    fiscal_pol_antiga = get_tax_polissa(
-        cursor, uid, pol_obj, pol.id, context=context_preus_antics
-    )
-    fiscal_pol_nova = get_tax_polissa(
-        cursor, uid, pol_obj, pol.id, context=context_preus_nous
-    )
     bo_social_antiga, bo_social_antiga_imp = get_bo_social_estimation(
-        cursor, uid, fiscal_pol_antiga, context=context_preus_antics
+        cursor, uid, pol, context=context_preus_antics
     )
     bo_social_nova, bo_social_nova_imp = get_bo_social_estimation(
-        cursor, uid, fiscal_pol_nova, context=context_preus_nous
+        cursor, uid, pol, context=context_preus_nous
     )
     base_antiga = import_energia_anual_antiga + import_potencia_anual_antiga
     base_nova = import_energia_anual_nova + import_potencia_anual_nova
@@ -204,10 +202,10 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     impacte_perc = impacte_import / import_total_anual_antiga if import_total_anual_antiga else 0
 
     base_antiga_imp, taxes_antiga = compute_estimation_taxes(
-        cursor, uid, fiscal_pol_antiga, base_antiga, context=context_preus_antics
+        cursor, uid, pol, base_antiga, context=context_preus_antics
     )
     base_nova_imp, taxes_nova = compute_estimation_taxes(
-        cursor, uid, fiscal_pol_nova, base_nova, context=context_preus_nous
+        cursor, uid, pol, base_nova, context=context_preus_nous
     )
     import_total_anual_antiga_amb_impost = base_antiga_imp + bo_social_antiga_imp
     import_total_anual_nova_amb_impost = base_nova_imp + bo_social_nova_imp

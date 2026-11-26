@@ -570,8 +570,11 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
     def get_gkwh_estimation(self, cursor, uid, pol_id, context=False):
         pol_o = self.pool.get("giscedata.polissa")
 
+        # Historical use must not inherit the future date used for pricing.
+        context_consum = dict(context or {})
+        context_consum.pop('date', None)
         consums, origen = pol_o.generationkwh_anual_estimation(
-            cursor, uid, pol_id.id, context=context)
+            cursor, uid, pol_id.id, context=context_consum)
 
         if origen == 'no_data':
             consum_total = False
