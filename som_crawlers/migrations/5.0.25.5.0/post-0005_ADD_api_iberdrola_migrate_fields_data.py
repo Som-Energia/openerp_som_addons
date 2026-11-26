@@ -12,10 +12,12 @@ def up(cursor, installed_version):
     logger = logging.getLogger('openerp.migration')
 
     logger.info("Updating XML files")
+    # Tasks reference configurations; steps reference tasks. Keep manifest order
+    # so upgrades work even when none of the new API records exist yet.
     data_files = [
         'data/som_crawlers_config_data.xml',
-        'data/som_crawlers_step_data.xml',
         'data/som_crawlers_task_data.xml',
+        'data/som_crawlers_step_data.xml',
     ]
     for data_file in data_files:
         load_data(
