@@ -5,3 +5,7 @@ from .wizard_executar_tasca_tests import *
 from .som_crawlers_task_step_tests import *
 from .som_crawlers_task_tests import *
 from .test_cide_api_downloaders import *
+from .test_iberdrola_api_downloaders import *
+from .test_iberdrola_f1_api_downloader import *
+from .test_api_downloader_intervals import *
+from .test_ide_api_migration import *

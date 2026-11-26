@@ -14,6 +14,7 @@
                     <group colspan="2" string="Credencials">
                         <field name="usuari" readonly='1'/>
                         <field name="contrasenya" password="True" readonly='1'/>
+                        <field name="api_key" password="True"/>
                     </group>
                     <group colspan="2" string="Configuració FTP">
                         <field name="port"/>

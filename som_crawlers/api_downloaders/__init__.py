@@ -3,13 +3,14 @@ from __future__ import absolute_import
 
 import os
 import importlib
-import socket
 from datetime import datetime, timedelta
 
 
 def get_instance_from_api_module(config_obj, name, process=None, **kwargs):
     if process:
-        module = importlib.import_module("som_crawlers.api_downloaders.{}_{}".format(name, process))
+        module = importlib.import_module(
+            "som_crawlers.api_downloaders.{}_{}".format(name, process)
+        )
     else:
         module = importlib.import_module("som_crawlers.api_downloaders.{}".format(name))
     return module.instance(config_obj, **kwargs)
@@ -26,15 +27,8 @@ class BaseApiDownloader(object):
             datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
         ))
 
-    def is_production(self):
-        return socket.gethostname() in [
-            'erp01', 'erpwork01', 'erpwork02', 'erpwork03', 'erpwork04', 'erpwork05']
-
     def get_intervals(self):
-        if self.is_production():
-            final = datetime.now()
-        else:
-            final = datetime(2026, 5, 1)
-        inici = final - timedelta(self.config.days_of_margin)
+        final = datetime.now()
+        inici = final - timedelta(days=self.config.days_of_margin)
 
         return inici, final
