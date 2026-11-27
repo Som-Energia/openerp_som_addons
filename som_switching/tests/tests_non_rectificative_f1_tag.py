@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 from destral.transaction import Transaction
 from giscedata_switching.tests.common_tests import TestSwitchingImport
@@ -26,15 +27,19 @@ class TestNonRectificativeF1Tag(TestSwitchingImport):
         )[1]
 
     def create_dummy_F1_invoice(self, f1_id, data_inici=None, data_final=None, lines=None):
+        contract = self.pool.get("giscedata.polissa").browse(
+            self.cursor, self.uid,
+            self.get_oref("giscedata_polissa", "polissa_0001"),
+        )
         inv_data = {
             'linia_id': f1_id,
             'address_invoice_id': 1,
             'partner_id': 1,
             'account_id': 1,
-            'polissa_id': 1,
-            'tarifa_acces_id': 17,
-            'cups_id': 1,
-            'llista_preu': 11,
+            'polissa_id': contract.id,
+            'tarifa_acces_id': contract.tarifa.id,
+            'cups_id': contract.cups.id,
+            'llista_preu': contract.llista_preu.id,
             'potencia': 1,
             'date_boe': '2022-01-01',
             'facturacio': 1,

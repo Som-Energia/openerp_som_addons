@@ -21,7 +21,9 @@ if [[ "$1" == -m && "$2" == pip ]]; then
 fi
 if [[ "$1" == -m && "$2" == pre_commit ]]; then exit 0; fi
 if [[ "$1" == */check_local_env.py ]]; then exit "${TEST_PREFLIGHT_FAIL:-0}"; fi
-if [[ "$1" == */destral/destral/cli.py ]]; then exit 0; fi
+if [[ "$1" == */destral/destral/cli.py ]]; then
+    exit 0
+fi
 exit 99
 PYTHON
 chmod +x "$tmp/bin/python"

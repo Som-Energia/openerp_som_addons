@@ -104,6 +104,22 @@ class TestSwitchingTelefon(testing.OOTestCaseWithCursor):
             self.mod_con_wizard_obj._columns['phone_pre'].size, 4
         )
 
+    def test_wizard_phone_email_preserves_email_and_structured_phone(self):
+        self.address_obj.write(self.cursor, self.uid, [1], {
+            'phone': '1234567890',
+            'phone_prefix': self.get_prefix('850'),
+            'mobile': False,
+            'email': 'atr-contact@example.test',
+        })
+
+        values = self.mod_con_wizard_obj.get_phone_email(
+            self.cursor, self.uid, 1
+        )
+
+        self.assertEqual(values['phone_pre'], '850')
+        self.assertEqual(values['phone_num'], '1234567890')
+        self.assertEqual(values['email'], 'atr-contact@example.test')
+
 
 class TestStructuredATRPhoneXML(TestSwitchingImport):
 
