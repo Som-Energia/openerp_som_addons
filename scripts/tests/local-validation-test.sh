@@ -55,13 +55,13 @@ grep -Fq $'/destral/destral/cli.py\tfixture_db\t--no-requirements\t-m\texample' 
 TEST_PREFLIGHT_FAIL=42 bash "$script_dir/run-tests.sh" fixture_db --help > "$tmp/output" 2>&1
 grep -Fq $'/destral/destral/cli.py\tfixture_db\t--help' "$TEST_PYTHON_LOG" || fail 'Destral help unavailable'
 if grep -Fq 'check_local_env.py' "$TEST_PYTHON_LOG"; then fail 'runner requires optional validation tools'; fi
-# Translation validation is opt-in, and explicit caller configuration is preserved.
+# Translation validation must remain enabled for every required language.
 : > "$TEST_TRANSLATIONS_LOG"
 env -u DESTRAL_TESTING_LANGS bash "$script_dir/run-tests.sh" fixture_db \
     --no-requirements -m example > "$tmp/output" 2>&1
-[[ "$(cat "$TEST_TRANSLATIONS_LOG")" == '<unset>' ]] || fail 'runner forces translation checks'
+[[ "$(cat "$TEST_TRANSLATIONS_LOG")" == "['en_US','ca_ES','es_ES']" ]] || fail 'translation checks are not enabled'
 : > "$TEST_TRANSLATIONS_LOG"
-DESTRAL_TESTING_LANGS="['ca_ES']" bash "$script_dir/run-tests.sh" fixture_db \
+DESTRAL_TESTING_LANGS="" bash "$script_dir/run-tests.sh" fixture_db \
     --no-requirements -m example > "$tmp/output" 2>&1
-[[ "$(cat "$TEST_TRANSLATIONS_LOG")" == "['ca_ES']" ]] || fail 'runner overrides translation configuration'
+[[ "$(cat "$TEST_TRANSLATIONS_LOG")" == "['en_US','ca_ES','es_ES']" ]] || fail 'translation checks can be disabled'
 printf 'PASS: repeatable setup and independent runner\n'

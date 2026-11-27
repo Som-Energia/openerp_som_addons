@@ -1,0 +1,2694 @@
+# Translations for Som Energia's som_switching module.
+# Copyright (C) 2026 Som Energia
+# Distributed under the same license as the module.
+msgid ""
+msgstr ""
+"Project-Id-Version: Som Energia - som_switching 0-dev\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-27 11:49+0100\n"
+"PO-Revision-Date: 2026-11-27 11:49+0100\n"
+"Last-Translator: Som Energia\n"
+"Language: ca_ES\n"
+"Language-Team: Som Energia\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/giscedata_switching_log_reexport_wizard.py:94
+msgid "\t- CUPS {} -> Error: {}\n"
+msgstr "\t- CUPS {} -> Error: {}\n"
+
+#. module: som_switching
+#. Runtime Mako template already selects Catalan/Spanish content; preserve recipient-language branching
+#. and code.
+#, python-format
+msgid ""
+"\n"
+"                <!doctype html>\n"
+"                <html>\n"
+"                <head></head>\n"
+"                <body>\n"
+"                <%\n"
+"                nom_nou_titular =  object.step_ids[0].pas_id.fiscal_address_id.name\n"
+"                %>\n"
+"                %if object.polissa_ref_id.titular.lang != \"es_ES\":\n"
+"                Benvolguts/des,<br>\n"
+"                <br>\n"
+"                Us informem que hem rebut correctament la sol·licitud d'un canvi de titular pel "
+"contracte número ${object.cups_polissa_id.name} amb el CUPS: ${object.cups_id.name} i del qual, "
+"fins ara, el titular és en/na  ${object.cups_polissa_id.titular.name}.<br>\n"
+"                <br>\n"
+"                Si es tracta d'un canvi de titularitat degut a la defunció de la persona titular "
+"actual o bé detecteu un error en el resum de dades següent, contesteu aquest correu.<br>\n"
+"                <b>Si tot és correcte no és necessari que contesteu</b> i la gestió es durà a "
+"terme en un màxim de cinc dies hàbils.<br>\n"
+"                És important tenir en compte que en les properes setmanes, la persona que ha "
+"estat titular fins ara, rebrà una última factura fins a la data d’activació del contracte amb la "
+"nova persona titular.<br>\n"
+"                <br>\n"
+"                Les dades del nou titular són:<br>\n"
+"                - Nom: ${nom_nou_titular.split(',')[-1]} ${nom_nou_titular.split(',')[0]}<br/>\n"
+"                - NIF, NIE o CIF: ****<br>\n"
+"                - Número de compte: **** **** **** **** ****<br>\n"
+"                <br>\n"
+"                % if object.polissa_ref_id.soci:\n"
+"                El contracte estarà associat al soci/a "
+"${object.polissa_ref_id.soci.name.split(',')[-1]} "
+"${object.polissa_ref_id.soci.name.split(',')[0]}.<br>\n"
+"                % else:\n"
+"                El contracte estarà associat al soci/a: Encara sense persona sòcia "
+"vinculada.<br/>\n"
+"                % endif\n"
+"                <br>\n"
+"                Salutacions,<br>\n"
+"                <br>\n"
+"                Equip de Som Energia<br>\n"
+"                modifica@somenergia.coop<br>\n"
+"                <a href=\"www.somenergia.coop/ca\">www.somenergia.coop</a><br/>\n"
+"                % endif\n"
+"                % if object.polissa_ref_id.titular.lang != \"ca_ES\" and "
+"object.polissa_ref_id.titular.lang != \"es_ES\":\n"
+"                <br>\n"
+"                "
+"----------------------------------------------------------------------------------------------------"
+"\n"
+"                <br>\n"
+"                % endif\n"
+"                % if object.polissa_ref_id.titular.lang != \"ca_ES\":\n"
+"                Estimados/as,<br/>\n"
+"                <br/>\n"
+"                Os informamos que hemos recibido correctamente la solicitud de cambio de titular "
+"del contrato número ${object.cups_polissa_id.name} con el CUPS: ${object.cups_id.name} y del "
+"cual, hasta ahora el titular es ${object.cups_polissa_id.titular.name.split(',')[-1]} "
+"${object.cups_polissa_id.titular.name.split(',')[0]}.<br/>\n"
+"                <br/>\n"
+"                Si se trata de un cambio de titularidad debido a la defunción de la persona "
+"titular actual o bien detectáis un error en el resumen de datos siguiente, contestad este "
+"correo.<br/>\n"
+"                <b>Si todo es correcto no es necesario que lo hagáis</b> y la gestión se llevará "
+"a cabo en un plazo máximo de cinco días hábiles.<br/>\n"
+"                Es importante tener en cuenta que en las próximas semanas, la persona que ha sido"
+" titular hasta ahora, recibirá una última factura hasta la fecha de activación del contrato con "
+"la nueva persona titular.<br/>\n"
+"                <br/>\n"
+"                Los datos del nuevo titular son:<br/>\n"
+"                - Nombre: ${nom_nou_titular.split(',')[-1]} ${nom_nou_titular.split(',')[0]}<br/>"
+"\n"
+"                - NIF, NIE o CIF: ****<br/>\n"
+"                - Número de cuenta: **** **** **** **** ****<br/>\n"
+"                <br/>\n"
+"                % if object.polissa_ref_id.soci:\n"
+"                El contrato estará asociado al socio/a "
+"${object.polissa_ref_id.soci.name.split(',')[-1]} "
+"${object.polissa_ref_id.soci.name.split(',')[0]}.<br>\n"
+"                % else:\n"
+"                El contrato estará asociado al socio/a: Aún sin persona socia vinculada.<br/>\n"
+"                % endif\n"
+"                <br/>\n"
+"                Saludos,<br/>\n"
+"                <br/>\n"
+"                Equipo de Som Energia<br/>\n"
+"                modifica@somenergia.coop<br/>\n"
+"                <a href=\"www.somenergia.coop/es\">www.somenergia.coop</a><br/>\n"
+"                % endif\n"
+"                </body>\n"
+"                </html>\n"
+"                \n"
+"            "
+msgstr ""
+"\n"
+"                <!doctype html>\n"
+"                <html>\n"
+"                <head></head>\n"
+"                <body>\n"
+"                <%\n"
+"                nom_nou_titular =  object.step_ids[0].pas_id.fiscal_address_id.name\n"
+"                %>\n"
+"                %if object.polissa_ref_id.titular.lang != \"es_ES\":\n"
+"                Benvolguts/des,<br>\n"
+"                <br>\n"
+"                Us informem que hem rebut correctament la sol·licitud d'un canvi de titular pel "
+"contracte número ${object.cups_polissa_id.name} amb el CUPS: ${object.cups_id.name} i del qual, "
+"fins ara, el titular és en/na  ${object.cups_polissa_id.titular.name}.<br>\n"
+"                <br>\n"
+"                Si es tracta d'un canvi de titularitat degut a la defunció de la persona titular "
+"actual o bé detecteu un error en el resum de dades següent, contesteu aquest correu.<br>\n"
+"                <b>Si tot és correcte no és necessari que contesteu</b> i la gestió es durà a "
+"terme en un màxim de cinc dies hàbils.<br>\n"
+"                És important tenir en compte que en les properes setmanes, la persona que ha "
+"estat titular fins ara, rebrà una última factura fins a la data d’activació del contracte amb la "
+"nova persona titular.<br>\n"
+"                <br>\n"
+"                Les dades del nou titular són:<br>\n"
+"                - Nom: ${nom_nou_titular.split(',')[-1]} ${nom_nou_titular.split(',')[0]}<br/>\n"
+"                - NIF, NIE o CIF: ****<br>\n"
+"                - Número de compte: **** **** **** **** ****<br>\n"
+"                <br>\n"
+"                % if object.polissa_ref_id.soci:\n"
+"                El contracte estarà associat al soci/a "
+"${object.polissa_ref_id.soci.name.split(',')[-1]} "
+"${object.polissa_ref_id.soci.name.split(',')[0]}.<br>\n"
+"                % else:\n"
+"                El contracte estarà associat al soci/a: Encara sense persona sòcia "
+"vinculada.<br/>\n"
+"                % endif\n"
+"                <br>\n"
+"                Salutacions,<br>\n"
+"                <br>\n"
+"                Equip de Som Energia<br>\n"
+"                modifica@somenergia.coop<br>\n"
+"                <a href=\"www.somenergia.coop/ca\">www.somenergia.coop</a><br/>\n"
+"                % endif\n"
+"                % if object.polissa_ref_id.titular.lang != \"ca_ES\" and "
+"object.polissa_ref_id.titular.lang != \"es_ES\":\n"
+"                <br>\n"
+"                "
+"----------------------------------------------------------------------------------------------------"
+"\n"
+"                <br>\n"
+"                % endif\n"
+"                % if object.polissa_ref_id.titular.lang != \"ca_ES\":\n"
+"                Estimados/as,<br/>\n"
+"                <br/>\n"
+"                Os informamos que hemos recibido correctamente la solicitud de cambio de titular "
+"del contrato número ${object.cups_polissa_id.name} con el CUPS: ${object.cups_id.name} y del "
+"cual, hasta ahora el titular es ${object.cups_polissa_id.titular.name.split(',')[-1]} "
+"${object.cups_polissa_id.titular.name.split(',')[0]}.<br/>\n"
+"                <br/>\n"
+"                Si se trata de un cambio de titularidad debido a la defunción de la persona "
+"titular actual o bien detectáis un error en el resumen de datos siguiente, contestad este "
+"correo.<br/>\n"
+"                <b>Si todo es correcto no es necesario que lo hagáis</b> y la gestión se llevará "
+"a cabo en un plazo máximo de cinco días hábiles.<br/>\n"
+"                Es importante tener en cuenta que en las próximas semanas, la persona que ha sido"
+" titular hasta ahora, recibirá una última factura hasta la fecha de activación del contrato con "
+"la nueva persona titular.<br/>\n"
+"                <br/>\n"
+"                Los datos del nuevo titular son:<br/>\n"
+"                - Nombre: ${nom_nou_titular.split(',')[-1]} ${nom_nou_titular.split(',')[0]}<br/>"
+"\n"
+"                - NIF, NIE o CIF: ****<br/>\n"
+"                - Número de cuenta: **** **** **** **** ****<br/>\n"
+"                <br/>\n"
+"                % if object.polissa_ref_id.soci:\n"
+"                El contrato estará asociado al socio/a "
+"${object.polissa_ref_id.soci.name.split(',')[-1]} "
+"${object.polissa_ref_id.soci.name.split(',')[0]}.<br>\n"
+"                % else:\n"
+"                El contrato estará asociado al socio/a: Aún sin persona socia vinculada.<br/>\n"
+"                % endif\n"
+"                <br/>\n"
+"                Saludos,<br/>\n"
+"                <br/>\n"
+"                Equipo de Som Energia<br/>\n"
+"                modifica@somenergia.coop<br/>\n"
+"                <a href=\"www.somenergia.coop/es\">www.somenergia.coop</a><br/>\n"
+"                % endif\n"
+"                </body>\n"
+"                </html>\n"
+"                \n"
+"            "
+
+#. module: som_switching
+#. Runtime Mako template already selects Catalan/Spanish content; preserve recipient-language branching
+#. and code.
+#, python-format
+msgid ""
+"\n"
+"                <%!\n"
+"                    from mako.template import Template\n"
+"\n"
+"                    def render(text_to_render, object_):\n"
+"                        templ = Template(text_to_render)\n"
+"                        return templ.render_unicode(\n"
+"                            object=object_,\n"
+"                            format_exceptions=True\n"
+"                    )\n"
+"\n"
+"                    def get_partner_name(object_):\n"
+"                        p_obj = object_.pool.get('res.partner')\n"
+"                        if not object_.vat_enterprise():\n"
+"                            nom_titular =' ' + p_obj.separa_cognoms(object_._cr, object_._uid, "
+"object_.cups_polissa_id.titular.name)['nom']\n"
+"                        else:\n"
+"                            nom_titular = ''\n"
+"                        return nom_titular\n"
+"                %>\n"
+"                <%\n"
+"                    polissa = object.cups_polissa_id\n"
+"\n"
+"                    t_obj = object.pool.get('poweremail.templates')\n"
+"                    md_obj = object.pool.get('ir.model.data')\n"
+"                    template_id = md_obj.get_object_reference(\n"
+"                                        object._cr, object._uid,  "
+"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
+"                                    )[1]\n"
+"\n"
+"                    text_legal = render(t_obj.read(\n"
+"                        object._cr, object._uid, [template_id], "
+"['def_body_text'])[0]['def_body_text'],\n"
+"                        object\n"
+"                    )\n"
+"\n"
+"                %>\n"
+"                <!doctype html>\n"
+"                <html>\n"
+"                    <head>\n"
+"                        <meta charset='utf-8'>\n"
+"                    </head>\n"
+"                    % if object.cups_polissa_id.titular.lang == \"ca_ES\":\n"
+"                        ${correu_cat()}\n"
+"                    % else:\n"
+"                        ${correu_es()}\n"
+"                    % endif\n"
+"                    ${text_legal}\n"
+"                </html>\n"
+"\n"
+"                <%def name=\"correu_cat()\">\n"
+"                    <body>\n"
+"                        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=2><strong> Contracte Som Energia nº "
+"${polissa.name}</strong></font>\n"
+"                                </td>\n"
+"                                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                                    <img width='130' height='65' "
+"src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=1> Adreça punt subministrament: "
+"${object.cups_id.direccio}</font>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=1> Codi CUPS: ${object.cups_id.name}</font>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </table>\n"
+"                        <p>\n"
+"                            Hola${get_partner_name(object)},\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Ens ha arribat la notificació que no estàs d’acord amb les dades que "
+"ens ha passat l’empresa de distribució elèctrica referent a la teva instal·lació d’autoconsum "
+"associada al CUPS ${object.cups_id.name} amb direcció de subministrament "
+"${object.cups_id.direccio}.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Enviem el rebuig, amb el detall del motiu de desacord que ens has "
+"indicat a través de la teva oficina virtual, a la distribuïdora.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Si es tracta d’un error en la comunicació per part de la "
+"distribuïdora ens faran arribar una nova comunicació corregida, si pel contrari es tracta d’un "
+"error a l’hora de fer el registre o de la comunicació per part de la Comunitat Autònoma cal que "
+"contacteu amb la mateixa per tal de modificar la informació i que comenci el procés novament.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Malauradament, la distribuïdora no ens indica si es tracta d’una o "
+"altra casuística pel que et recomanem que contactis directament amb la distribuïdora i el "
+"departament corresponent de la teva Comunitat Autònoma per aclarir-ho.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Qualsevol dubte seguim en contacte.\n"
+"                        </p>\n"
+"                        Salutacions,<br>\n"
+"                        <br>\n"
+"                        Equip de Som Energia<br>\n"
+"                        <a "
+"href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n"
+"                        <a href=\"http://www.somenergia.coop/ca\">www.somenergia.coop</a>\n"
+"                    </body>\n"
+"                </%def>\n"
+"                <%def name=\"correu_es()\">\n"
+"                    <body>\n"
+"                        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=2><strong> Contrato Som Energia nº "
+"${polissa.name}</strong></font>\n"
+"                                </td>\n"
+"                                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                                    <img width='130' height='65' "
+"src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=1> Dirección del punto de suministro: "
+"${object.cups_id.direccio}</font>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=1> Código CUPS: ${object.cups_id.name}</font>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </table>\n"
+"                        <p>\n"
+"                            Hola${get_partner_name(object)},\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Nos ha llegado la notificación que no estás de acuerdo con los datos "
+"que nos ha pasado la empresa de distribución eléctrica referente a tu instalación de autoconsumo "
+"asociada al CUPS ${object.cups_id.name} con dirección de suministro ${object.cups_id.direccio}.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Enviamos el rechazo, con el detalle del motivo de desacuerdo que nos "
+"has indicado a través de tu oficina virtual, a la distribuidora.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Si se trata de un error en la comunicación por parte de la "
+"distribuidora nos harán llegar una nueva comunicación corregida, si por el contrario se trata de "
+"un error a la hora de hacer el registro o de la comunicación por parte de la Comunidad Autónoma "
+"deberás ponerte en contacto con la misma a fin de modificar la información y que comience el "
+"proceso nuevamente.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Desgraciadamente, la distribuidora no nos indica si se trata de una u"
+" otra casuística por lo que te recomendamos que contactes directamente con la distribuidora y el "
+"departamento correspondiente de tu Comunidad Autónoma para aclararlo.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Cualquier duda seguimos en contacto.\n"
+"                        </p>\n"
+"                        Saludos,<br>\n"
+"                        <br>\n"
+"                        Equipo de Som Energia<br>\n"
+"                        <a "
+"href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n"
+"                        <a href=\"http://www.somenergia.coop/es\">www.somenergia.coop</a>\n"
+"                    </body>\n"
+"                </%def>\n"
+"                \n"
+"            "
+msgstr ""
+"\n"
+"                <%!\n"
+"                    from mako.template import Template\n"
+"\n"
+"                    def render(text_to_render, object_):\n"
+"                        templ = Template(text_to_render)\n"
+"                        return templ.render_unicode(\n"
+"                            object=object_,\n"
+"                            format_exceptions=True\n"
+"                    )\n"
+"\n"
+"                    def get_partner_name(object_):\n"
+"                        p_obj = object_.pool.get('res.partner')\n"
+"                        if not object_.vat_enterprise():\n"
+"                            nom_titular =' ' + p_obj.separa_cognoms(object_._cr, object_._uid, "
+"object_.cups_polissa_id.titular.name)['nom']\n"
+"                        else:\n"
+"                            nom_titular = ''\n"
+"                        return nom_titular\n"
+"                %>\n"
+"                <%\n"
+"                    polissa = object.cups_polissa_id\n"
+"\n"
+"                    t_obj = object.pool.get('poweremail.templates')\n"
+"                    md_obj = object.pool.get('ir.model.data')\n"
+"                    template_id = md_obj.get_object_reference(\n"
+"                                        object._cr, object._uid,  "
+"'som_poweremail_common_templates', 'common_template_legal_footer'\n"
+"                                    )[1]\n"
+"\n"
+"                    text_legal = render(t_obj.read(\n"
+"                        object._cr, object._uid, [template_id], "
+"['def_body_text'])[0]['def_body_text'],\n"
+"                        object\n"
+"                    )\n"
+"\n"
+"                %>\n"
+"                <!doctype html>\n"
+"                <html>\n"
+"                    <head>\n"
+"                        <meta charset='utf-8'>\n"
+"                    </head>\n"
+"                    % if object.cups_polissa_id.titular.lang == \"ca_ES\":\n"
+"                        ${correu_cat()}\n"
+"                    % else:\n"
+"                        ${correu_es()}\n"
+"                    % endif\n"
+"                    ${text_legal}\n"
+"                </html>\n"
+"\n"
+"                <%def name=\"correu_cat()\">\n"
+"                    <body>\n"
+"                        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=2><strong> Contracte Som Energia nº "
+"${polissa.name}</strong></font>\n"
+"                                </td>\n"
+"                                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                                    <img width='130' height='65' "
+"src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=1> Adreça punt subministrament: "
+"${object.cups_id.direccio}</font>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=1> Codi CUPS: ${object.cups_id.name}</font>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </table>\n"
+"                        <p>\n"
+"                            Hola${get_partner_name(object)},\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Ens ha arribat la notificació que no estàs d’acord amb les dades que "
+"ens ha passat l’empresa de distribució elèctrica referent a la teva instal·lació d’autoconsum "
+"associada al CUPS ${object.cups_id.name} amb direcció de subministrament "
+"${object.cups_id.direccio}.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Enviem el rebuig, amb el detall del motiu de desacord que ens has "
+"indicat a través de la teva oficina virtual, a la distribuïdora.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Si es tracta d’un error en la comunicació per part de la "
+"distribuïdora ens faran arribar una nova comunicació corregida, si pel contrari es tracta d’un "
+"error a l’hora de fer el registre o de la comunicació per part de la Comunitat Autònoma cal que "
+"contacteu amb la mateixa per tal de modificar la informació i que comenci el procés novament.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Malauradament, la distribuïdora no ens indica si es tracta d’una o "
+"altra casuística pel que et recomanem que contactis directament amb la distribuïdora i el "
+"departament corresponent de la teva Comunitat Autònoma per aclarir-ho.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Qualsevol dubte seguim en contacte.\n"
+"                        </p>\n"
+"                        Salutacions,<br>\n"
+"                        <br>\n"
+"                        Equip de Som Energia<br>\n"
+"                        <a "
+"href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n"
+"                        <a href=\"http://www.somenergia.coop/ca\">www.somenergia.coop</a>\n"
+"                    </body>\n"
+"                </%def>\n"
+"                <%def name=\"correu_es()\">\n"
+"                    <body>\n"
+"                        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=2><strong> Contrato Som Energia nº "
+"${polissa.name}</strong></font>\n"
+"                                </td>\n"
+"                                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                                    <img width='130' height='65' "
+"src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=1> Dirección del punto de suministro: "
+"${object.cups_id.direccio}</font>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                            <tr>\n"
+"                                <td height=2px>\n"
+"                                    <font size=1> Código CUPS: ${object.cups_id.name}</font>\n"
+"                                </td>\n"
+"                            </tr>\n"
+"                        </table>\n"
+"                        <p>\n"
+"                            Hola${get_partner_name(object)},\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Nos ha llegado la notificación que no estás de acuerdo con los datos "
+"que nos ha pasado la empresa de distribución eléctrica referente a tu instalación de autoconsumo "
+"asociada al CUPS ${object.cups_id.name} con dirección de suministro ${object.cups_id.direccio}.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Enviamos el rechazo, con el detalle del motivo de desacuerdo que nos "
+"has indicado a través de tu oficina virtual, a la distribuidora.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Si se trata de un error en la comunicación por parte de la "
+"distribuidora nos harán llegar una nueva comunicación corregida, si por el contrario se trata de "
+"un error a la hora de hacer el registro o de la comunicación por parte de la Comunidad Autónoma "
+"deberás ponerte en contacto con la misma a fin de modificar la información y que comience el "
+"proceso nuevamente.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Desgraciadamente, la distribuidora no nos indica si se trata de una u"
+" otra casuística por lo que te recomendamos que contactes directamente con la distribuidora y el "
+"departamento correspondiente de tu Comunidad Autónoma para aclararlo.\n"
+"                        </p>\n"
+"                        <p>\n"
+"                            Cualquier duda seguimos en contacto.\n"
+"                        </p>\n"
+"                        Saludos,<br>\n"
+"                        <br>\n"
+"                        Equipo de Som Energia<br>\n"
+"                        <a "
+"href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n"
+"                        <a href=\"http://www.somenergia.coop/es\">www.somenergia.coop</a>\n"
+"                    </body>\n"
+"                </%def>\n"
+"                \n"
+"            "
+
+#. module: som_switching
+#. Runtime Mako template already selects Catalan/Spanish content; preserve recipient-language branching
+#. and code.
+#, python-format
+msgid ""
+"\n"
+"               <%!\n"
+"    from mako.template import Template\n"
+"\n"
+"    def render(text_to_render, object_):\n"
+"        templ = Template(text_to_render)\n"
+"        return templ.render_unicode(\n"
+"            object=object_,\n"
+"            format_exceptions=True\n"
+"    )\n"
+"%>\n"
+"<%\n"
+"    polissa = object.cups_polissa_id\n"
+"\n"
+"    t_obj = object.pool.get('poweremail.templates')\n"
+"    md_obj = object.pool.get('ir.model.data')\n"
+"    template_id = md_obj.get_object_reference(\n"
+"                        object._cr, object._uid,  'som_poweremail_common_templates', "
+"'common_template_legal_footer'\n"
+"                    )[1]\n"
+"\n"
+"    text_legal = render(t_obj.read(\n"
+"        object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],\n"
+"        object\n"
+"    )\n"
+"\n"
+"%>\n"
+"<!doctype html>\n"
+"<html>\n"
+"    <head>\n"
+"        <meta charset='utf-8'>\n"
+"    </head>\n"
+"    % if object.cups_polissa_id.titular.lang == \"ca_ES\":\n"
+"        ${correu_cat()}\n"
+"    % else:\n"
+"        ${correu_es()}\n"
+"    % endif\n"
+"    ${text_legal}\n"
+"</html>\n"
+"\n"
+"<%def name=\"correu_cat()\">\n"
+"    <body>\n"
+"        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=2><strong> Contracte Som Energia nº "
+"${polissa.name}</strong></font>\n"
+"                </td>\n"
+"                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-"
+"content/uploads/2014/11/logo-somenergia.png\">\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Adreça punt subministrament: ${object.cups_id.direccio}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Codi CUPS: ${object.cups_id.name}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"        <p>\n"
+"            Bon dia,\n"
+"        </p>\n"
+"        <p>\n"
+"            Recentment l'empresa de distribució elèctrica ens ha fet arribar les teves dades "
+"donat que estan associades a una instal·lació d'autoconsum d'un CUPS comercialitzat per Som "
+"Energia.\n"
+"        </p>\n"
+"        <p>\n"
+"            Per poder gestionar l'aplicació de l'autoconsum necessitem que ens donis autorització"
+" per tractar les teves dades.\n"
+"        </p>\n"
+"        <p>\n"
+"            T'enviem la informació relacionada amb la protecció de dades per què ens autoritzis "
+"el tractament d'aquestes responent aquest mateix correu.\n"
+"        </p>\n"
+"        <p>\n"
+"            INFORMACIÓ DE PROTECCIÓ DE DADES DE SOM ENERGIA\n"
+"        </p>\n"
+"        <p>\n"
+"            <b>Responsabilitats:</b> SOM ENERGIA, SCCL. (F55091367), C / Riu Güell, 68, 17005 de "
+"Girona, somenergia@delegado-datos.com. <b>Finalitats:</b> Tramitar l'alta de l'autoconsum "
+"associat a la seva instal·lació. <b>Legitimació:</b> Acord de serveis amb el titular de la "
+"instal·lació fotovoltaica. <b>Destinataris:</b> No estan previstes cessions, tret entre el "
+"client, el titular de la instal·lació i Som Energia i, les legalment previstes. <b>Drets:</b> Pot"
+" retirar el seu consentiment en qualsevol moment, així com accedir, rectificar, suprimir les "
+"seves dades i altres drets a somenergia@delegado-datos.com. <b>Informació Addicional:</b><a "
+"href=\"https://www.somenergia.coop/ca/avis-legal/#politica-de-privacitat\">Política de "
+"Privadesa.</a>\n"
+"        </p>\n"
+"        <p>\n"
+"            Esperem la teva resposta per continuar o no amb la gestió,\n"
+"        </p>\n"
+"\t    Salutacions,<br>\n"
+"        <br>\n"
+"        Equip de Som Energia<br>\n"
+"        <a "
+"href=\"mailto:comercialitzacio@somenergia.coop\">comercialitzacio@somenergia.coop</a><br>\n"
+"        <a href=\"http://www.somenergia.coop/ca\">www.somenergia.coop</a> - facebook <a "
+"href=\"https://www.facebook.com/somenergia/\">https://www.facebook.com/somenergia/</b> - twitter "
+"<a href=\"https://twitter.com/somenergia\">https://twitter.com/somenergia</b>\n"
+"    </body>\n"
+"</%def>\n"
+"<%def name=\"correu_es()\">\n"
+"    <body>\n"
+"        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=2><strong> Contrato Som Energia nº ${polissa.name}</strong></font>"
+"\n"
+"                </td>\n"
+"                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-"
+"content/uploads/2014/11/logo-somenergia.png\">\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Dirección del punto de suministro: "
+"${object.cups_id.direccio}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Código CUPS: ${object.cups_id.name}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"        <p>\n"
+"            Buenos días,\n"
+"\t    </p>\n"
+"        <p>\n"
+"            Recientemente la empresa de distribución eléctrica nos ha hecho llegar tus datos dado"
+" que están asociadas a una instalación de autoconsumo de un CUPS comercializado por Som Energia."
+"        </p>\n"
+"        <p>\n"
+"            Para poder gestionar la aplicación del autoconsumo necesitamos que nos des "
+"autorización para tratar tus datos.\n"
+"        </p>\n"
+"        <p>\n"
+"            Te enviamos la información relacionada con la protección de datos para que nos "
+"autorices el tratamiento de estas respondiendo a este mismo correo.        </p>\n"
+"        <p>\n"
+"            INFORMACIÓN DE PROTECCIÓN DE DATOS DE SOM ENERGIA\n"
+"        </p>\n"
+"        <p>\n"
+"            Esperamos tu respuesta para continuar o no con la gestión,\n"
+"        </p>\n"
+"        <p>\n"
+"            <b>Responsabilidades:</b> SOM ENERGIA, SCCL. (F55091367), C/ Riu Güell, 68, 17005 de "
+"Girona, somenergia@delegado-datos.com. <b>Finalidades:</b> Tramitar el alta del autoconsumo "
+"asociado a su instalación.<b> Legitimación:</b> Acuerdo de servicios con el titular de la "
+"instalación fotovoltaica. <b>Destinatarios:</b> No están previstas cesiones, salvo entre el "
+"cliente, el titular de la instalación y Som Energia y, las legalmente previstas. <b>Derechos:</b>"
+"  Puede retirar su consentimiento en cualquier momento, así como acceder, rectificar, suprimir "
+"sus datos y demás derechos en somenergia@delegado-datos.com. <b>Información Adicional:</b> <a "
+"href=\"https://www.somenergia.coop/es/aviso-legal/#politica-de-privacidad\">Política de "
+"Privacidad</a>.\n"
+"        </p>\n"
+"        Saludos,<br>\n"
+"        <br>\n"
+"        Equipo de Som Energia<br>\n"
+"        <a "
+"href=\"mailto:comercialitzacio@somenergia.coop\">comercialitzacio@somenergia.coop</a><br>\n"
+"        <a href=\"http://www.somenergia.coop/es\">www.somenergia.coop</a> - facebook <a "
+"href=\"https://www.facebook.com/somenergia/\">https://www.facebook.com/somenergia/</b> - twitter "
+"<a href=\"https://twitter.com/somenergia\">https://twitter.com/somenergia</b>\n"
+"    </body>\n"
+"</%def>\n"
+"                \n"
+"            "
+msgstr ""
+"\n"
+"               <%!\n"
+"    from mako.template import Template\n"
+"\n"
+"    def render(text_to_render, object_):\n"
+"        templ = Template(text_to_render)\n"
+"        return templ.render_unicode(\n"
+"            object=object_,\n"
+"            format_exceptions=True\n"
+"    )\n"
+"%>\n"
+"<%\n"
+"    polissa = object.cups_polissa_id\n"
+"\n"
+"    t_obj = object.pool.get('poweremail.templates')\n"
+"    md_obj = object.pool.get('ir.model.data')\n"
+"    template_id = md_obj.get_object_reference(\n"
+"                        object._cr, object._uid,  'som_poweremail_common_templates', "
+"'common_template_legal_footer'\n"
+"                    )[1]\n"
+"\n"
+"    text_legal = render(t_obj.read(\n"
+"        object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],\n"
+"        object\n"
+"    )\n"
+"\n"
+"%>\n"
+"<!doctype html>\n"
+"<html>\n"
+"    <head>\n"
+"        <meta charset='utf-8'>\n"
+"    </head>\n"
+"    % if object.cups_polissa_id.titular.lang == \"ca_ES\":\n"
+"        ${correu_cat()}\n"
+"    % else:\n"
+"        ${correu_es()}\n"
+"    % endif\n"
+"    ${text_legal}\n"
+"</html>\n"
+"\n"
+"<%def name=\"correu_cat()\">\n"
+"    <body>\n"
+"        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=2><strong> Contracte Som Energia nº "
+"${polissa.name}</strong></font>\n"
+"                </td>\n"
+"                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-"
+"content/uploads/2014/11/logo-somenergia.png\">\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Adreça punt subministrament: ${object.cups_id.direccio}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Codi CUPS: ${object.cups_id.name}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"        <p>\n"
+"            Bon dia,\n"
+"        </p>\n"
+"        <p>\n"
+"            Recentment l'empresa de distribució elèctrica ens ha fet arribar les teves dades "
+"donat que estan associades a una instal·lació d'autoconsum d'un CUPS comercialitzat per Som "
+"Energia.\n"
+"        </p>\n"
+"        <p>\n"
+"            Per poder gestionar l'aplicació de l'autoconsum necessitem que ens donis autorització"
+" per tractar les teves dades.\n"
+"        </p>\n"
+"        <p>\n"
+"            T'enviem la informació relacionada amb la protecció de dades per què ens autoritzis "
+"el tractament d'aquestes responent aquest mateix correu.\n"
+"        </p>\n"
+"        <p>\n"
+"            INFORMACIÓ DE PROTECCIÓ DE DADES DE SOM ENERGIA\n"
+"        </p>\n"
+"        <p>\n"
+"            <b>Responsabilitats:</b> SOM ENERGIA, SCCL. (F55091367), C / Riu Güell, 68, 17005 de "
+"Girona, somenergia@delegado-datos.com. <b>Finalitats:</b> Tramitar l'alta de l'autoconsum "
+"associat a la seva instal·lació. <b>Legitimació:</b> Acord de serveis amb el titular de la "
+"instal·lació fotovoltaica. <b>Destinataris:</b> No estan previstes cessions, tret entre el "
+"client, el titular de la instal·lació i Som Energia i, les legalment previstes. <b>Drets:</b> Pot"
+" retirar el seu consentiment en qualsevol moment, així com accedir, rectificar, suprimir les "
+"seves dades i altres drets a somenergia@delegado-datos.com. <b>Informació Addicional:</b><a "
+"href=\"https://www.somenergia.coop/ca/avis-legal/#politica-de-privacitat\">Política de "
+"Privadesa.</a>\n"
+"        </p>\n"
+"        <p>\n"
+"            Esperem la teva resposta per continuar o no amb la gestió,\n"
+"        </p>\n"
+"\t    Salutacions,<br>\n"
+"        <br>\n"
+"        Equip de Som Energia<br>\n"
+"        <a "
+"href=\"mailto:comercialitzacio@somenergia.coop\">comercialitzacio@somenergia.coop</a><br>\n"
+"        <a href=\"http://www.somenergia.coop/ca\">www.somenergia.coop</a> - facebook <a "
+"href=\"https://www.facebook.com/somenergia/\">https://www.facebook.com/somenergia/</b> - twitter "
+"<a href=\"https://twitter.com/somenergia\">https://twitter.com/somenergia</b>\n"
+"    </body>\n"
+"</%def>\n"
+"<%def name=\"correu_es()\">\n"
+"    <body>\n"
+"        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=2><strong> Contrato Som Energia nº ${polissa.name}</strong></font>"
+"\n"
+"                </td>\n"
+"                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-"
+"content/uploads/2014/11/logo-somenergia.png\">\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Dirección del punto de suministro: "
+"${object.cups_id.direccio}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Código CUPS: ${object.cups_id.name}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"        <p>\n"
+"            Buenos días,\n"
+"\t    </p>\n"
+"        <p>\n"
+"            Recientemente la empresa de distribución eléctrica nos ha hecho llegar tus datos dado"
+" que están asociadas a una instalación de autoconsumo de un CUPS comercializado por Som Energia."
+"        </p>\n"
+"        <p>\n"
+"            Para poder gestionar la aplicación del autoconsumo necesitamos que nos des "
+"autorización para tratar tus datos.\n"
+"        </p>\n"
+"        <p>\n"
+"            Te enviamos la información relacionada con la protección de datos para que nos "
+"autorices el tratamiento de estas respondiendo a este mismo correo.        </p>\n"
+"        <p>\n"
+"            INFORMACIÓN DE PROTECCIÓN DE DATOS DE SOM ENERGIA\n"
+"        </p>\n"
+"        <p>\n"
+"            Esperamos tu respuesta para continuar o no con la gestión,\n"
+"        </p>\n"
+"        <p>\n"
+"            <b>Responsabilidades:</b> SOM ENERGIA, SCCL. (F55091367), C/ Riu Güell, 68, 17005 de "
+"Girona, somenergia@delegado-datos.com. <b>Finalidades:</b> Tramitar el alta del autoconsumo "
+"asociado a su instalación.<b> Legitimación:</b> Acuerdo de servicios con el titular de la "
+"instalación fotovoltaica. <b>Destinatarios:</b> No están previstas cesiones, salvo entre el "
+"cliente, el titular de la instalación y Som Energia y, las legalmente previstas. <b>Derechos:</b>"
+"  Puede retirar su consentimiento en cualquier momento, así como acceder, rectificar, suprimir "
+"sus datos y demás derechos en somenergia@delegado-datos.com. <b>Información Adicional:</b> <a "
+"href=\"https://www.somenergia.coop/es/aviso-legal/#politica-de-privacidad\">Política de "
+"Privacidad</a>.\n"
+"        </p>\n"
+"        Saludos,<br>\n"
+"        <br>\n"
+"        Equipo de Som Energia<br>\n"
+"        <a "
+"href=\"mailto:comercialitzacio@somenergia.coop\">comercialitzacio@somenergia.coop</a><br>\n"
+"        <a href=\"http://www.somenergia.coop/es\">www.somenergia.coop</a> - facebook <a "
+"href=\"https://www.facebook.com/somenergia/\">https://www.facebook.com/somenergia/</b> - twitter "
+"<a href=\"https://twitter.com/somenergia\">https://twitter.com/somenergia</b>\n"
+"    </body>\n"
+"</%def>\n"
+"                \n"
+"            "
+
+#. module: som_switching
+#. Runtime Mako template already selects Catalan/Spanish content; preserve recipient-language branching
+#. and code.
+#, python-format
+msgid ""
+"\n"
+"               <%!\n"
+"    from mako.template import Template\n"
+"\n"
+"    def render(text_to_render, object_):\n"
+"        templ = Template(text_to_render)\n"
+"        return templ.render_unicode(\n"
+"            object=object_,\n"
+"            format_exceptions=True\n"
+"    )\n"
+"%>\n"
+"<%\n"
+"    polissa = object.cups_polissa_id\n"
+"\n"
+"    t_obj = object.pool.get('poweremail.templates')\n"
+"    md_obj = object.pool.get('ir.model.data')\n"
+"    template_id = md_obj.get_object_reference(\n"
+"                        object._cr, object._uid,  'som_poweremail_common_templates', "
+"'common_template_legal_footer'\n"
+"                    )[1]\n"
+"\n"
+"    text_legal = render(t_obj.read(\n"
+"        object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],\n"
+"        object\n"
+"    )\n"
+"\n"
+"%>\n"
+"<!doctype html>\n"
+"<html>\n"
+"    <head>\n"
+"        <meta charset='utf-8'>\n"
+"    </head>\n"
+"    % if object.cups_polissa_id.titular.lang == \"ca_ES\":\n"
+"        ${correu_cat()}\n"
+"    % else:\n"
+"        ${correu_es()}\n"
+"    % endif\n"
+"    ${text_legal}\n"
+"</html>\n"
+"\n"
+"<%def name=\"correu_cat()\">\n"
+"    <body>\n"
+"        Correu CAT\n"
+"    </body>\n"
+"</%def>\n"
+"<%def name=\"correu_es()\">\n"
+"    <body>\n"
+"        Correu ES\n"
+"    </body>\n"
+"</%def>\n"
+"                \n"
+"            "
+msgstr ""
+"\n"
+"               <%!\n"
+"    from mako.template import Template\n"
+"\n"
+"    def render(text_to_render, object_):\n"
+"        templ = Template(text_to_render)\n"
+"        return templ.render_unicode(\n"
+"            object=object_,\n"
+"            format_exceptions=True\n"
+"    )\n"
+"%>\n"
+"<%\n"
+"    polissa = object.cups_polissa_id\n"
+"\n"
+"    t_obj = object.pool.get('poweremail.templates')\n"
+"    md_obj = object.pool.get('ir.model.data')\n"
+"    template_id = md_obj.get_object_reference(\n"
+"                        object._cr, object._uid,  'som_poweremail_common_templates', "
+"'common_template_legal_footer'\n"
+"                    )[1]\n"
+"\n"
+"    text_legal = render(t_obj.read(\n"
+"        object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],\n"
+"        object\n"
+"    )\n"
+"\n"
+"%>\n"
+"<!doctype html>\n"
+"<html>\n"
+"    <head>\n"
+"        <meta charset='utf-8'>\n"
+"    </head>\n"
+"    % if object.cups_polissa_id.titular.lang == \"ca_ES\":\n"
+"        ${correu_cat()}\n"
+"    % else:\n"
+"        ${correu_es()}\n"
+"    % endif\n"
+"    ${text_legal}\n"
+"</html>\n"
+"\n"
+"<%def name=\"correu_cat()\">\n"
+"    <body>\n"
+"        Correu CAT\n"
+"    </body>\n"
+"</%def>\n"
+"<%def name=\"correu_es()\">\n"
+"    <body>\n"
+"        Correu ES\n"
+"    </body>\n"
+"</%def>\n"
+"                \n"
+"            "
+
+#. module: som_switching
+#: view:giscedata.switching.r101.wizard view:wizard.r1.from.f1.erroni
+msgid " "
+msgstr " "
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:358
+msgid "  * S'ha tancat correctament."
+msgstr "  * S'ha tancat correctament."
+
+#. module: som_switching
+msgid "${object.codi_sollicitud}"
+msgstr "${object.codi_sollicitud}"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "10.000"
+msgstr "10.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "100"
+msgstr "100"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "11.000"
+msgstr "11.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "110.000"
+msgstr "110.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "12.000"
+msgstr "12.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "1200"
+msgstr "1200"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "13.000"
+msgstr "13.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "13.200"
+msgstr "13.200"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "130000"
+msgstr "130000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "132.000"
+msgstr "132.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "15.000"
+msgstr "15.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "150"
+msgstr "150"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "16.500"
+msgstr "16.500"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "17.000"
+msgstr "17.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "1X127"
+msgstr "1X127"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "1X133"
+msgstr "1X133"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "1X220"
+msgstr "1X220"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "1X230"
+msgstr "1X230"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "2.0A"
+msgstr "2.0A"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "2.0DHA"
+msgstr "2.0DHA"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "2.0DHS"
+msgstr "2.0DHS"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "2.0TD"
+msgstr "2.0TD"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "2.1A"
+msgstr "2.1A"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "2.1DHA"
+msgstr "2.1DHA"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "2.1DHS"
+msgstr "2.1DHS"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "20.000"
+msgstr "20.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "2000"
+msgstr "2000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "22.000"
+msgstr "22.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "220.000"
+msgstr "220.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "25.000"
+msgstr "25.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "26.500"
+msgstr "26.500"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "2X220"
+msgstr "2X220"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "2X230"
+msgstr "2X230"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "3.0A"
+msgstr "3.0A"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "3.0TD"
+msgstr "3.0TD"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "3.0TDVE"
+msgstr "3.0TDVE"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "3.0TDVE - Embarcaciones"
+msgstr "3.0TDVE - Embarcacions"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "3.1A"
+msgstr "3.1A"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "30.000"
+msgstr "30.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "36.000"
+msgstr "36.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3X220"
+msgstr "3X220"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3X220/127"
+msgstr "3X220/127"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3X230"
+msgstr "3X230"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3X230/133"
+msgstr "3X230/133"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3X380"
+msgstr "3X380"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3X380/220"
+msgstr "3X380/220"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3X400"
+msgstr "3X400"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3X400/230"
+msgstr "3X400/230"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3x100"
+msgstr "3x100"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3x150/260"
+msgstr "3x150/260"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "3x260"
+msgstr "3x260"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "400.000"
+msgstr "400.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "44.000"
+msgstr "44.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "45.000"
+msgstr "45.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "5.000"
+msgstr "5.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "5500"
+msgstr "5500"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "55000"
+msgstr "55000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "6.000"
+msgstr "6.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.1A"
+msgstr "6.1A"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.1B"
+msgstr "6.1B"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.1TD"
+msgstr "6.1TD"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.1TDVE"
+msgstr "6.1TDVE"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.1TDVE - Embarcaciones"
+msgstr "6.1TDVE - Embarcacions"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.2"
+msgstr "6.2"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.2TD"
+msgstr "6.2TD"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.2TDVE"
+msgstr "6.2TDVE"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.2TDVE - Embarcaciones"
+msgstr "6.2TDVE - Embarcacions"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.3"
+msgstr "6.3"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.3TD"
+msgstr "6.3TD"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.4"
+msgstr "6.4"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.4TD"
+msgstr "6.4TD"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,tariff
+msgid "6.5"
+msgstr "6.5"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "66.000"
+msgstr "66.000"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "7.200"
+msgstr "7.200"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "8.000"
+msgstr "8.000"
+
+#. module: som_switching
+#: view:giscedata.switching.a301.wizard
+msgid "A3 - Alta"
+msgstr "A3 - Alta"
+
+#. module: som_switching
+#: view:wizard.comment.to.F1
+msgid "Acceptar"
+msgstr "Acceptar"
+
+#. module: som_switching
+#: field:wizard.comment.to.F1,option
+msgid "Accio"
+msgstr "Accio"
+
+#. module: som_switching
+#: field:giscedata.atc.tag,active
+msgid "Actiu"
+msgstr "Actiu"
+
+#. module: som_switching
+msgid "Activa les notificacions per els pasos M1-02 acceptats, excepte quan son de canvis de titular."
+msgstr "Activa les notificacions per els pasos M1-02 acceptats, excepte quan son de canvis de titular."
+
+#. module: som_switching
+msgid "Activa les notificacions per els pasos M2-05 motiu 06"
+msgstr "Activa les notificacions per els pasos M2-05 motiu 06"
+
+#. module: som_switching
+msgid "Activa les notificacions per els pasos M2-05 motiu 07"
+msgstr "Activa les notificacions per els pasos M2-05 motiu 07"
+
+#. module: som_switching
+msgid "Activa les notificacions per els pasos M2-05 on els motius siguin 01, 02, 03, 04, 05 i 08"
+msgstr "Activa les notificacions per els pasos M2-05 on els motius siguin 01, 02, 03, 04, 05 i 08"
+
+#. module: som_switching
+msgid ""
+"Activa les notificacions per els passos de rebuig M1-02 amb canvis tècnics per a tots els motius "
+"excepte el 57"
+msgstr ""
+"Activa les notificacions per els passos de rebuig M1-02 amb canvis tècnics per a tots els motius "
+"excepte el 57"
+
+#. module: som_switching
+msgid "Activa les notificacions per tots els passos b1-02 en cas de motiu baixa 01"
+msgstr "Activa les notificacions per tots els passos b1-02 en cas de motiu baixa 01"
+
+#. module: som_switching
+msgid "Activa les notificacions per tots els passos b1-02 que siguin rebuig."
+msgstr "Activa les notificacions per tots els passos b1-02 que siguin rebuig."
+
+#. module: som_switching
+msgid "Activa les notificacions per tots els passos b1-07 en cas de motiu baixa 01"
+msgstr "Activa les notificacions per tots els passos b1-07 en cas de motiu baixa 01"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching.py:178
+#, python-format
+msgid ""
+"Activació cas %s-%s no implementada/activada a %s.\n"
+"\n"
+"Pots consultar les activacions disponibles a:\n"
+"* Gestió ATR -> Configuració -> Activacions de Casos ATR"
+msgstr ""
+"Activació cas %s-%s no implementada/activada a %s.\n"
+"\n"
+"Pots consultar les activacions disponibles a:\n"
+"* Gestió ATR -> Configuració -> Activacions de Casos ATR"
+
+#. module: som_switching
+#: selection:wizard.comment.to.F1,option
+msgid "Afegir"
+msgstr "Afegir"
+
+#. module: som_switching
+msgid "Afegir/modificar una observació a fitxers F1"
+msgstr "Afegir/modificar una observació a fitxers F1"
+
+#. module: som_switching
+msgid ""
+"Aquest mòdul afegeix les següents funcionalitats:\n"
+"  * Categories per les pòlisses per els casos de switching\n"
+msgstr ""
+"Aquest mòdul afegeix les següents funcionalitats:\n"
+"  * Categories per les pòlisses per els casos de switching\n"
+
+#. module: som_switching
+#: view:wizard.r101.from.multiple.contracts
+msgid ""
+"Aquesta acció generarà casos R1. Has revisat l'estat de la facturació suspesa i la refacturació "
+"pendent abans de continuar?"
+msgstr ""
+"Aquesta acció generarà casos R1. Has revisat l'estat de la facturació suspesa i la refacturació "
+"pendent abans de continuar?"
+
+#. module: som_switching
+#: view:giscedata.switching.r101.wizard
+msgid ""
+"Aquesta acció generarà un R1-02009. Has revisat l'estat de la facturació suspesa i la "
+"refacturació pendent abans de continuar?"
+msgstr ""
+"Aquesta acció generarà un R1-02009. Has revisat l'estat de la facturació suspesa i la "
+"refacturació pendent abans de continuar?"
+
+#. module: som_switching
+#: view:giscedata.switching.r101.wizard
+msgid ""
+"Aquesta acció generarà un R1-02036. Has revisat l'estat de la facturació suspesa i la "
+"refacturació pendent abans de continuar?"
+msgstr ""
+"Aquesta acció generarà un R1-02036. Has revisat l'estat de la facturació suspesa i la "
+"refacturació pendent abans de continuar?"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching.py:177
+#: code:addons/som_switching/models/giscedata_switching_r1.py:101
+msgid "Atenció"
+msgstr "Atenció"
+
+#. module: som_switching
+#: field:giscedata.facturacio.importacio.linia,_attachments_field
+msgid "Attachments"
+msgstr "Adjunts"
+
+#. module: som_switching
+#: field:wizard.validate.d101,autoconsum_id
+msgid "Autoconsum"
+msgstr "Autoconsum"
+
+#. module: som_switching
+#: view:giscedata.switching.mod.con.wizard
+msgid "C2 - Canvi de comercialitzadora amb canvis"
+msgstr "C2 - Canvi de comercialitzadora amb canvis"
+
+#. module: som_switching
+msgid "COBRAMENTS"
+msgstr "COBRAMENTS"
+
+#. module: som_switching
+msgid "CONTRACTES"
+msgstr "CONTRACTES"
+
+#. module: som_switching
+msgid "CONTRACTES - A"
+msgstr "CONTRACTES - A"
+
+#. module: som_switching
+msgid "CONTRACTES - B"
+msgstr "CONTRACTES - B"
+
+#. module: som_switching
+msgid "CONTRACTES - C"
+msgstr "CONTRACTES - C"
+
+#. module: som_switching
+msgid "CONTRACTES - M"
+msgstr "CONTRACTES - M"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_r1.py:102
+msgid "Cal omplir el camp Comentaris del pas 04 de la R1 abans de desar-lo o exportar-lo."
+msgstr "Cal omplir el camp Comentaris del pas 04 de la R1 abans de desar-lo o exportar-lo."
+
+#. module: som_switching
+#: selection:wizard.close.obsolete.cases,new_state
+msgid "Cancel"
+msgstr "Cancel·lar"
+
+#. module: som_switching
+#: view:wizard.close.obsolete.cases view:wizard.comment.to.F1
+#: view:wizard.giscedata.switching.log.reexport view:wizard.validate.d101
+msgid "Cancel·lar"
+msgstr "Cancel·lar"
+
+#. module: som_switching
+msgid "Canvi de titular. Verificació de dades. Contracte ${object.cups_polissa_id.name}"
+msgstr "Canvi de titular. Verificació de dades. Contracte ${object.cups_polissa_id.name}"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:187
+msgid "Cas ATC {} no es pot cancel·lar: L'estat no és Pendent, Esborrany o Obert"
+msgstr "Cas ATC {} no es pot cancel·lar: L'estat no és Pendent, Esborrany o Obert"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:93
+msgid "Cas ATC {} no es pot cancel·lar: R1 01 està pendent del pas finalitzador"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 01 està pendent del pas finalitzador"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:111
+msgid "Cas ATC {} no es pot cancel·lar: R1 02 està pendent del pas finalitzador"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 02 està pendent del pas finalitzador"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:103
+msgid "Cas ATC {} no es pot cancel·lar: R1 02 l'heu de revisar i tancar"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 02 l'heu de revisar i tancar"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:119
+msgid "Cas ATC {} no es pot cancel·lar: R1 03 en estat Obert"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 03 en estat Obert"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:125
+msgid "Cas ATC {} no es pot cancel·lar: R1 03 està pendent del pas finalitzador"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 03 està pendent del pas finalitzador"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:133
+msgid "Cas ATC {} no es pot cancel·lar: R1 04 en estat Obert - ERROR MANUAL -"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 04 en estat Obert - ERROR MANUAL -"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:141
+msgid "Cas ATC {} no es pot cancel·lar: R1 04 en estat Pendent"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 04 en estat Pendent"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:155
+msgid "Cas ATC {} no es pot cancel·lar: R1 05 l'heu de revisar i tancar"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 05 l'heu de revisar i tancar"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:148
+msgid "Cas ATC {} no es pot cancel·lar: R1 05 l'heu de revisar i tancar - Error manual R1 no oberta"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 05 l'heu de revisar i tancar - Error manual R1 no oberta"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:163
+msgid ""
+"Cas ATC {} no es pot cancel·lar: R1 08 no pots cancel·lar una cancel·lació, cal esperar a rebre "
+"pas 09 de distribuïdora"
+msgstr ""
+"Cas ATC {} no es pot cancel·lar: R1 08 no pots cancel·lar una cancel·lació, cal esperar a rebre "
+"pas 09 de distribuïdora"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:179
+msgid "Cas ATC {} no es pot cancel·lar: R1 09 d'acceptació s'ha de tancar i no cancel·lar"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 09 d'acceptació s'ha de tancar i no cancel·lar"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:172
+msgid "Cas ATC {} no es pot cancel·lar: R1 09 de rebuig no es pot cancel·lar ni tancar"
+msgstr "Cas ATC {} no es pot cancel·lar: R1 09 de rebuig no es pot cancel·lar ni tancar"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:337
+msgid "Cas tancat automaticament al importar R1-02."
+msgstr "Cas tancat automaticament al importar R1-02."
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/wizard_validate_d101.py:349
+msgid "Casos Creats"
+msgstr "Casos Creats"
+
+#. module: som_switching
+#: help:wizard.close.obsolete.cases,no_action
+msgid "Change the state without trigger an action"
+msgstr "Canviar l'estat sense executar cap acció"
+
+#. module: som_switching
+#: selection:wizard.close.obsolete.cases,new_state
+msgid "Close"
+msgstr "Tancar"
+
+#. module: som_switching
+#: field:wizard.r101.from.multiple.contracts,subtipus_code
+msgid "Codi subtipus"
+msgstr "Codi subtipus"
+
+#. module: som_switching
+#: field:wizard.validate.d101,con_sur1
+msgid "Cognom 1"
+msgstr "Cognom 1"
+
+#. module: som_switching
+#: field:wizard.validate.d101,con_sur2
+msgid "Cognom 2"
+msgstr "Cognom 2"
+
+#. module: som_switching
+#: field:giscedata.switching,collectiu_atr
+msgid "Col·lectiu pas"
+msgstr "Col·lectiu pas"
+
+#. module: som_switching
+#: field:giscedata.switching,collectiu_polissa
+msgid "Col·lectiu pòlissa"
+msgstr "Col·lectiu pòlissa"
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/wizard_comment_to_F1.py:35 field:wizard.comment.to.F1,comment
+msgid "Comentari"
+msgstr "Comentari"
+
+#. module: som_switching
+#: help:wizard.validate.d101,rejection_comment
+msgid "Comentari de rebuig del pas D1-02"
+msgstr "Comentari de rebuig del pas D1-02"
+
+#. module: som_switching
+#: view:wizard.r1.from.f1.erroni
+msgid "Comentaris"
+msgstr "Comentaris"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching.py:172
+msgid "Comercializadora"
+msgstr "Comercialitzadora"
+
+#. module: som_switching
+#: field:wizard.close.obsolete.cases,comment
+msgid "Comment"
+msgstr "Comentari"
+
+#. module: som_switching
+#: field:wizard.close.obsolete.cases,add_comment
+msgid "Comment type"
+msgstr "Tipus de comentari"
+
+#. module: som_switching
+#: view:wizard.r101.from.multiple.contracts
+msgid "Continuar"
+msgstr "Continuar"
+
+#. module: som_switching
+#: view:wizard.validate.d101
+msgid "D'acord"
+msgstr "D'acord"
+
+#. module: som_switching
+#: field:wizard.validate.d101,set_pending
+msgid "D1-02 de rebuig pendent de validar"
+msgstr "D1-02 de rebuig pendent de validar"
+
+#. module: som_switching
+#: field:giscedata.switching,data_accio
+msgid "Data acció del pas 01"
+msgstr "Data acció del pas 01"
+
+#. module: som_switching
+#: field:giscedata.polissa,data_alta_autoconsum
+msgid "Data alta autoconsum (M105)"
+msgstr "Data alta autoconsum (M105)"
+
+#. module: som_switching
+#: field:giscedata.polissa,data_baixa_autoconsum
+msgid "Data baixa autoconsum (M105)"
+msgstr "Data baixa autoconsum (M105)"
+
+#. module: som_switching
+#: field:giscedata.atc.tag,creation_date
+msgid "Data creació"
+msgstr "Data creació"
+
+#. module: som_switching
+#: help:giscedata.polissa,data_alta_autoconsum
+msgid "Data en la que es va activar la modcon de canvi de tipus d'auto de 00 al tipusoportú."
+msgstr "Data en la que es va activar la modcon de canvi de tipus d'auto de 00 al tipusoportú."
+
+#. module: som_switching
+#: help:giscedata.polissa,data_baixa_autoconsum
+msgid "Data en la que es va activar la modcon de sortida de l'autoconsum del tipus que tingués a 00"
+msgstr "Data en la que es va activar la modcon de sortida de l'autoconsum del tipus que tingués a 00"
+
+#. module: som_switching
+#: field:giscedata.atc.tag,description
+msgid "Descripció"
+msgstr "Descripció"
+
+#. module: som_switching
+#: field:wizard.r101.from.multiple.contracts,reclamacio_disconformidad_autoconsumo
+msgid "Disconformitat autoconsum"
+msgstr "Disconformitat autoconsum"
+
+#. module: som_switching
+#: view:wizard.r101.from.multiple.contracts
+msgid "Disconformitats autoconsum (Aplicarà a totes les reclamacions):"
+msgstr "Disconformitats autoconsum (Aplicarà a totes les reclamacions):"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching.py:169
+msgid "Distribuidora"
+msgstr "Distribuidora"
+
+#. module: som_switching
+#: field:giscedata.switching.r101.wizard,doc_ids field:wizard.r1.from.f1.erroni,doc_ids
+msgid "Documents"
+msgstr "Documents"
+
+#. module: som_switching
+#: field:giscedata.switching.r101.wizard,doc_add field:wizard.r1.from.f1.erroni,doc_add
+msgid "Documents adjunts"
+msgstr "Documents adjunts"
+
+#. module: som_switching
+#: selection:wizard.close.obsolete.cases,new_state
+msgid "Draft"
+msgstr "Esborrany"
+
+#. module: som_switching
+msgid ""
+"Dóna d'alta a la llista de Mailchimp indicada a la variable\n"
+"            de configuració \"mailchimp_clients_list\" al nou. Si el nou titular és soci, "
+"actualitza\n"
+"            les dades de la llista de la variable \"mailchimp_members_list\".\n"
+"            Aplica pels canvis de titular per subrogació en activar el pas 02."
+msgstr ""
+"Dóna d'alta a la llista de Mailchimp indicada a la variable\n"
+"            de configuració \"mailchimp_clients_list\" al nou. Si el nou titular és soci, "
+"actualitza\n"
+"            les dades de la llista de la variable \"mailchimp_members_list\".\n"
+"            Aplica pels canvis de titular per subrogació en activar el pas 02."
+
+#. module: som_switching
+msgid ""
+"Dóna d'alta a la llista de Mailchimp indicada a la variable\n"
+"            de configuració \"mailchimp_clients_list\" al nou. Si el nou titular és soci, "
+"actualitza\n"
+"            les dades de la llista de la variable \"mailchimp_members_list\".\n"
+"            Aplica pels canvis de titular per transpàs en activar el pas 05."
+msgstr ""
+"Dóna d'alta a la llista de Mailchimp indicada a la variable\n"
+"            de configuració \"mailchimp_clients_list\" al nou. Si el nou titular és soci, "
+"actualitza\n"
+"            les dades de la llista de la variable \"mailchimp_members_list\".\n"
+"            Aplica pels canvis de titular per transpàs en activar el pas 05."
+
+#. module: som_switching
+msgid ""
+"Dóna de baixa de la llista de Mailchimp indicada a la variable\n"
+"            de configuració \"mailchimp_clients_list\" l'antic titular si aquest no té cap més "
+"contracte actiu.\n"
+"            Aplica pels canvis de titular per subrogació en activar el pas 02."
+msgstr ""
+"Dóna de baixa de la llista de Mailchimp indicada a la variable\n"
+"            de configuració \"mailchimp_clients_list\" l'antic titular si aquest no té cap més "
+"contracte actiu.\n"
+"            Aplica pels canvis de titular per subrogació en activar el pas 02."
+
+#. module: som_switching
+msgid ""
+"Dóna de baixa de la llista de Mailchimp indicada a la variable\n"
+"            de configuració \"mailchimp_clients_list\" l'antic titular si aquest no té cap més "
+"contracte actiu.\n"
+"            Aplica pels canvis de titular per transpàs en activar el pas 05."
+msgstr ""
+"Dóna de baixa de la llista de Mailchimp indicada a la variable\n"
+"            de configuració \"mailchimp_clients_list\" l'antic titular si aquest no té cap més "
+"contracte actiu.\n"
+"            Aplica pels canvis de titular per transpàs en activar el pas 05."
+
+#. module: som_switching
+msgid ""
+"Dóna de baixa el titular de la llista de Mailchimp indicada a la variable\n"
+"            de configuració \"mailchimp_clients_list\" si aquest no té cap més contracte actiu."
+msgstr ""
+"Dóna de baixa el titular de la llista de Mailchimp indicada a la variable\n"
+"            de configuració \"mailchimp_clients_list\" si aquest no té cap més contracte actiu."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:214
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:356
+msgid "ERROR"
+msgstr "ERROR"
+
+#. module: som_switching
+#: selection:wizard.comment.to.F1,option
+msgid "Eliminar"
+msgstr "Eliminar"
+
+#. module: som_switching
+#: selection:wizard.giscedata.switching.log.reexport,state selection:wizard.validate.d101,state
+msgid "End"
+msgstr "Fi"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching.py:195
+#: code:addons/som_switching/wizard/wizard_comment_to_F1.py:14
+#: code:addons/som_switching/wizard/wizard_validate_d101.py:166
+#: code:addons/som_switching/wizard/wizard_validate_d101.py:285
+msgid "Error"
+msgstr "Error"
+
+#. module: som_switching
+#: constraint:crm.case.section
+msgid "Error ! You cannot create recursive sections."
+msgstr "Error: no es poden crear seccions recursives."
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/giscedata_switching_log_reexport_wizard.py:18
+msgid "Es reexportaràn {} arxius"
+msgstr "Es reexportaràn {} arxius"
+
+#. module: som_switching
+#: field:wizard.validate.d101,state
+msgid "Estat"
+msgstr "Estat"
+
+#. module: som_switching
+#: view:giscedata.switching.a301.wizard view:giscedata.switching.mod.con.wizard
+msgid ""
+"Estàs segur que vols generar el cas ATR sense completar ambdós apartats Documentació Tècnica i "
+"Documentació Adjunta?"
+msgstr ""
+"Estàs segur que vols generar el cas ATR sense completar ambdós apartats Documentació Tècnica i "
+"Documentació Adjunta?"
+
+#. module: som_switching
+#: field:giscedata.atc,tag field:giscedata.atc.tag,name field:wizard.create.atc.from.polissa,tag
+msgid "Etiqueta"
+msgstr "Etiqueta"
+
+#. module: som_switching
+#: view:giscedata.atc.tag
+msgid "Etiquetes CACs"
+msgstr "Etiquetes CACs"
+
+#. module: som_switching
+msgid "FACTURA"
+msgstr "FACTURA"
+
+#. module: som_switching
+#: field:wizard.giscedata.switching.log.reexport,report
+msgid "Fichero a descargar"
+msgstr "Fitxer per descarregar"
+
+#. module: som_switching
+#: view:giscedata.switching.r101.wizard view:wizard.r101.from.multiple.contracts
+msgid "Gestió Facturació del Contracte"
+msgstr "Gestió Facturació del Contracte"
+
+#. module: som_switching
+#: selection:wizard.close.obsolete.cases,add_comment
+msgid "Historize"
+msgstr "Registrar a l'historial"
+
+#. module: som_switching
+#: field:wizard.validate.d101,generated_m1
+msgid "ID del cas M1 generat per l'assitent"
+msgstr "ID del cas M1 generat per l'assitent"
+
+#. module: som_switching
+#: field:wizard.validate.d101,generated_d102
+msgid "ID del pas D102 generat per l'assitent"
+msgstr "ID del pas D102 generat per l'assitent"
+
+#. module: som_switching
+msgid "INFO"
+msgstr "INFO"
+
+#. module: som_switching
+#: field:wizard.close.obsolete.cases,info
+msgid "Info"
+msgstr "Informació"
+
+#. module: som_switching
+#: selection:wizard.giscedata.switching.log.reexport,state selection:wizard.validate.d101,state
+msgid "Init"
+msgstr "Inici"
+
+#. module: som_switching
+#: constraint:ir.ui.view
+msgid ""
+"Invalid XML for View Architecture! Check server logs for details (view name, model, line number "
+"and RNG error)."
+msgstr ""
+"XML no vàlid per a l'arquitectura de la vista. Consulta els registres del servidor per obtenir "
+"més informació (nom de la vista, model, número de línia i error RNG)."
+
+#. module: som_switching
+#: constraint:ir.actions.act_window
+msgid "Invalid model name in the action definition."
+msgstr "Nom de model no vàlid en la definició de l'acció."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching.py:219
+msgid "La activacio no ha retornat la informacio esperada"
+msgstr "La activacio no ha retornat la informacio esperada"
+
+#. module: som_switching
+#: view:giscedata.switching.mod.con.wizard
+msgid "M1 - Modificació contractual"
+msgstr "M1 - Modificació contractual"
+
+#. module: som_switching
+#: field:giscedata.switching.r101.wizard,facturacio_suspesa
+#: field:wizard.r101.from.multiple.contracts,facturacio_suspesa
+#: field:wizard.subtype.r1,facturacio_suspesa
+msgid "Marcar contracte amb facturació suspesa"
+msgstr "Marcar contracte amb facturació suspesa"
+
+#. module: som_switching
+#: field:giscedata.switching.r101.wizard,refacturacio_pendent
+#: field:wizard.r101.from.multiple.contracts,refacturacio_pendent
+#: field:wizard.subtype.r1,refacturacio_pendent
+msgid "Marcar contracte amb refacturacio pendent"
+msgstr "Marcar contracte amb refacturacio pendent"
+
+#. module: som_switching
+#: view:giscedata.switching.r101.wizard view:wizard.r101.from.multiple.contracts
+msgid "Marcar facturacio suspesa: "
+msgstr "Marcar facturacio suspesa: "
+
+#. module: som_switching
+#: view:giscedata.switching.r101.wizard view:wizard.r101.from.multiple.contracts
+msgid "Marcar refacturacio pendent: "
+msgstr "Marcar refacturacio pendent: "
+
+#. module: som_switching
+#: field:wizard.giscedata.switching.log.reexport,msg
+msgid "Missatge"
+msgstr "Missatge"
+
+#. module: som_switching
+#: view:wizard.comment.to.F1
+msgid "Modifica les observacions"
+msgstr "Modifica les observacions"
+
+#. module: som_switching
+#: field:wizard.create.atc.from.polissa,mostrar_tag
+msgid "Mostrar_tag"
+msgstr "Mostrar_tag"
+
+#. module: som_switching
+#: field:wizard.validate.d101,rejection_comment
+msgid "Motiu de rebuig"
+msgstr "Motiu de rebuig"
+
+#. module: som_switching
+#: field:giscedata.switching.a301.wizard,necessita_documentacio_tecnica
+#: field:giscedata.switching.mod.con.wizard,necessita_documentacio_tecnica
+msgid "Necessita Documentació Tecnica"
+msgstr "Necessita Documentació Tecnica"
+
+#. module: som_switching
+#: field:wizard.close.obsolete.cases,new_state
+msgid "New State"
+msgstr "Estat nou"
+
+#. module: som_switching
+#: selection:wizard.close.obsolete.cases,add_comment
+msgid "No comment"
+msgstr "Sense comentari"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching.py:420
+msgid "No es poden cancel·lar casos ATR en marxa, revisa els protocols o demana ajuda."
+msgstr "No es poden cancel·lar casos ATR en marxa, revisa els protocols o demana ajuda."
+
+#. module: som_switching
+#: constraint:giscedata.switching
+msgid "No es pot assignar un codi de procés diferent a l'assignat als passos"
+msgstr "No es pot assignar un codi de procés diferent a l'assignat als passos"
+
+#. module: som_switching
+#: constraint:giscedata.switching.activation.config
+msgid ""
+"No pots tenir un pas marcat com a final amb un ordre inferior que els altres amb el mateix procés"
+" i pas"
+msgstr ""
+"No pots tenir un pas marcat com a final amb un ordre inferior que els altres amb el mateix procés"
+" i pas"
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/wizard_comment_to_F1.py:14
+msgid "No s'ha omplert el camp comentari"
+msgstr "No s'ha omplert el camp comentari"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching.py:196
+msgid "No s'ha pogut activar el cas {0} perqué no es troba el métode d'activació {1}."
+msgstr "No s'ha pogut activar el cas {0} perqué no es troba el métode d'activació {1}."
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/wizard_validate_d101.py:106
+msgid "No s'ha pogut crear el cas M1 pel contracte amb id {}: {}"
+msgstr "No s'ha pogut crear el cas M1 pel contracte amb id {}: {}"
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/wizard_validate_d101.py:316
+msgid "No s'ha pogut crear el cas M1 per la pòlissa {}"
+msgstr "No s'ha pogut crear el cas M1 per la pòlissa {}"
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/wizard_validate_d101.py:251
+msgid "No s'ha pogut crear el cas M1 per la pòlissa {} al no haver-hi un autoconsum"
+msgstr "No s'ha pogut crear el cas M1 per la pòlissa {} al no haver-hi un autoconsum"
+
+#. module: som_switching
+#: constraint:giscedata.switching
+msgid "No s'ha trobat la comercialitzadora sortint"
+msgstr "No s'ha trobat la comercialitzadora sortint"
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/giscedata_switching_log_reexport_wizard.py:47
+msgid "No s'han seleccionat ids"
+msgstr "No s'han seleccionat ids"
+
+#. module: som_switching
+#: field:wizard.close.obsolete.cases,no_action
+msgid "No trigger an action"
+msgstr "No executar cap acció"
+
+#. module: som_switching
+#: field:wizard.validate.d101,con_name
+msgid "Nom"
+msgstr "Nom"
+
+#. module: som_switching
+#: field:wizard.giscedata.switching.log.reexport,filename
+msgid "Nombre fichero exportado"
+msgstr "Nom del fitxer exportat"
+
+#. module: som_switching
+msgid ""
+"Nomes quan es tracte de un canvi de titular sense altres canvis.\n"
+"\n"
+"Si es tracte de una subrogació i en la variable de configuració "
+"'sw_m1_owner_change_subrogacio_new_contract' s'indica que no es vol nou contracte per "
+"subrogacions (valor 0):\n"
+"Es fa una modificació contractual en la data indicada per la distribuidora cambiant el titular i "
+"les altres dades administratives.\n"
+"\n"
+"Si es tracte de un traspàs o una subrogació amb contracte nou (variable "
+"'sw_m1_owner_change_subrogacio_new_contract' a 1):\n"
+"Es dona de baixa l'antic contracte en la data de canvi sol.licitada en el pas 01 o en data de "
+"última lectura facturada (la més recent).\n"
+"Les lectures, comptadors, linies extra, F1 i factures de proveidor posteriors a la data de baixa "
+"s'assignen al nou contracte, que es dona d'alta el dia despres de la baixa de l'antic."
+msgstr ""
+"Nomes quan es tracte de un canvi de titular sense altres canvis.\n"
+"\n"
+"Si es tracte de una subrogació i en la variable de configuració "
+"'sw_m1_owner_change_subrogacio_new_contract' s'indica que no es vol nou contracte per "
+"subrogacions (valor 0):\n"
+"Es fa una modificació contractual en la data indicada per la distribuidora cambiant el titular i "
+"les altres dades administratives.\n"
+"\n"
+"Si es tracte de un traspàs o una subrogació amb contracte nou (variable "
+"'sw_m1_owner_change_subrogacio_new_contract' a 1):\n"
+"Es dona de baixa l'antic contracte en la data de canvi sol.licitada en el pas 01 o en data de "
+"última lectura facturada (la més recent).\n"
+"Les lectures, comptadors, linies extra, F1 i factures de proveidor posteriors a la data de baixa "
+"s'assignen al nou contracte, que es dona d'alta el dia despres de la baixa de l'antic."
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/wizard_close_obsolete_cases.py:14
+msgid ""
+"Només els casos oberts:\n"
+" * D1 01 amb motiu 04 amb pólissa de baixa o autoconsum activat\n"
+msgstr ""
+"Només els casos oberts:\n"
+" * D1 01 amb motiu 04 amb pólissa de baixa o autoconsum activat\n"
+
+#. module: som_switching
+#: field:wizard.close.obsolete.cases,num_cases
+msgid "Number of cases"
+msgstr "Nombre de casos"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:63
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:70
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:86
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:110
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:119
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:145
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:152
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:168
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:192
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:201
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:230
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:239
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:245
+msgid "OK"
+msgstr "OK"
+
+#. module: som_switching
+#: view:wizard.validate.d101
+msgid "Obrir casos generats"
+msgstr "Obrir casos generats"
+
+#. module: som_switching
+#: field:giscedata.switching,user_observations
+msgid "Observaciones del usuario"
+msgstr "Observacions de l'usuari"
+
+#. module: som_switching
+#: view:giscedata.facturacio.importacio.linia view:giscedata.switching
+msgid "Observacions"
+msgstr "Observacions"
+
+#. module: som_switching
+#: field:giscedata.facturacio.importacio.linia,user_observations
+msgid "Observacions de l'usuari"
+msgstr "Observacions de l'usuari"
+
+#. module: som_switching
+#: selection:wizard.close.obsolete.cases,new_state
+msgid "Open"
+msgstr "Obert"
+
+#. module: som_switching
+#: selection:wizard.validate.d101,solicitud_tensio
+msgid "Otra tensión obsoleta"
+msgstr "Altra tensió obsoleta"
+
+#. module: som_switching
+#: field:wizard.close.obsolete.cases,result
+msgid "Output Text"
+msgstr "Text de sortida"
+
+#. module: som_switching
+#: field:wizard.validate.d101,power_p1
+msgid "P1"
+msgstr "P1"
+
+#. module: som_switching
+#: field:wizard.validate.d101,power_p2
+msgid "P2"
+msgstr "P2"
+
+#. module: som_switching
+#: field:wizard.validate.d101,power_p3
+msgid "P3"
+msgstr "P3"
+
+#. module: som_switching
+#: field:wizard.validate.d101,power_p4
+msgid "P4"
+msgstr "P4"
+
+#. module: som_switching
+#: field:wizard.validate.d101,power_p5
+msgid "P5"
+msgstr "P5"
+
+#. module: som_switching
+#: field:wizard.validate.d101,power_p6
+msgid "P6"
+msgstr "P6"
+
+#. module: som_switching
+#: field:wizard.validate.d101,sw_id
+msgid "Pas D1 a validar"
+msgstr "Pas D1 a validar"
+
+#. module: som_switching
+#: selection:wizard.close.obsolete.cases,new_state
+msgid "Pending"
+msgstr "Pendent"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:354
+#, python-format
+msgid "Per la pólissa '%s' no hem pogut tancar el cas %s"
+msgstr "Per la pólissa '%s' no hem pogut tancar el cas %s"
+
+#. module: som_switching
+#: selection:wizard.r101.from.multiple.contracts,reclamacio_tipus_atencio_incorrecte
+msgid "Por operaciones"
+msgstr "Per operacions"
+
+#. module: som_switching
+#: selection:wizard.r101.from.multiple.contracts,reclamacio_tipus_atencio_incorrecte
+msgid "Por operarios de equipos de medida"
+msgstr "Per operaris d'equips de mesura"
+
+#. module: som_switching
+#: selection:wizard.r101.from.multiple.contracts,reclamacio_tipus_atencio_incorrecte
+msgid "Por operarios de inspección"
+msgstr "Per operaris d'inspecció"
+
+#. module: som_switching
+#: selection:wizard.r101.from.multiple.contracts,reclamacio_tipus_atencio_incorrecte
+msgid "Por operarios de lecturas"
+msgstr "Per operaris de lectures"
+
+#. module: som_switching
+#: selection:wizard.r101.from.multiple.contracts,reclamacio_tipus_atencio_incorrecte
+msgid "Por operarios de nuevos suministros"
+msgstr "Per operaris de nous subministraments"
+
+#. module: som_switching
+#: selection:wizard.r101.from.multiple.contracts,reclamacio_tipus_atencio_incorrecte
+msgid "Por personal de canales de atención"
+msgstr "Per personal de canals d'atenció"
+
+#. module: som_switching
+#: field:giscedata.switching.b101.wizard,phone_pre field:wizard.validate.d101,phone_pre
+msgid "Prefix"
+msgstr "Prefix"
+
+#. module: som_switching
+#: field:giscedata.atc.tag,text_R1
+msgid "Proposta text R1"
+msgstr "Proposta text R1"
+
+#. module: som_switching
+#: view:giscedata.switching.r101.wizard
+msgid "R1-01 (02-009) - Reclamació Factura sense lectures"
+msgstr "R1-01 (02-009) - Reclamació Factura sense lectures"
+
+#. module: som_switching
+#: view:giscedata.switching.r101.wizard
+msgid "R1-01 (02-036) - Reclamació Factura amb lectures"
+msgstr "R1-01 (02-036) - Reclamació Factura amb lectures"
+
+#. module: som_switching
+msgid "RECLAMACIONS"
+msgstr "RECLAMACIONS"
+
+#. module: som_switching
+msgid "Rebuig dades inst.autoproducció CUPS ${object.cups_id.name}"
+msgstr "Rebuig dades inst.autoproducció CUPS ${object.cups_id.name}"
+
+#. module: som_switching
+#: field:wizard.validate.d101,is_rejected
+msgid "Rebutjar"
+msgstr "Rebutjar"
+
+#. module: som_switching
+msgid "Reexportar fitxer adjunts"
+msgstr "Reexportar fitxer adjunts"
+
+#. module: som_switching
+#: view:wizard.giscedata.switching.log.reexport
+msgid "Reexportar fitxers"
+msgstr "Reexportar fitxers"
+
+#. module: som_switching
+#: view:wizard.giscedata.switching.log.reexport
+msgid "Reexportar fitxers dels logs"
+msgstr "Reexportar fitxers dels logs"
+
+#. module: som_switching
+#: field:wizard.create.atc.from.polissa,require_tag
+msgid "Requerir tag"
+msgstr "Requerir tag"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching.py:201
+msgid "Resultat Activacio:\n"
+msgstr "Resultat Activacio:\n"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching.py:244
+msgid "Resultat Notificacio:\n"
+msgstr "Resultat Notificacio:\n"
+
+#. module: som_switching
+#: field:wizard.validate.d101,results
+msgid "Resultats"
+msgstr "Resultats"
+
+#. module: som_switching
+#: view:wizard.validate.d101
+msgid "Resultats:"
+msgstr "Resultats:"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:214
+msgid "S'ha produït un error desconegut donant d'alta el nou titular a Mailchimp."
+msgstr "S'ha produït un error desconegut donant d'alta el nou titular a Mailchimp."
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/giscedata_switching_log_reexport_wizard.py:90
+msgid "S'han processat {} fitxers.\n"
+msgstr "S'han processat {} fitxers.\n"
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/giscedata_switching_log_reexport_wizard.py:92
+msgid "S'han produït els següents errors en els arxius exportats:\n"
+msgstr "S'han produït els següents errors en els arxius exportats:\n"
+
+#. module: som_switching
+#: selection:wizard.close.obsolete.cases,add_comment
+msgid "Send partner & historize"
+msgstr "Enviar al contacte i registrar a l'historial"
+
+#. module: som_switching
+#: help:wizard.validate.d101,is_rejected
+msgid "Si s'activa es generarà un D1-02 serà de rebuig"
+msgstr "Si s'activa es generarà un D1-02 serà de rebuig"
+
+#. module: som_switching
+#: help:wizard.validate.d101,set_pending
+msgid "Si s'activa, es crearà el D1-02 marcat com a pendent de validar"
+msgstr "Si s'activa, es crearà el D1-02 marcat com a pendent de validar"
+
+#. module: som_switching
+msgid "Solicituds obertes pendents d'enviar"
+msgstr "Solicituds obertes pendents d'enviar"
+
+#. module: som_switching
+msgid "Sol·licitud autorització de dades titular autoconsum CUPS: ${object.cups_polissa_id.name}"
+msgstr "Sol·licitud autorització de dades titular autoconsum CUPS: ${object.cups_polissa_id.name}"
+
+#. module: som_switching
+#: view:wizard.validate.d101
+msgid "Sortir"
+msgstr "Sortir"
+
+#. module: som_switching
+#: field:wizard.close.obsolete.cases,state field:wizard.giscedata.switching.log.reexport,state
+msgid "State"
+msgstr "Estat"
+
+#. module: som_switching
+#: selection:wizard.comment.to.F1,option
+msgid "Substituir"
+msgstr "Substituir"
+
+#. module: som_switching
+msgid "Tanca el cas quan es tracta d'un M1 05 Mod. Acord repartiment/fitxer coeficients."
+msgstr "Tanca el cas quan es tracta d'un M1 05 Mod. Acord repartiment/fitxer coeficients."
+
+#. module: som_switching
+#: view:wizard.giscedata.switching.log.reexport
+msgid "Tancar"
+msgstr "Tancar"
+
+#. module: som_switching
+#: view:wizard.close.obsolete.cases
+msgid "Tancar casos"
+msgstr "Tancar casos"
+
+#. module: som_switching
+#: view:wizard.close.obsolete.cases
+msgid "Tancar casos ATR obsolets"
+msgstr "Tancar casos ATR obsolets"
+
+#. module: som_switching
+#: field:wizard.validate.d101,tariff
+msgid "Tarifa ATR"
+msgstr "Tarifa ATR"
+
+#. module: som_switching
+#: field:giscedata.switching.b101.wizard,phone_num field:wizard.validate.d101,phone_num
+msgid "Telèfon"
+msgstr "Telèfon"
+
+#. module: som_switching
+#: field:wizard.validate.d101,solicitud_tensio
+msgid "Tensió Sol.licitada"
+msgstr "Tensió Sol.licitada"
+
+#. module: som_switching
+#: constraint:ir.model
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr "El nom de l'objecte ha de començar per x_ i no contenir caràcters especials."
+
+#. module: som_switching
+#: constraint:payment.mode
+msgid "The SEPA creditor code is not correct"
+msgstr "El codi de creditor SEPA no és correcte"
+
+#. module: som_switching
+#: field:wizard.r101.from.multiple.contracts,reclamacio_tipus_atencio_incorrecte
+msgid "Tipus atenció incorrecte"
+msgstr "Tipus atenció incorrecte"
+
+#. module: som_switching
+#: view:wizard.r101.from.multiple.contracts
+msgid "Tipus atenció incorrecte (Aplicarà a totes les reclamacions):"
+msgstr "Tipus atenció incorrecte (Aplicarà a totes les reclamacions):"
+
+#. module: som_switching
+#: field:wizard.r101.from.multiple.contracts,reclamacio_tipus_concepte_facturat
+msgid "Tipus concepte facturat"
+msgstr "Tipus concepte facturat"
+
+#. module: som_switching
+#: view:wizard.r101.from.multiple.contracts
+msgid "Tipus concepte facturat (Aplicarà a totes les reclamacions):"
+msgstr "Tipus concepte facturat (Aplicarà a totes les reclamacions):"
+
+#. module: som_switching
+#: field:giscedata.atc.tag,titol
+msgid "Títol"
+msgstr "Títol"
+
+#. module: som_switching
+msgid "Validació D1"
+msgstr "Validació D1"
+
+#. module: som_switching
+#: view:wizard.validate.d101
+msgid "Validar D1-01"
+msgstr "Validar D1-01"
+
+#. module: som_switching
+msgid "Validar D101"
+msgstr "Validar D101"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_atc.py:92
+#: code:addons/som_switching/models/giscedata_atc.py:102
+#: code:addons/som_switching/models/giscedata_atc.py:110
+#: code:addons/som_switching/models/giscedata_atc.py:118
+#: code:addons/som_switching/models/giscedata_atc.py:124
+#: code:addons/som_switching/models/giscedata_atc.py:132
+#: code:addons/som_switching/models/giscedata_atc.py:140
+#: code:addons/som_switching/models/giscedata_atc.py:147
+#: code:addons/som_switching/models/giscedata_atc.py:154
+#: code:addons/som_switching/models/giscedata_atc.py:162
+#: code:addons/som_switching/models/giscedata_atc.py:171
+#: code:addons/som_switching/models/giscedata_atc.py:178
+#: code:addons/som_switching/models/giscedata_atc.py:186
+#: code:addons/som_switching/models/giscedata_switching.py:419
+msgid "Warning"
+msgstr "Avís"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:148
+#, python-format
+msgid ""
+"[Alta Mailchimp] Aquest cas (M1-%s) està finalitzat però és un rebuig. No es dona de alta el nou "
+"titular."
+msgstr ""
+"[Alta Mailchimp] Aquest cas (M1-%s) està finalitzat però és un rebuig. No es dona de alta el nou "
+"titular."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:165
+#, python-format
+msgid "[Alta Mailchimp] Aquest cas (M1-%s) no és d'un canvi de titular."
+msgstr "[Alta Mailchimp] Aquest cas (M1-%s) no és d'un canvi de titular."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:141
+#, python-format
+msgid "[Alta Mailchimp] Com que el cas (M1-%s) no està finalitzat no s'ha donat de alta el nou titular."
+msgstr "[Alta Mailchimp] Com que el cas (M1-%s) no està finalitzat no s'ha donat de alta el nou titular."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:188
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:197
+#, python-format
+msgid ""
+"[Alta Mailchimp] El canvi pel cas (M1-%s) encara no s'ha activat. No es dona de alta el nou "
+"titular."
+msgstr ""
+"[Alta Mailchimp] El canvi pel cas (M1-%s) encara no s'ha activat. No es dona de alta el nou "
+"titular."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:312
+#, python-format
+msgid "[Alta Mailchimp] S'ha iniciat el procés de alta per el nou titular (ID %d)"
+msgstr "[Alta Mailchimp] S'ha iniciat el procés de alta per el nou titular (ID %d)"
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:235
+#, python-format
+msgid "[Baixa Mailchimp] Aquest cas (%s-%s) no és un Cn-06 ni Bn-05."
+msgstr "[Baixa Mailchimp] Aquest cas (%s-%s) no és un Cn-06 ni Bn-05."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:66
+#, python-format
+msgid ""
+"[Baixa Mailchimp] Aquest cas (M1-%s) està finalitzat però és un rebuig. No es dona de baixa "
+"l'antic titular."
+msgstr ""
+"[Baixa Mailchimp] Aquest cas (M1-%s) està finalitzat però és un rebuig. No es dona de baixa "
+"l'antic titular."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:83
+#, python-format
+msgid "[Baixa Mailchimp] Aquest cas (M1-%s) no és d'un canvi de titular."
+msgstr "[Baixa Mailchimp] Aquest cas (M1-%s) no és d'un canvi de titular."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:226
+#, python-format
+msgid ""
+"[Baixa Mailchimp] Com que el cas (%s-%s) no està finalitzat no s'ha donat de baixa l'antic "
+"titular."
+msgstr ""
+"[Baixa Mailchimp] Com que el cas (%s-%s) no està finalitzat no s'ha donat de baixa l'antic "
+"titular."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:59
+#, python-format
+msgid ""
+"[Baixa Mailchimp] Com que el cas (M1-%s) no està finalitzat no s'ha donat de baixa l'antic "
+"titular."
+msgstr ""
+"[Baixa Mailchimp] Com que el cas (M1-%s) no està finalitzat no s'ha donat de baixa l'antic "
+"titular."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:106
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:115
+#, python-format
+msgid ""
+"[Baixa Mailchimp] El canvi pel cas (M1-%s) encara no s'ha activat. No es dona de baixa l'antic "
+"titular."
+msgstr ""
+"[Baixa Mailchimp] El canvi pel cas (M1-%s) encara no s'ha activat. No es dona de baixa l'antic "
+"titular."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:242
+msgid "[Baixa Mailchimp] No s'ha donat de baixa el titular perquè la pòlissa està activa."
+msgstr "[Baixa Mailchimp] No s'ha donat de baixa el titular perquè la pòlissa està activa."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:260
+msgid ""
+"[Baixa Mailchimp] No s'ha iniciat el procés de baixa perque l'antic titular encara té pòlisses "
+"associades."
+msgstr ""
+"[Baixa Mailchimp] No s'ha iniciat el procés de baixa perque l'antic titular encara té pòlisses "
+"associades."
+
+#. module: som_switching
+#: code:addons/som_switching/models/giscedata_switching_helpers.py:280
+#, python-format
+msgid "[Baixa Mailchimp] S'ha iniciat el procés de baixa per l'antic titular (ID %d)"
+msgstr "[Baixa Mailchimp] S'ha iniciat el procés de baixa per l'antic titular (ID %d)"
+
+#. module: som_switching
+msgid "giscedata.atc.tag"
+msgstr "giscedata.atc.tag"
+
+#. module: som_switching
+msgid "som_switching"
+msgstr "som_switching"
+
+#. module: som_switching
+msgid "wizard.close.obsolete.cases"
+msgstr "wizard.close.obsolete.cases"
+
+#. module: som_switching
+msgid "wizard.comment.to.F1"
+msgstr "wizard.comment.to.F1"
+
+#. module: som_switching
+msgid "wizard.giscedata.switching.log.reexport"
+msgstr "wizard.giscedata.switching.log.reexport"
+
+#. module: som_switching
+msgid "wizard.validate.d101"
+msgstr "wizard.validate.d101"
+
+#. module: som_switching
+#: code:addons/som_switching/wizard/wizard_create_r1.py:74
+#: code:addons/som_switching/wizard/wizard_generate_R1_from_F1_erroni.py:53
+msgid ""
+"{0}, {1}, Reclamació {2}: SUBTIPUS {3}. Generat el pas R1-01\n"
+"\n"
+msgstr ""
+"{0}, {1}, Reclamació {2}: SUBTIPUS {3}. Generat el pas R1-01\n"
+"\n"
+
+#. module: som_switching
+#: view:giscedata.polissa
+msgid "Última lectura de F1"
+msgstr "Última lectura de F1"
+
+#. module: som_switching
+#: field:giscedata.facturacio.importacio.linia,last_observation_line
+#: field:giscedata.switching,last_observation_line
+msgid "Última línia de les observacions"
+msgstr "Última línia de les observacions"

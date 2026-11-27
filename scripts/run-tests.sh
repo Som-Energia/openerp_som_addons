@@ -11,8 +11,7 @@ export PYTHONUNBUFFERED="1"
 
 export DEBUG_ENABLED=0
 export OORQ_ASYNC=0
-# Destral translation validation is opt-in via DESTRAL_TESTING_LANGS.
-# Preserve the caller's choice instead of requiring catalogs in every addon.
+export DESTRAL_TESTING_LANGS="['en_US','ca_ES','es_ES']"
 
 # export OPENERP_DB_NAME="destral_db"
 
