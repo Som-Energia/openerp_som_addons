@@ -94,6 +94,22 @@ necessiten Bash, Git, flock i Python 3; no necessiten l'ERP, Docker ni
 credencials. `TEST_PYTHON` permet repetir els tests Python amb un altre
 intèrpret, per exemple el del virtualenv ERP.
 
+### Generador de migracions
+
+El runner inclou els tests de `scripts/create_migration_script.py`. Es poden
+executar separadament amb Python 3 o amb el virtualenv ERP Python 2.7:
+
+```bash
+scripts/tests/create-migration-script-test.sh
+PYENV_VERSION=erp TEST_PYTHON=python scripts/tests/create-migration-script-test.sh
+```
+
+Només fan servir la llibreria estàndard i repositoris Git temporals. Comproven
+que els XML i CSV modificats es carreguin en l'ordre de `__terp__.py`, que
+`--dry-run` mostri el mateix ordre i que els recursos sense ordre conegut
+produeixin un error sense crear ni sobreescriure migracions. No executen
+l'ERP ni validen l'actualització d'un addon real.
+
 Els tests Destral continuen passant obligatòriament per
 `scripts/run-tests-worktree.sh` quan es treballa des d'un worktree; vegeu la
 skill [erp-test](../../.agents/skills/erp-test/SKILL.md).
