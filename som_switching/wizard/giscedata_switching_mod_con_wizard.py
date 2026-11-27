@@ -85,6 +85,13 @@ class GiscedataSwitchingModConWizard(osv.osv_memory):
                 res = dcode in ["0021", "0022"]
         return res
 
+    def get_phone_email(self, cursor, uid, address_id):
+        values = super(GiscedataSwitchingModConWizard, self).get_phone_email(
+            cursor, uid, address_id
+        )
+        values.update(self.get_phone(cursor, uid, address_id))
+        return values
+
     _columns = {
         "phone_pre": fields.char("Prefix", size=4),
         "necessita_documentacio_tecnica": fields.boolean(
