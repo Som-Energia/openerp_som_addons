@@ -29,7 +29,6 @@ export OPENERP_MONGODB_HOST="localhost"
 export OPENERP_SII_TEST_MODE=1
 export OPENERP_ENVIRONMENT=local
 export OPENERP_RUN_SCRIPTS_INTERACTIVE_RESULT=skip
-export DESTRAL_TESTING_LANGS="['es_ES']"
 export PYTHONPATH="<ruta_erp>/server/bin:<ruta_erp>/server/bin/addons:<ruta_erp>/server/sitecustomize:$PYTHONPATH"
 export PYTHONIOENCODING="UTF-8"
 export PYTHONUNBUFFERED="1"
@@ -42,6 +41,13 @@ Consulta el skill [erp-start](../../.agents/skills/erp-start/SKILL.md) per arren
 ## Executar tests
 
 Consulta el skill [erp-test](../../.agents/skills/erp-test/SKILL.md) per executar tests automatitzats amb destral.
+
+La validació de traduccions és optativa i requereix catàlegs a `i18n/`.
+El runner no l'activa per defecte i respecta els idiomes configurats explícitament:
+
+```bash
+export DESTRAL_TESTING_LANGS="['es_ES']"
+```
 
 ## Scripts de migració
 
