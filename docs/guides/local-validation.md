@@ -1,5 +1,23 @@
 # Validació local
 
+## Preparar les dependències ERP compartides
+
+Crear o obrir una branca o un worktree no sincronitza les dependències. Des
+del checkout o worktree seleccionat, fes aquest pas explícit abans de la
+primera execució o validació que necessiti l'entorn ERP compartit:
+
+```bash
+PYENV_VERSION=erp scripts/sync-workspace-repositories.sh
+```
+
+La [skill `erp-workspace-sync`](../../.agents/skills/erp-workspace-sync/SKILL.md)
+descriu el perfil de CI, les excepcions de branca i les proteccions. Amb
+`--dry-run` només obtens un pla local: sense consultar els remots no es comprova
+si hi ha els tags o branques requerits, si hi ha divergència ni si la
+sincronització podrà acabar correctament. El wrapper de tests no sincronitza
+les dependències. Omet aquest pas per a validacions que no les necessitin, com
+els tests aïllats dels scripts.
+
 ## Serveis compartits
 
 Des de qualsevol checkout o worktree d'addons:

@@ -25,7 +25,7 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 | Quan necessites fer un commit de codi | git-commit | .agents/skills/git-commit/SKILL.md |
 | Quan necessites crear una Pull Request | git-pr | .agents/skills/git-pr/SKILL.md |
 | Quan un agent ERP ha de treballar en un worktree des d'un pane Herdr mantenint el context multirepo | erp-herdr-worktree | .agents/skills/erp-herdr-worktree/SKILL.md |
-| Abans de crear una branca o worktree ERP, per alinear les dependències compartides amb CI | erp-workspace-sync | .agents/skills/erp-workspace-sync/SKILL.md |
+| Abans de la primera execució o validació que necessiti les dependències ERP compartides | erp-workspace-sync | .agents/skills/erp-workspace-sync/SKILL.md |
 | Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .agents/skills/erp-test/SKILL.md |
 | Quan necessites arrencar el servei ERP, executar l'ERP, o obrir l'entorn de desenvolupament | erp-start | .agents/skills/erp-start/SKILL.md |
 | Quan necessites crear un script de migració, modificar el model, o actualitzar un mòdul a producció | erp-migration | .agents/skills/erp-migration/SKILL.md |
@@ -72,13 +72,14 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - El companion és només un shell auxiliar; no iniciïs tests ni modifiquis enllaços compartits automàticament.
 
 ### erp-workspace-sync
-- Abans de crear una branca o worktree ERP nou, executar `scripts/sync-workspace-repositories.sh` des del checkout que es prepara; ometre-ho per canvis només de docs/CI/metadades
+- Executar `scripts/sync-workspace-repositories.sh` des del checkout o worktree seleccionat abans de la primera execució o validació que necessiti les dependències ERP; no cal per crear ni obrir la branca o el worktree
 - Perfil de refs: `.agents/workspace-repositories.tsv`; el valor per defecte d'`erp` és `rolling_erp01` i `somenergia-utils` només s'aplica a Python 2
 - Excepció puntual: `--branch <repo>=<branca>`; persistent només després d'un sync correcte amb `--persist`, o amb `--persist-only` sense sync
 - Si algun repositori és brut, absent o ha divergit, aturar-se: no fer `stash`, `reset`, ni canviar-lo manualment; una branca reescrita requereix `--accept-rewritten-branch <repo>`
-- `--allow-missing` no valida un entorn equivalent a CI
+- `--allow-missing` no valida un entorn equivalent a CI; `--dry-run` només mostra un pla local, sense comprovar refs remotes, divergència ni viabilitat
 
 ### erp-test
+- Abans de la primera validació amb dependències ERP compartides, preparar-les explícitament amb `erp-workspace-sync`
 - Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis
 - Verificar `$WORKSPACE/erp`, `$WORKSPACE/destral` i `$WORKSPACE/openerp_som_addons/docker-compose.yaml`
 - En worktrees, wrapper obligatori: `scripts/run-tests-worktree.sh --addon <module_name> -- <database> --no-requirements -m <module_name>`
@@ -86,6 +87,7 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Compose: `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml"`; serveis `postgres`, `mongo`, `redis`
 
 ### erp-start
+- Abans de la primera execució amb dependències ERP compartides, preparar-les explícitament amb `erp-workspace-sync`
 - Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis
 - Command: `$WORKSPACE/erp/server/bin/openerp-server.py --no-netrpc --price_accuracy=6 --config=$HOME/conf/erp.conf -d <database>`
 - `erpserver` només es pot utilitzar si `command -v erpserver` té èxit
