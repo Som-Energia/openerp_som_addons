@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 from destral import testing
+from tools.misc import cache
 
 
 class TestRejectionOwnership(testing.OOTestCaseWithCursor):
@@ -160,3 +161,47 @@ class TestRejectionOwnership(testing.OOTestCaseWithCursor):
         copied_id = self.headers.copy(self.cursor, self.uid, header_id)
         self.assertEqual(self.rejection_ids(copied_id), [])
         self.headers.unlink(self.cursor, self.uid, [copied_id, header_id])
+
+    def test_deleting_visible_header_preserves_hidden_owners_rejection(self):
+        hidden_id = self.create_header()
+        shared_ids = self.rejection_ids(hidden_id)
+        visible_id = self.headers.copy(self.cursor, self.uid, hidden_id)
+        copied_ids = self.rejection_ids(visible_id)
+        self.headers.write(
+            self.cursor, self.uid, [visible_id],
+            {"rebuig_ids": [(6, 0, shared_ids)]},
+        )
+        self.rejections.unlink(self.cursor, self.uid, copied_ids)
+        users = self.pool.get("res.users")
+        restricted_uid = users.copy(self.cursor, self.uid, self.uid, {
+            "name": "ATR rejection restricted user",
+            "login": "atr_rejection_restricted",
+        })
+        self.assertNotEqual(restricted_uid, 1)
+        model_id = self.pool.get("ir.model").search(
+            self.cursor, self.uid,
+            [("model", "=", "giscedata.switching.step.header")],
+        )[0]
+        self.addCleanup(cache.clean_caches_for_db, self.database)
+        self.pool.get("ir.rule.group").create(self.cursor, self.uid, {
+            "name": "Hide the original rejection header",
+            "model_id": model_id,
+            "global": True,
+            "rules": [(0, 0, {
+                "domain_force": repr([("id", "!=", hidden_id)]),
+            })],
+        })
+        self.assertEqual(
+            self.headers.search(
+                self.cursor, restricted_uid, [("id", "in", [hidden_id, visible_id])]
+            ),
+            [visible_id],
+        )
+
+        self.headers.unlink(self.cursor, restricted_uid, [visible_id])
+
+        self.assertEqual(self.rejection_ids(hidden_id), shared_ids)
+        self.assertEqual(
+            self.rejections.search(self.cursor, self.uid, [("id", "in", shared_ids)]),
+            shared_ids,
+        )
