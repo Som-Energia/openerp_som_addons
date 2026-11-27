@@ -32,6 +32,10 @@ Aquesta skill requereix:
 
 ## Workflow
 
+Abans de la primera execució que necessiti l'entorn ERP compartit, prepara
+les dependències amb [`erp-workspace-sync`](../erp-workspace-sync/SKILL.md) des
+del checkout o worktree seleccionat.
+
 ### Pas 1: Arrencar i esperar els serveis compartits
 
 Des del checkout o worktree seleccionat:

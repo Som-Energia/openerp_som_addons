@@ -33,6 +33,10 @@ Aquesta skill requereix:
 
 ## Workflow
 
+Abans de la primera validació que necessiti l'entorn ERP compartit, prepara
+les dependències amb [`erp-workspace-sync`](../erp-workspace-sync/SKILL.md) des
+del checkout o worktree seleccionat. El wrapper de tests no les sincronitza.
+
 ### Pas 0: Preparar les eines si és un entorn nou
 
 ```bash

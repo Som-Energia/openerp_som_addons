@@ -49,6 +49,7 @@ printf '%s\n' \
     $'branchrepo\torigin\tbranch\trolling_erp01\tall' \
     $'defaultrepo\torigin\tdefault-branch\t-\tall' \
     $'tagrepo\torigin\tlatest-tag\t-\tall' \
+    $'fallbackrepo\torigin\tlatest-tag-or-default-branch\t-\tall' \
     $'py2repo\torigin\tbranch\tpy2\tpy2' \
     > "$tmp/openerp_som_addons/.agents/workspace-repositories.tsv"
 
@@ -69,6 +70,15 @@ GIT_AUTHOR_DATE='2021-01-01T00:00:00Z' \
 git -C "$tmp/tagrepo-seed" tag v2
 make_clone tagrepo
 
+make_seed fallbackrepo
+git -C "$tmp/fallbackrepo-seed" tag -am 'initial release' v1
+make_clone fallbackrepo
+git -C "$tmp/fallbackrepo-seed" switch -qc release/current
+printf '%s\n' released >> "$tmp/fallbackrepo-seed/data"
+git -C "$tmp/fallbackrepo-seed" commit -qam advance-default
+git -C "$tmp/fallbackrepo-seed" push -q "$tmp/fallbackrepo-remote.git" release/current
+git -C "$tmp/fallbackrepo-remote.git" symbolic-ref HEAD refs/heads/release/current
+
 sync
 assert_equal "$(git -C "$tmp/branchrepo" branch --show-current)" rolling_erp01
 assert_equal "$(git -C "$tmp/defaultrepo" branch --show-current)" master
@@ -88,6 +98,67 @@ git -C "$tmp/defaultrepo-seed" push -q "$tmp/defaultrepo-remote.git" main
 git -C "$tmp/defaultrepo-remote.git" symbolic-ref HEAD refs/heads/main
 sync
 assert_equal "$(git -C "$tmp/defaultrepo" branch --show-current)" main
+
+# A commit tag wins over the advertised default branch, even at an older tip.
+assert_equal "$(git -C "$tmp/fallbackrepo" branch --show-current)" ''
+assert_equal "$(git -C "$tmp/fallbackrepo" rev-parse HEAD)" \
+    "$(git -C "$tmp/fallbackrepo-seed" rev-parse 'v1^{commit}')"
+
+# Once the remote tag is gone, use the advertised branch, not the cached
+# origin/HEAD or the tag still present in the local clone.
+git -C "$tmp/fallbackrepo-remote.git" tag -d v1 >/dev/null
+assert_equal "$(git -C "$tmp/fallbackrepo" symbolic-ref refs/remotes/origin/HEAD)" refs/remotes/origin/master
+sync
+assert_equal "$(git -C "$tmp/fallbackrepo" branch --show-current)" release/current
+fallback_tip="$(git -C "$tmp/fallbackrepo-remote.git" rev-parse HEAD)"
+assert_equal "$(git -C "$tmp/fallbackrepo" rev-parse HEAD)" "$fallback_tip"
+
+# A tag pointing to a blob is not an eligible commit tag.
+git -C "$tmp/fallbackrepo-seed" tag blob-tag HEAD:data
+git -C "$tmp/fallbackrepo-seed" push -q "$tmp/fallbackrepo-remote.git" refs/tags/blob-tag
+git -C "$tmp/fallbackrepo" switch -q master
+sync
+assert_equal "$(git -C "$tmp/fallbackrepo" branch --show-current)" release/current
+assert_equal "$(git -C "$tmp/fallbackrepo" rev-parse HEAD)" "$fallback_tip"
+
+# The fallback uses the ordinary branch safeguards and stops all checkouts.
+git -C "$tmp/fallbackrepo" -c user.name='Workspace sync test' \
+    -c user.email=workspace-sync@example.invalid commit --allow-empty -qm local-only
+local_tip="$(git -C "$tmp/fallbackrepo" rev-parse HEAD)"
+if sync --branch branchrepo=developer > "$tmp/fallback-diverged-out" 2> "$tmp/fallback-diverged-err"; then
+    fail 'fallback branch with local commits was accepted'
+fi
+grep -q 'fallbackrepo/release/current has local commits or diverged' "$tmp/fallback-diverged-err" || \
+    fail 'fallback branch divergence was not reported'
+assert_equal "$(git -C "$tmp/fallbackrepo" rev-parse HEAD)" "$local_tip"
+assert_equal "$(git -C "$tmp/branchrepo" branch --show-current)" rolling_erp01
+git -C "$tmp/fallbackrepo" reset --hard -q "$fallback_tip"
+
+# Repositories that opt into strict latest-tag still require a remote commit tag.
+git -C "$tmp/tagrepo-remote.git" tag -d v1 v2 >/dev/null
+if sync --branch branchrepo=developer > "$tmp/strict-tag-out" 2> "$tmp/strict-tag-err"; then
+    fail 'strict latest-tag accepted a remote without tags'
+fi
+grep -q 'tagrepo has no commit tag on remote origin' "$tmp/strict-tag-err" || \
+    fail 'strict latest-tag failure was not reported'
+assert_equal "$(git -C "$tmp/branchrepo" branch --show-current)" rolling_erp01
+git -C "$tmp/tagrepo-seed" push -q --tags "$tmp/tagrepo-remote.git"
+
+# An unreachable remote does not affect the local plan. A real fetch error
+# must stop synchronization rather than falling back to a cached branch.
+git -C "$tmp/fallbackrepo" remote set-url origin "$tmp/missing-remote.git"
+sync --dry-run --branch branchrepo=nonexistent > "$tmp/remote-plan"
+grep -q 'Local plan only: remote tag/branch availability, divergence, and sync feasibility are not checked' \
+    "$tmp/remote-plan" || fail 'dry run did not describe the limits of the local plan'
+grep -q 'Would synchronize fallbackrepo.*latest-tag-or-default-branch' "$tmp/remote-plan" || \
+    fail 'dry run did not display the fallback strategy'
+if sync --branch branchrepo=developer > "$tmp/fallback-fetch-out" 2> "$tmp/fallback-fetch-err"; then
+    fail 'fallback accepted a failed fetch'
+fi
+grep -q 'Cannot fetch tags for fallbackrepo remote origin' "$tmp/fallback-fetch-err" || \
+    fail 'fallback tag fetch failure was not reported'
+assert_equal "$(git -C "$tmp/branchrepo" branch --show-current)" rolling_erp01
+git -C "$tmp/fallbackrepo" remote set-url origin "$tmp/fallbackrepo-remote.git"
 
 # A rewritten branch requires opt-in and preserves its former local tip.
 git -C "$tmp/branchrepo-seed" switch -q rolling_erp01

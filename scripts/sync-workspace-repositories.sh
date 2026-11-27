@@ -37,8 +37,10 @@ Options:
                                May be given more than once.
   --allow-missing             Warn and skip unavailable dependencies instead of
                                failing. This does not produce a complete CI profile.
-  --dry-run                   Show the intended synchronization without fetching,
+  --dry-run                   Show a local plan without contacting remotes,
                                switching repositories, or writing overrides.
+                               Does not check remote tag/branch availability,
+                               divergence, or whether synchronization will succeed.
   -h, --help                  Show this help.
 EOF
     exit 2
@@ -195,7 +197,7 @@ while IFS=$'\t' read -r repository remotes strategy ref profile extra; do
                 exit 1
             fi
             ;;
-        default-branch|latest-tag)
+        default-branch|latest-tag|latest-tag-or-default-branch)
             if [[ "$ref" != "-" ]]; then
                 error "$strategy must use '-' as ref for $repository"
                 exit 1
@@ -382,6 +384,7 @@ if [[ "$problems" -ne 0 ]]; then
 fi
 
 if [[ "$dry_run" -eq 1 ]]; then
+    printf '%s\n' 'Local plan only: remote tag/branch availability, divergence, and sync feasibility are not checked.'
     for repository in "${available_repositories[@]}"; do
         if [[ -n "${overrides[$repository]:-}" ]]; then
             target="branch ${overrides[$repository]} (override)"
@@ -454,13 +457,51 @@ for repository in "${available_repositories[@]}"; do
     fi
 
     case "${target_kinds[$repository]}" in
-        branch)
-            branch="${target_refs[$repository]}"
-            fetch_branch_target "$repository" "$path" "$remote" "$branch" || continue
-            target_object_refs[$repository]="$remote/$branch"
-            target_displays[$repository]="$branch"
-            target_ready[$repository]=1
-            ;;
+        latest-tag|latest-tag-or-default-branch)
+            tag_prefix="refs/workspace-sync/$remote/tags"
+            temporary_tag_prefixes+=("$path"$'\t'"$tag_prefix")
+            if ! git -C "$path" fetch "$remote" --no-tags --prune \
+                "+refs/tags/*:$tag_prefix/*"; then
+                error "Cannot fetch tags for $repository remote $remote"
+                problems=1
+                continue
+            fi
+
+            if ! tag_refs="$(git -C "$path" for-each-ref --format='%(refname)' "$tag_prefix")"; then
+                error "Cannot list fetched tags for $repository remote $remote"
+                problems=1
+                continue
+            fi
+
+            latest_tag_ref=""
+            latest_tag_timestamp=-1
+            while IFS= read -r tag_ref; do
+                [[ -n "$tag_ref" ]] || continue
+                tag_commit="$(git -C "$path" rev-parse --verify --quiet "$tag_ref^{commit}" 2>/dev/null)" || continue
+                tag_timestamp="$(git -C "$path" show -s --format=%ct "$tag_commit")"
+                if [[ "$tag_timestamp" -gt "$latest_tag_timestamp" ]] || \
+                    { [[ "$tag_timestamp" -eq "$latest_tag_timestamp" ]] && [[ "$tag_ref" > "$latest_tag_ref" ]]; }; then
+                    latest_tag_ref="$tag_ref"
+                    latest_tag_timestamp="$tag_timestamp"
+                fi
+            done <<< "$tag_refs"
+
+            if [[ -n "$latest_tag_ref" ]]; then
+                target_kinds[$repository]=tag
+                target_refs[$repository]="$latest_tag_ref"
+                target_object_refs[$repository]="$latest_tag_ref"
+                target_displays[$repository]="${latest_tag_ref#"$tag_prefix/"}"
+                target_ready[$repository]=1
+                continue
+            fi
+            if [[ "${target_kinds[$repository]}" == latest-tag ]]; then
+                error "$repository has no commit tag on remote $remote"
+                problems=1
+                continue
+            fi
+            printf 'No commit tag for %s on remote %s; using its advertised default branch.\n' "$repository" "$remote"
+            # Fall through to the normal default-branch resolution.
+            ;&
         default-branch)
             if ! remote_head="$(git -C "$path" ls-remote --symref "$remote" HEAD | awk '
                 $1 == "ref:" && $2 ~ /^refs\/heads\// {
@@ -478,43 +519,12 @@ for repository in "${available_repositories[@]}"; do
             fi
             target_kinds[$repository]=branch
             target_refs[$repository]="$remote_head"
-            fetch_branch_target "$repository" "$path" "$remote" "$remote_head" || continue
-            target_object_refs[$repository]="$remote/$remote_head"
-            target_displays[$repository]="$remote_head"
-            target_ready[$repository]=1
-            ;;
-        latest-tag)
-            tag_prefix="refs/workspace-sync/$remote/tags"
-            temporary_tag_prefixes+=("$path"$'\t'"$tag_prefix")
-            if ! git -C "$path" fetch "$remote" --no-tags --prune \
-                "+refs/tags/*:$tag_prefix/*"; then
-                error "Cannot fetch tags for $repository remote $remote"
-                problems=1
-                continue
-            fi
-
-            latest_tag_ref=""
-            latest_tag_timestamp=-1
-            while IFS= read -r tag_ref; do
-                tag_commit="$(git -C "$path" rev-parse "$tag_ref^{}^{commit}" 2>/dev/null || true)"
-                [[ -n "$tag_commit" ]] || continue
-                tag_timestamp="$(git -C "$path" show -s --format=%ct "$tag_commit")"
-                if [[ "$tag_timestamp" -gt "$latest_tag_timestamp" ]] || \
-                    { [[ "$tag_timestamp" -eq "$latest_tag_timestamp" ]] && [[ "$tag_ref" > "$latest_tag_ref" ]]; }; then
-                    latest_tag_ref="$tag_ref"
-                    latest_tag_timestamp="$tag_timestamp"
-                fi
-            done < <(git -C "$path" for-each-ref --format='%(refname)' "$tag_prefix")
-
-            if [[ -z "$latest_tag_ref" ]]; then
-                error "$repository has no commit tag on remote $remote"
-                problems=1
-                continue
-            fi
-            target_kinds[$repository]=tag
-            target_refs[$repository]="$latest_tag_ref"
-            target_object_refs[$repository]="$latest_tag_ref"
-            target_displays[$repository]="${latest_tag_ref#"$tag_prefix/"}"
+            ;&
+        branch)
+            branch="${target_refs[$repository]}"
+            fetch_branch_target "$repository" "$path" "$remote" "$branch" || continue
+            target_object_refs[$repository]="$remote/$branch"
+            target_displays[$repository]="$branch"
             target_ready[$repository]=1
             ;;
     esac

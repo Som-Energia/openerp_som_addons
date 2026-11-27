@@ -3,21 +3,19 @@ name: erp-workspace-sync
 description: >
   Sincronitza les dependències compartides del workspace OpenERP amb el perfil
   de refs de CI, admetent excepcions locals per repositori. Utilitza-la abans
-  de crear una branca o un worktree nou per a una funcionalitat ERP.
+  de la primera execució o validació que necessiti aquestes dependències.
 ---
 
 # ERP workspace sync
 
-Utilitza aquesta skill abans de crear una branca de funcionalitat o un
-worktree d'`openerp_som_addons`. El perfil per defecte replica les refs de
-`.github/actions/bootstrap-erp/bootstrap-erp-env.sh`: en particular,
-`erp` usa `rolling_erp01`.
+Utilitza aquesta skill des del checkout o worktree seleccionat abans de la
+primera execució o validació que necessiti l'entorn ERP compartit. El perfil
+per defecte replica les refs de `.github/actions/bootstrap-erp/bootstrap-erp-env.sh`:
+en particular, `erp` usa `rolling_erp01`.
 
-No és un hook Git deliberadament. Un hook `post-checkout` s'executaria també
-quan es canvia a una branca existent, no pot distingir de manera fiable una
-branca nova i modificaria repositoris germans fora de la transacció Git. El
-script versionat dóna un punt d'entrada explícit, auditable i amb proteccions
-contra canvis locals.
+La sincronització és un pas explícit: no és un hook Git ni un requisit per
+crear o obrir branques o worktrees. Tampoc l'executa el wrapper de tests. Omet-la
+si la tasca no necessita les dependències compartides.
 
 ## Procediment
 
@@ -34,9 +32,8 @@ contra canvis locals.
    `--workspace /ruta/al/workspace`. El perfil Python es detecta de l'intèrpret
    actiu o de `PYTHON_VERSION`; fixa'l explícitament, per exemple amb
    `--python-version 3.10`, si l'entorn no és l'habitual.
-3. Només quan la sincronització acaba correctament, crea la branca o el
-   worktree. Per crear worktrees, continua respectant la política d'aprovació,
-   `git fetch origin` i la base `origin/main` d'`AGENTS.md`.
+3. Quan la sincronització acabi correctament, continua amb l'execució o
+   validació que necessita les dependències.
 
 ## Perfil de dependències
 
@@ -47,8 +44,11 @@ dependència del bootstrap de CI:
 - `branch`: fa checkout de la branca indicada i només l'avança amb
   fast-forward;
 - `default-branch`: usa la branca HEAD anunciada pel remote;
-- `latest-tag`: queda en detached HEAD al tag més recent del remote
-  seleccionat;
+- `latest-tag`: queda en detached HEAD al tag més recent del remote que
+  apunta a un commit; falla si no n'hi ha cap;
+- `latest-tag-or-default-branch` (`OMIE`): si no hi ha cap tag elegible
+  després d'un fetch correcte, aplica `default-branch`, com el bootstrap de
+  CI quan conserva la branca clonada. Un error de fetch continua sent un error;
 - el perfil `py2` només s'inclou amb Python 2.x (`somenergia-utils`); el perfil
   `all` s'aplica a totes les versions.
 
@@ -84,10 +84,8 @@ scripts/sync-workspace-repositories.sh --clear-branch erp --persist-only
 ```
 
 Això escriu `.agents/workspace-repositories.local`, que està ignorat per Git,
-dins del checkout des d'on s'executa el script. En crear un worktree, la
-sincronització prèvia s'executa des del checkout principal; si cal persistir
-l'override al worktree nou, crea'l i executa després el script des d'aquell
-worktree amb `--branch ... --persist`.
+dins del checkout des d'on s'executa el script. Executa'l des del worktree on
+vulguis desar l'override.
 
 Un `erp/` compartit només pot tenir una branca activa alhora. Per tant, les
 excepcions persistents són específiques del worktree que les documenta, però
@@ -115,8 +113,10 @@ explícita: `--accept-rewritten-branch poweremail2`. El script crea una branca
 - No fa `stash` ni descarta commits locals. També bloqueja una branca de destí
   que no es pugui avançar amb fast-forward, excepte amb
   `--accept-rewritten-branch`, que en conserva una còpia de seguretat.
-- `--dry-run` mostra un pla informatiu sense canviar refs, checkouts ni
-  overrides. Conserva el lock del workspace, però no espera el lock de tests;
-  una sincronització real tornarà a validar l'estat i esperarà que acabin.
+- `--dry-run` mostra un pla local sense contactar els remots ni canviar refs,
+  checkouts o overrides. No comprova l'existència de tags o branques remotes,
+  la divergència ni si la sincronització podrà acabar correctament. Conserva el
+  lock del workspace, però no espera el lock de tests; una sincronització real
+  tornarà a validar l'estat i esperarà que acabin.
 - Si falla després d'un fetch, no canvia cap working tree; resol primer el
   problema indicat i torna'l a executar.

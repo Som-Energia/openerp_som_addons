@@ -5,7 +5,9 @@
 # Strategies:
 #   branch          checkout and fast-forward the named remote branch
 #   default-branch  checkout and fast-forward the remote's advertised HEAD
-#   latest-tag      checkout detached at the newest remote tag commit
+#   latest-tag      checkout detached at the newest remote tag commit; fail if absent
+#   latest-tag-or-default-branch
+#                   use default-branch only if no remote tag points to a commit
 #
 # Profiles:
 #   all             dependency used by every Python profile
@@ -20,7 +22,7 @@
 # the fallback transparently.
 erp	some,origin	branch	rolling_erp01	all
 libFacturacioATR	origin	latest-tag	-	all
-OMIE	origin	latest-tag	-	all
+OMIE	origin	latest-tag-or-default-branch	-	all
 omie-modules	origin	default-branch	-	all
 somenergia-generationkwh	origin	default-branch	-	all
 plantmeter	origin	default-branch	-	all
