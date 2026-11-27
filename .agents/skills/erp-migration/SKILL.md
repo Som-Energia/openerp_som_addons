@@ -57,6 +57,25 @@ Preview the proposed migration actions without changing files:
 python scripts/create_migration_script.py --dry-run
 ```
 
+### Ordre dels recursos i casos que requereixen revisió manual
+
+El generador llegeix `__terp__.py` com un diccionari literal, sense executar-lo.
+Selecciona només els recursos modificats i conserva l'ordre de `init_xml` i,
+a continuació, `update_xml`. XML i CSV de seguretat no s'agrupen per extensió:
+les referències poden requerir que estiguin intercalats. L'ordre de `git diff`
+o l'ordre alfabètic dels noms no són un ordre de càrrega vàlid.
+
+Si falta el manifest, no és literal o hi ha recursos modificats que no hi
+consten, tant la generació com `--dry-run` s'aturen amb un error abans d'escriure
+cap migració. Reviseu el cas i escriviu una migració explícita si és necessari.
+No afegiu XML exclusius d'una migració al manifest només per evitar aquest error:
+això en canviaria el comportament en les instal·lacions i actualitzacions normals.
+
+Per defecte, manteniu l'ordre del manifest també en les migracions manuals.
+Per exemple: configuracions abans de tasques, i tasques abans dels passos que
+les referencien. Qualsevol excepció ha d'estar justificada i coberta per un test
+d'actualització. El generador no és un analitzador de totes les dependències XML.
+
 Existing migration scripts are never overwritten by default. Use `--replace`
 only after reviewing the generated candidate and confirming replacement is safe:
 
@@ -81,7 +100,12 @@ do not auto-detect the version.
 - [ ] Verify changed manifest resources are included in the migration review.
 - [ ] Run and review `python scripts/create_migration_script.py --dry-run`.
 - [ ] Run Python 2.7 and Python 3 syntax compilation for the generator and generated migration script.
-- [ ] Verify the module upgrade in an ERP environment.
+- [ ] Verify the module upgrade in an ERP environment. For new records with
+  external-ID references, test an existing installation without those records,
+  execute the migration and check all links. A fresh install uses manifest order
+  and does not prove the migration's load order is correct.
+- [ ] Execute the migration a second time and check idempotence: no duplicated
+  records or lost customizations.
 - [ ] Confirm `TARGET_VERSION` still matches the installed ERP migration version; update it manually when it changes.
 
 ### Pas 2: Crear manualment (si cal)
@@ -155,6 +179,21 @@ migrate = up
 |-------|-----------|
 | **pre** | Camps que triguen molt a crear-se (ex: camps calculats/stored). Crear columna manualment a PostgreSQL abans de l'_auto_init. |
 | **post** | Canvis normals que necessiten executar-se DESPRÉS del model. Actualitzar valors per defecte, carregar XMLs, traduccions. |
+
+## Tests del generador
+
+Els tests aïllats formen part de la CI `Local validation scripts` i no necessiten
+ERP, PostgreSQL, MongoDB ni Redis:
+
+```bash
+scripts/tests/create-migration-script-test.sh
+PYENV_VERSION=erp TEST_PYTHON=python scripts/tests/create-migration-script-test.sh
+```
+
+Comproven l'ordre del manifest (també XML/CSV intercalats), els recursos no
+modificats, la sortida de `--dry-run`, els errors sense escriptures parcials i
+la protecció de migracions existents. Aquests tests no substitueixen el test
+d'actualització del mòdul afectat.
 
 ## Executar la migració
 

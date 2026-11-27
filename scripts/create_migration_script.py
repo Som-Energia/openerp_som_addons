@@ -17,6 +17,11 @@ Execució des de l'arrel del repositori:
 # Intentionally manual source of truth. Update when the installed ERP migration
 # version changes; do not replace this with auto-detection.
 TARGET_VERSION = "5.0.25.5.0"
+STRING_TYPES = (str, type(u''))
+
+
+class MigrationOrderError(ValueError):
+    """Resource order needs manual review before generating a migration."""
 
 
 def to_unicode(value):
@@ -79,6 +84,47 @@ def get_modified_files():
                         modified_files[module_name]['po'].append(relative_path)
 
     return modified_files
+
+
+def get_manifest_resources(module_name):
+    """Read OpenERP 5 resource order without executing the manifest."""
+    path = os.path.join(module_name, '__terp__.py')
+    try:
+        tree = parse_python_file(path)
+        if len(tree.body) != 1 or not isinstance(tree.body[0], ast.Expr):
+            raise ValueError('Expected a literal manifest dictionary')
+        manifest = ast.literal_eval(tree.body[0].value)
+    except (IOError, OSError, SyntaxError, ValueError, TypeError):
+        raise MigrationOrderError(
+            'Cannot read a literal manifest at {0}; review migration order manually.'.format(path))
+    if not isinstance(manifest, dict):
+        raise MigrationOrderError('Expected a manifest dictionary at {0}.'.format(path))
+
+    resources = []
+    for key in ('init_xml', 'update_xml'):
+        values = manifest.get(key, [])
+        if not isinstance(values, (list, tuple)) or not all(
+                isinstance(value, STRING_TYPES) for value in values):
+            raise MigrationOrderError(
+                'Invalid {0} resource list in {1}; review migration order manually.'.format(
+                    key, path))
+        resources.extend(values)
+    return resources
+
+
+def get_ordered_data_files(module_name, files):
+    """Select changed XML/CSV resources in manifest order, never diff order."""
+    selected = files.get('data', []) + files.get('security', [])
+    if not selected:
+        return []
+    resources = get_manifest_resources(module_name)
+    missing = sorted(set(selected).difference(resources))
+    if missing:
+        raise MigrationOrderError(
+            'Resources not declared in {0}/__terp__.py: {1}. '
+            'Review their order and write an explicit migration; no order will be guessed.'.format(
+                module_name, ', '.join(missing)))
+    return [resource for resource in resources if resource in selected]
 
 
 def find_new_fields(file_path):
@@ -167,16 +213,14 @@ def get_script_name(files, next_num, branch_name):
 
 
 def report_migration_candidate(module_name, files, models_to_init,
-                               script_path):
+                               script_path, data_files):
     """Report the actions that a migration script would contain."""
     print("Migration candidate for module: {0}".format(module_name))
     if models_to_init:
         print("  Python/model initialization: {0}".format(
             ', '.join(models_to_init)))
-    if files['data']:
-        print("  XML/data loading: {0}".format(', '.join(files['data'])))
-    if files['security']:
-        print("  Security loading: {0}".format(', '.join(files['security'])))
+    if data_files:
+        print("  Data loading (manifest order): {0}".format(', '.join(data_files)))
     if files.get('po'):
         print("  Translations: {0}".format(', '.join(files['po'])))
     print("  Proposed path: {0}".format(script_path))
@@ -184,7 +228,8 @@ def report_migration_candidate(module_name, files, models_to_init,
 
 def create_migration_script(module_name, files, dry_run=False, replace=False):  # noqa: C901
     """Crea un script de migració pel mòdul especificat."""
-    # Primer comprovem si hi ha canvis a fer
+    # Validate before creating directories or replacing an existing script.
+    data_files = get_ordered_data_files(module_name, files)
     models_to_init = []
     for py_file in files['py']:
         full_path = os.path.join(module_name, py_file)
@@ -192,7 +237,7 @@ def create_migration_script(module_name, files, dry_run=False, replace=False):  
         models_to_init.extend(models)
 
     # Si no hi ha ni models per inicialitzar ni fitxers data per actualitzar ni po, sortim
-    if not models_to_init and not files['data'] and not files.get('po'):
+    if not models_to_init and not data_files and not files.get('po'):
         return
 
     migration_dir = os.path.join(module_name, 'migrations', TARGET_VERSION)
@@ -219,7 +264,7 @@ def create_migration_script(module_name, files, dry_run=False, replace=False):  
 
     if dry_run:
         report_migration_candidate(module_name, files, models_to_init,
-                                   script_path)
+                                   script_path, data_files)
         if existing_branch_script:
             print("  Existing script: {0}".format(existing_branch_script))
             if replace:
@@ -254,7 +299,7 @@ from __future__ import absolute_import
 import logging
 '''
         )
-        if files.get('data') or files.get('security'):
+        if data_files:
             f.write('''from oopgrade.oopgrade import load_data\n''')
         if models_to_init:
             f.write('''import pooler\n''')
@@ -277,29 +322,16 @@ def up(cursor, installed_version):
         cursor, context={{'module': '{1}'}}
     )\n'''.format(model, module_name))
 
-        # Afegir load_data per XMLs modificats
-        if files['data']:
-            f.write('\n    logger.info("Updating XML files")\n')
+        # XML and security CSV files must remain interleaved as in the manifest.
+        if data_files:
+            f.write('\n    logger.info("Updating data files in manifest order")\n')
             f.write('    data_files = [\n')
-            for data_file in files['data']:
-                f.write("        '{0}',\n".format(data_file))
+            for data_file in data_files:
+                f.write("        {0!r},\n".format(data_file))
             f.write('    ]\n')
             f.write('''    for data_file in data_files:
         load_data(
             cursor, '{0}', data_file,
-            idref=None, mode='update'
-        )\n'''.format(module_name))
-
-        # Afegir load_data per CSVs security modificats
-        if files['security']:
-            f.write('\n    logger.info("Updating CSV security files")\n')
-            f.write('    security_files = [\n')
-            for data_file in files['security']:
-                f.write("        '{0}',\n".format(data_file))
-            f.write('    ]\n')
-            f.write('''    for security_file in security_files:
-        load_data(
-            cursor, '{0}', security_file,
             idref=None, mode='update'
         )\n'''.format(module_name))
 
@@ -326,8 +358,12 @@ migrate = up
 
 def main(dry_run=False, replace=False):
     modified_files = get_modified_files()
-    for module_name, files in modified_files.items():
-        if files['data'] or files['py'] or files.get('po'):  # Crear script si hi ha canvis
+    # Preflight every module, so an ambiguous resource cannot leave partial output.
+    for module_name in sorted(modified_files):
+        get_ordered_data_files(module_name, modified_files[module_name])
+    for module_name in sorted(modified_files):
+        files = modified_files[module_name]
+        if files['data'] or files['security'] or files['py'] or files.get('po'):
             create_migration_script(module_name, files, dry_run, replace)
 
 
@@ -343,5 +379,8 @@ if __name__ == '__main__':
         '--replace', action='store_true',
         help='Replace an existing migration script for the current branch.')
     args = parser.parse_args()
-    main(args.dry_run, args.replace)
+    try:
+        main(args.dry_run, args.replace)
+    except MigrationOrderError as error:
+        parser.error(to_unicode(error.args[0]))
     exit(0)
